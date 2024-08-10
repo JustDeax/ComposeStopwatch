@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             ComposeStopwatchTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "Just Deax",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
