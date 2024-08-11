@@ -20,7 +20,7 @@
         <service android:name=".stopwatch.StopwatchService" android:foregroundServiceType="dataSync"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".AppActivity"
             android:exported="true"
             android:theme="@style/Theme.ComposeStopwatch">
             <intent-filter>

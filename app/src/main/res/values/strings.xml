@@ -2,6 +2,9 @@
     <string name="app_name">Beta Compose Stopwatch</string>
 
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="apply">Apply</string>
+    <string name="grant">Grant</string>
 
     <string name="stopwatch_channel">Stopwatch notifications</string>
     <string name="stopwatch_running">Stopwatch running</string>
@@ -21,7 +24,6 @@
 
     <string name="ignore_battery">Ignore Battery Optimizations</string>
     <string name="ignore_battery_desc">This app requires permission to ignore battery optimizations to function properly.</string>
-    <string name="grant">Grant</string>
 
     <!--    <string name="ignore_battery_denied">Ignore Battery Optimizations Permission Denied</string>-->
     <!--    <string name="ignore_battery_denied_desc">The app may not function properly without the requested permission.</string>-->
@@ -29,11 +31,9 @@
 
     <string name="change_tap_on_clock">Change tap on clock</string>
     <string name="change_tap_on_clock_desc">Select what will happen when the tap on clock</string>
-    <string name="apply">Apply</string>
 
     <string name="reset_stopwatch">Reset Stopwatch?</string>
     <string name="reset_stopwatch_desc">To enable or disable notifications you need to reset the stopwatch</string>
-    <string name="ok">OK</string>
 
     <string-array name="tap_on_clock">
         <item name="none">None</item>
@@ -53,5 +53,8 @@
         <item name="light">Light</item>
         <item name="dark">Dark</item>
     </string-array>
+
+    <string name="multi_stopwatch_not_available">Multi-stopwatch not available</string>
+    <string name="multi_stopwatch_not_available_desc">The function is not available and may not be available</string>
 
 </resources>

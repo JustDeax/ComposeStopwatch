@@ -1,0 +1,45 @@
+package com.justdeax.composeStopwatch.ui
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun OutlineIconButton(onClick: () -> Unit, painter: Painter, contentDesc: String) {
+    OutlinedButton(
+        modifier = Modifier
+            .width(90.dp)
+            .height(60.dp)
+            .padding(5.dp),
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = contentDesc,
+            tint = MaterialTheme.colorScheme.outline
+        )
+    }
+}
+
+@Composable
+fun IconButton(width: Int = 70, onClick: () -> Unit, painter: Painter, contentDesc: String) {
+    Button(
+        modifier = Modifier
+            .width(width.dp)
+            .height(70.dp),
+        onClick = onClick
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = contentDesc
+        )
+    }
+}
