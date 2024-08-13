@@ -34,16 +34,9 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     }
 
     fun changeTapOnClock(tapType: Int) {
-        if (isRunning.value == true && !notificationEnabled.value!!)
-            viewModelScope.launch {
-                saveStopwatch()
-                dataStoreManager.changeTapOnClock(tapType)
-                restoreStopwatch()
-            }
-        else
-            viewModelScope.launch {
-                dataStoreManager.changeTapOnClock(tapType)
-            }
+        viewModelScope.launch {
+            dataStoreManager.changeTapOnClock(tapType)
+        }
     }
 
     fun changeNotificationEnabled(enabled: Boolean) {

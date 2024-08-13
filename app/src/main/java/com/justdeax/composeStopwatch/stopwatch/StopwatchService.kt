@@ -79,7 +79,8 @@ class StopwatchService: LifecycleService() {
             NOTIFICATION_ID,
             getNotification(
                 getString(R.string.stopwatch_pausing),
-                formatSeconds(elapsedMsBeforePause / 1000)
+                formatSeconds(elapsedMsBeforePause / 1000) + "." +
+                        displayMs(elapsedMs.value!!)
             )
         )
     }
@@ -108,7 +109,8 @@ class StopwatchService: LifecycleService() {
             NOTIFICATION_ID,
             getNotification(
                 getString(R.string.stopwatch_running),
-                formatSeconds(elapsedSec.value!!) + "." + displayMs(elapsedMs.value!!)
+                formatSeconds(elapsedSec.value!!) + "." +
+                        displayMs(elapsedMs.value!!)
             )
         )
     }

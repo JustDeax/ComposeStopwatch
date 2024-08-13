@@ -39,15 +39,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.AppActivity
-import com.justdeax.composeStopwatch.ui.theme.Copper
+import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.IconButton
-import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.ui.OkayDialog
 import com.justdeax.composeStopwatch.ui.OutlineIconButton
 import com.justdeax.composeStopwatch.ui.RadioDialog
 import com.justdeax.composeStopwatch.ui.SimpleDialog
+import com.justdeax.composeStopwatch.ui.theme.Copper2
+import com.justdeax.composeStopwatch.ui.theme.Gold2
+import com.justdeax.composeStopwatch.ui.theme.Silver2
+import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
 import kotlinx.coroutines.delay
@@ -79,7 +81,7 @@ fun DisplayTime(
                 fontSize = 50.sp,
                 fontFamily = FontFamily.Monospace
             )
-            Text(modifier = Modifier.offset(y = 15.dp),
+            Text(modifier = Modifier.offset(y = 20.dp),
                 text = displayMs(elapsedMs),
                 fontSize = 40.sp,
                 fontFamily = FontFamily.Monospace
@@ -96,13 +98,15 @@ fun DisplayLaps(
     Row(modifier = modifier) {
         LazyColumn {
             items(laps, key = { laps[it.index-1].index }) { (index, elapsedTime, deltaLap) ->
-                Row(modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth()
+                ) {
                     val indexColor = when (index) {
-                        1 -> Color.Yellow
-                        2 -> Color.LightGray
-                        3 -> Copper
+                        1 -> Gold2
+                        2 -> Silver2
+                        3 -> Copper2
                         else -> Color.DarkGray
                     }
                     Text(
@@ -121,8 +125,9 @@ fun DisplayLaps(
                         modifier = Modifier.weight(2f),
                         text = deltaLap,
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.Cyan,
-                        textAlign = TextAlign.End
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        textAlign = TextAlign.End,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -159,22 +164,34 @@ fun DisplayActions(
     FlowRow(modifier = modifier) {
         if (show) {
             OutlineIconButton(
-                onClick = { showMultiStopwatchDialog = true },
+                onClick = {
+                    activity.viewModel.saveStopwatch()
+                    showMultiStopwatchDialog = true
+                          },
                 painter = multiStopwatchDraw,
                 contentDesc = get(R.string.multi_stopwatch)
             )
             OutlineIconButton(
-                onClick = { showThemeDialog = true },
+                onClick = {
+                    activity.viewModel.saveStopwatch()
+                    showThemeDialog = true
+                          },
                 painter = themeDraw,
                 contentDesc = get(R.string.theme)
             )
             OutlineIconButton(
-                onClick = { showTapOnClockDialog = true },
+                onClick = {
+                    activity.viewModel.saveStopwatch()
+                    showTapOnClockDialog = true
+                          },
                 painter = tapOnClockDraw,
                 contentDesc = get(R.string.tap_on_clock)
             )
             OutlineIconButton(
-                onClick = { showResetStopwatchDialog = true },
+                onClick = {
+                    activity.viewModel.saveStopwatch()
+                    showResetStopwatchDialog = true
+                          },
                 painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
                 contentDesc = get(R.string.turn_off_notif)
             )
@@ -224,7 +241,10 @@ fun DisplayActions(
         } else {
             SimpleDialog(
                 get(R.string.reset_stopwatch),
-                get(R.string.reset_stopwatch_desc),
+                if (notificationEnabled)
+                    get(R.string.reset_stopwatch_desc_disable)
+                else
+                    get(R.string.reset_stopwatch_desc_enable),
                 get(R.string.ok), {
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {

@@ -33,7 +33,8 @@
     <string name="change_tap_on_clock_desc">Select what will happen when the tap on clock</string>
 
     <string name="reset_stopwatch">Reset Stopwatch?</string>
-    <string name="reset_stopwatch_desc">To enable or disable notifications you need to reset the stopwatch</string>
+    <string name="reset_stopwatch_desc_enable">To enable notifications you need to reset the stopwatch</string>
+    <string name="reset_stopwatch_desc_disable">To disable notifications you need to reset the stopwatch</string>
 
     <string-array name="tap_on_clock">
         <item name="none">None</item>

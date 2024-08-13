@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun RadioDialog(
@@ -48,7 +49,8 @@ fun RadioDialog(
             }
 
             Column {
-                if (desc != "") Text(desc)
+                if (desc != "")
+                    Text(modifier = Modifier.padding(bottom = 4.dp), text = desc, fontSize = 15.sp)
 
                 Column(Modifier.selectableGroup()) {
                     options.forEachIndexed { index, text ->
@@ -56,7 +58,7 @@ fun RadioDialog(
                             Modifier
                                 .fillMaxWidth()
                                 .height(56.dp)
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 4.dp)
                                 .selectable(
                                     selected = (text == currentOption),
                                     onClick = {
@@ -68,12 +70,13 @@ fun RadioDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
-                                selected = (text == currentOption), onClick = null
+                                modifier = Modifier.padding(16.dp, 0.dp),
+                                selected = (text == currentOption),
+                                onClick = null
                             )
                             Text(
                                 text = text,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(start = 16.dp)
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
