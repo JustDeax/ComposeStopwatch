@@ -1,5 +1,4 @@
 package com.justdeax.composeStopwatch.ui
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -37,9 +36,26 @@ fun IconButton(width: Int = 70, onClick: () -> Unit, painter: Painter, contentDe
             .height(70.dp),
         onClick = onClick
     ) {
-        Image(
+        Icon(
             painter = painter,
-            contentDescription = contentDesc
+            contentDescription = contentDesc,
+            tint = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+}
+
+@Composable
+fun IconButton2(height: Int, onClick: () -> Unit, painter: Painter, contentDesc: String) {
+    Button(
+        modifier = Modifier
+            .height(height.dp)
+            .width(70.dp),
+        onClick = onClick
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = contentDesc,
+            tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

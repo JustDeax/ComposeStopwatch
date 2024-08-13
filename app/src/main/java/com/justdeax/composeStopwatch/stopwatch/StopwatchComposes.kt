@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -31,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -42,13 +44,15 @@ import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.IconButton
+import com.justdeax.composeStopwatch.ui.IconButton2
 import com.justdeax.composeStopwatch.ui.OkayDialog
 import com.justdeax.composeStopwatch.ui.OutlineIconButton
 import com.justdeax.composeStopwatch.ui.RadioDialog
 import com.justdeax.composeStopwatch.ui.SimpleDialog
-import com.justdeax.composeStopwatch.ui.theme.Copper2
-import com.justdeax.composeStopwatch.ui.theme.Gold2
-import com.justdeax.composeStopwatch.ui.theme.Silver2
+import com.justdeax.composeStopwatch.ui.theme.Copper
+import com.justdeax.composeStopwatch.ui.theme.Gold
+import com.justdeax.composeStopwatch.ui.theme.Iron
+import com.justdeax.composeStopwatch.ui.theme.Silver
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
@@ -104,10 +108,10 @@ fun DisplayLaps(
                         .fillMaxWidth()
                 ) {
                     val indexColor = when (index) {
-                        1 -> Gold2
-                        2 -> Silver2
-                        3 -> Copper2
-                        else -> Color.DarkGray
+                        1 -> Gold
+                        2 -> Silver
+                        3 -> Copper
+                        else -> Iron
                     }
                     Text(
                         modifier = Modifier.weight(1f),
@@ -140,6 +144,7 @@ fun DisplayLaps(
 fun DisplayActions(
     modifier: Modifier,
     activity: AppActivity,
+    isPortrait: Boolean,
     show: Boolean,
     changeTheme: (Int) -> Unit,
     themeCode: Int,
@@ -159,56 +164,55 @@ fun DisplayActions(
     var showTapOnClockDialog by remember { mutableStateOf(false) }
     var showResetStopwatchDialog by remember { mutableStateOf(false) }
 
-    fun get(string: Int) = activity.getString(string)
-
-    FlowRow(modifier = modifier) {
+    @Composable
+    fun actionDialogs() {
         if (show) {
             OutlineIconButton(
                 onClick = {
                     activity.viewModel.saveStopwatch()
                     showMultiStopwatchDialog = true
-                          },
+                },
                 painter = multiStopwatchDraw,
-                contentDesc = get(R.string.multi_stopwatch)
+                contentDesc = activity.getString(R.string.multi_stopwatch)
             )
             OutlineIconButton(
                 onClick = {
                     activity.viewModel.saveStopwatch()
                     showThemeDialog = true
-                          },
+                },
                 painter = themeDraw,
-                contentDesc = get(R.string.theme)
+                contentDesc = activity.getString(R.string.theme)
             )
             OutlineIconButton(
                 onClick = {
                     activity.viewModel.saveStopwatch()
                     showTapOnClockDialog = true
-                          },
+                },
                 painter = tapOnClockDraw,
-                contentDesc = get(R.string.tap_on_clock)
+                contentDesc = activity.getString(R.string.tap_on_clock)
             )
             OutlineIconButton(
                 onClick = {
                     activity.viewModel.saveStopwatch()
                     showResetStopwatchDialog = true
-                          },
+                },
                 painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
-                contentDesc = get(R.string.turn_off_notif)
+                contentDesc = activity.getString(R.string.turn_off_notif)
             )
         }
     }
 
     if (showMultiStopwatchDialog) {
         OkayDialog(
-            title = get(R.string.multi_stopwatch_not_available),
-            desc = get(R.string.multi_stopwatch_not_available_desc),
-            confirmText = get(R.string.ok),
+            title = activity.getString(R.string.multi_stopwatch_not_available),
+            desc = activity.getString(R.string.multi_stopwatch_not_available_desc),
+            confirmText = activity.getString(R.string.ok),
             onConfirm = { showMultiStopwatchDialog = false }
         )
     }
     if (showThemeDialog) {
         RadioDialog(
-            title = get(R.string.change_theme),
+            title = activity.getString(R.string.change_theme),
             desc = "",
             defaultIndex = themeCode,
             options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
@@ -218,19 +222,19 @@ fun DisplayActions(
             setSelectedIndex = { newState -> changeTheme(newState)},
             onDismiss = { showThemeDialog = false },
             onConfirm = { showThemeDialog = false },
-            confirmText = get(R.string.apply)
+            confirmText = activity.getString(R.string.apply)
         )
     }
     if (showTapOnClockDialog) {
         RadioDialog(
-            title = get(R.string.change_tap_on_clock),
-            desc = get(R.string.change_tap_on_clock_desc),
+            title = activity.getString(R.string.change_tap_on_clock),
+            desc = activity.getString(R.string.change_tap_on_clock_desc),
             defaultIndex = tapOnClock,
             options = activity.resources.getStringArray(R.array.tap_on_clock),
             setSelectedIndex = { newState -> changeTapOnClock(newState)},
             onDismiss = { showTapOnClockDialog = false },
             onConfirm = { showTapOnClockDialog = false },
-            confirmText = get(R.string.apply)
+            confirmText = activity.getString(R.string.apply)
         )
     }
     if (showResetStopwatchDialog) {
@@ -240,12 +244,12 @@ fun DisplayActions(
             toggleNotification(true)
         } else {
             SimpleDialog(
-                get(R.string.reset_stopwatch),
+                activity.getString(R.string.reset_stopwatch),
                 if (notificationEnabled)
-                    get(R.string.reset_stopwatch_desc_disable)
+                    activity.getString(R.string.reset_stopwatch_desc_disable)
                 else
-                    get(R.string.reset_stopwatch_desc_enable),
-                get(R.string.ok), {
+                    activity.getString(R.string.reset_stopwatch_desc_enable),
+                activity.getString(R.string.ok), {
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {
                             activity.commandService(StopwatchService.State.PAUSE)
@@ -263,10 +267,21 @@ fun DisplayActions(
                             showResetStopwatchDialog = false
                         }
                 },
-                get(R.string.cancel), { showResetStopwatchDialog = false }
+                activity.getString(R.string.cancel), { showResetStopwatchDialog = false }
             )
         }
     }
+
+    if (isPortrait)
+        FlowRow(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) { actionDialogs() }
+    else
+        FlowColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) { actionDialogs() }
 }
 
 @Composable
@@ -289,10 +304,11 @@ fun DisplayButton(
         label = ""
     )
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(IntrinsicSize.Min)
-        .padding(top = 20.dp, bottom = 50.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .padding(top = 20.dp, bottom = 50.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -346,8 +362,95 @@ fun DisplayButton(
                     }
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
-                contentDesc = if (isRunning) activity.getString(R.string.pause)
-                else activity.getString(R.string.resume)
+                contentDesc =
+                    if (isRunning) activity.getString(R.string.pause)
+                    else activity.getString(R.string.resume)
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplayButtonInLandscape(
+    activity: AppActivity,
+    isRunning: Boolean,
+    timerStarted: Boolean,
+    showAdditional: Boolean,
+    showAdditionals: (Boolean) -> Unit,
+    notificationEnabled: Boolean
+) {
+    val startDrawable = painterResource(R.drawable.round_play_arrow_24)
+    val pauseDrawable = painterResource(R.drawable.round_pause_24)
+    val stopDrawable = painterResource(R.drawable.round_stop_24)
+    val addLapsDrawable = painterResource(R.drawable.round_add_circle_24)
+    val additionalsDrawable = painterResource(R.drawable.round_grid_view_24)
+    val startButtonHeight by animateIntAsState(
+        targetValue = if (timerStarted) 120 else 300,
+        animationSpec = keyframes { durationMillis = 250 },
+        label = ""
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(IntrinsicSize.Min)
+            .padding(start = 20.dp, end = 50.dp),
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = timerStarted,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Column {
+                    IconButton(
+                        onClick = { showAdditionals(!showAdditional) },
+                        painter = additionalsDrawable,
+                        contentDesc = activity.getString(R.string.additional_action)
+                    )
+                    Spacer(modifier = Modifier.height(170.dp))
+                    if (isRunning)
+                        IconButton(
+                            onClick = {
+                                if (notificationEnabled)
+                                    activity.commandService(StopwatchService.State.ADD_LAP)
+                                else
+                                    activity.viewModel.addLap()
+                            },
+                            painter = addLapsDrawable,
+                            contentDesc = activity.getString(R.string.add_lap)
+                        )
+                    else
+                        IconButton(
+                            onClick = {
+                                if (notificationEnabled)
+                                    activity.commandService(StopwatchService.State.RESET)
+                                else
+                                    activity.viewModel.reset()
+                                showAdditionals(true)
+                            },
+                            painter = stopDrawable,
+                            contentDesc = activity.getString(R.string.stop)
+                        )
+                }
+            }
+            IconButton2(
+                height = startButtonHeight,
+                onClick = {
+                    if (isRunning) {
+                        if (notificationEnabled) activity.commandService(StopwatchService.State.PAUSE)
+                        else activity.viewModel.pause()
+                    } else {
+                        if (!timerStarted) showAdditionals(false)
+                        if (notificationEnabled) activity.commandService(StopwatchService.State.START_RESUME)
+                        else activity.viewModel.startResume()
+                    }
+                },
+                painter = if (isRunning) pauseDrawable else startDrawable,
+                contentDesc =
+                    if (isRunning) activity.getString(R.string.pause)
+                    else activity.getString(R.string.resume)
             )
         }
     }

@@ -10,7 +10,7 @@ val DarkColorScheme = darkColorScheme(
 )
 
 val LightColorScheme = lightColorScheme(
-    primary = Blue40,
+    primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40,
     onSecondaryContainer = GrayDark
