@@ -9,10 +9,6 @@ val Pink10 = Color(0xFFEFB8C8)
 val GrayLight = Color(0xFFFCFCFC)
 
 //LIGHT THEME
-val color1 = Color(0xFF9268f8)
-val color2 = Color(0xFFE1BEE7)
-val Purple2 = Color(0xFF9e7fe3)
-
 val Purple40 = Color(0xFF6750A4)
 val PurpleGrey40 = Color(0xFF625B71)
 val Pink40 = Color(0xFF7D5260)

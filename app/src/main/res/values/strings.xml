@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Beta Compose Stopwatch</string>
+    <string name="app_name">Compose Stopwatch</string>
+    <string name="app_version">1.1.2</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -58,4 +59,14 @@
     <string name="multi_stopwatch_not_available">Multi-stopwatch not available</string>
     <string name="multi_stopwatch_not_available_desc">The function is not available and may not be available</string>
 
+    <string name="about_app">About Compose Stopwatch</string>
+    <string name="about_app_desc">
+        This is a stopwatch app in Material You theme, designed for comfort:\n
+        - Change Theme\n
+        - Change orientation\n
+        - Choose to tap on the clock displaying the time\n
+        - Switch notifications on/off\n
+        - Multi-second stopwatch (Not available)\n
+        Version: %s
+    </string>
 </resources>

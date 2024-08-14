@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.stopwatch.DisplayActions
+import com.justdeax.composeStopwatch.stopwatch.DisplayAppName
 import com.justdeax.composeStopwatch.stopwatch.DisplayButton
 import com.justdeax.composeStopwatch.stopwatch.DisplayButtonInLandscape
 import com.justdeax.composeStopwatch.stopwatch.DisplayLaps
@@ -44,7 +45,6 @@ import com.justdeax.composeStopwatch.stopwatch.DisplayTime
 import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
-import com.justdeax.composeStopwatch.ui.BatteryOptimizationCheck
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
@@ -75,7 +75,7 @@ class AppActivity : ComponentActivity() {
     fun AppPreviewScreen() {
         var additionalActionsShow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
-        val tapOnClock by viewModel.tapOnClock.observeAsState(1)
+        val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
@@ -103,10 +103,18 @@ class AppActivity : ComponentActivity() {
                     LaunchedEffect(Unit) {
                         if (elapsedMs == 0L) additionalActionsShow = true
                     }
-                    BatteryOptimizationCheck()
 
                     if (isPortrait) {
                         Column(modifier = Modifier.padding(innerPadding)) {
+                            DisplayAppName(
+                                Modifier
+                                    .animateContentSize()
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .padding(21.dp, 18.dp),
+                                this@AppActivity,
+                                additionalActionsShow
+                            )
                             DisplayTime(
                                 if (laps.isEmpty()) Modifier
                                     .animateContentSize()
@@ -116,6 +124,7 @@ class AppActivity : ComponentActivity() {
                                     .animateContentSize()
                                     .fillMaxWidth()
                                     .heightIn(min = 100.dp),
+                                true,
                                 elapsedSec,
                                 elapsedMs
                             ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
@@ -167,6 +176,7 @@ class AppActivity : ComponentActivity() {
                                         .animateContentSize()
                                         .fillMaxWidth()
                                         .heightIn(min = 100.dp),
+                                    laps.isNotEmpty(),
                                     elapsedSec,
                                     elapsedMs
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }

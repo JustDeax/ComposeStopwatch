@@ -2,8 +2,11 @@ package com.justdeax.composeStopwatch.stopwatch
 import android.os.Build
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +23,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,6 +67,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DisplayTime(
     modifier: Modifier,
+    miniClock: Boolean,
     elapsedSec: Long,
     elapsedMs: Long,
     clickOnClock: () -> Unit
@@ -80,16 +86,29 @@ fun DisplayTime(
                     interactionSource = remember { MutableInteractionSource() }
                 ) { clickOnClock() }
         ) {
-            Text(
-                text = "${formatSeconds(elapsedSec)}.",
-                fontSize = 50.sp,
-                fontFamily = FontFamily.Monospace
-            )
-            Text(modifier = Modifier.offset(y = 20.dp),
-                text = displayMs(elapsedMs),
-                fontSize = 40.sp,
-                fontFamily = FontFamily.Monospace
-            )
+            if (miniClock) {
+                Text(
+                    text = "${formatSeconds(elapsedSec)}.",
+                    fontSize = 50.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(modifier = Modifier.offset(y = 20.dp),
+                    text = displayMs(elapsedMs),
+                    fontSize = 40.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+            } else {
+                Text(
+                    text = "${formatSeconds(elapsedSec)}.",
+                    fontSize = 80.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(modifier = Modifier.offset(y = 32.dp),
+                    text = displayMs(elapsedMs),
+                    fontSize = 64.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+            }
         }
     }
 }
@@ -116,26 +135,78 @@ fun DisplayLaps(
                     Text(
                         modifier = Modifier.weight(1f),
                         text = index.toString(),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = indexColor,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = indexColor
                     )
                     Text(
                         modifier = Modifier.weight(2f),
                         text = "${formatSeconds(elapsedTime / 1000)}.${displayMs(elapsedTime)}",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.Normal
                     )
                     Text(
                         modifier = Modifier.weight(2f),
                         text = deltaLap,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         textAlign = TextAlign.End,
-                        fontWeight = FontWeight.Medium
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DisplayAppName(
+    modifier: Modifier,
+    activity: AppActivity,
+    show: Boolean
+) {
+    val helpDraw = painterResource(R.drawable.round_help_outline_24)
+    var showAboutApp by remember { mutableStateOf(false) }
+
+    androidx.compose.animation.AnimatedVisibility(
+        visible = show,
+        enter = fadeIn(animationSpec = tween(durationMillis = 1000)) +
+                slideInVertically(
+                    initialOffsetY = { -40 },
+                    animationSpec = tween(durationMillis = 1000)
+                ),
+        exit = fadeOut(animationSpec = tween(durationMillis = 500)) +
+                slideOutVertically(
+                    targetOffsetY = { -40 },
+                    animationSpec = tween(durationMillis = 500)
+                )
+    ) {
+        Row(modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { showAboutApp = true }
+        ) {
+            Text(
+                text = activity.getString(R.string.app_name),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = helpDraw,
+                contentDescription = activity.getString(R.string.about_app),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+    if (showAboutApp) {
+        OkayDialog(
+            title = activity.getString(R.string.about_app),
+            desc = activity.getString(R.string.about_app_desc, activity.getString(R.string.app_version)),
+            confirmText = activity.getString(R.string.ok),
+            onConfirm = { showAboutApp = false }
+        )
     }
 }
 

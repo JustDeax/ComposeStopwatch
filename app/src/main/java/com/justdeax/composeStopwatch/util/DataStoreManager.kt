@@ -29,7 +29,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     fun getTheme() = context.dataStore.data.map { get ->
-        get[APP_THEME] ?: 1
+        get[APP_THEME] ?: 0
     }
 
     suspend fun changeTapOnClock(tapType: Int) {
@@ -37,7 +37,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     fun getTapOnClock() = context.dataStore.data.map { get ->
-        get[SW_TAP_ON_CLOCK] ?: 0
+        get[SW_TAP_ON_CLOCK] ?: 1
     }
 
     suspend fun changeNotificationEnabled(enabled: Boolean) {

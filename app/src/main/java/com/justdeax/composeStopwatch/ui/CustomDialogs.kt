@@ -130,7 +130,7 @@ fun OkayDialog(
 ) {
     AlertDialog(
         title = { Text(title) },
-        text = { Text(desc) },
+        text = { Text(desc, fontSize = 20.sp) },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)
