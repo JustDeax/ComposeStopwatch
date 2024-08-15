@@ -5,7 +5,9 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -170,22 +172,11 @@ fun DisplayAppName(
 
     androidx.compose.animation.AnimatedVisibility(
         visible = show,
-        enter = fadeIn(animationSpec = tween(durationMillis = 1000)) +
-                slideInVertically(
-                    initialOffsetY = { -40 },
-                    animationSpec = tween(durationMillis = 1000)
-                ),
-        exit = fadeOut(animationSpec = tween(durationMillis = 500)) +
-                slideOutVertically(
-                    targetOffsetY = { -40 },
-                    animationSpec = tween(durationMillis = 500)
-                )
+        enter = fadeIn(tween(500)) + slideInVertically(tween(500)) { -40 },
+        exit =  fadeOut(tween(300)) + slideOutVertically(tween(300)) { -40 }
     ) {
-        Row(modifier
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { showAboutApp = true }
+        Row(modifier.clickable(
+            remember { MutableInteractionSource() }, null) { showAboutApp = true }
         ) {
             Text(
                 text = activity.getString(R.string.app_name),
@@ -196,7 +187,7 @@ fun DisplayAppName(
                 modifier = Modifier.size(24.dp),
                 painter = helpDraw,
                 contentDescription = activity.getString(R.string.about_app),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -237,65 +228,40 @@ fun DisplayActions(
 
     @Composable
     fun actionDialogs() {
-        if (show) {
-            OutlineIconButton(
-                onClick = {
-                    activity.viewModel.saveStopwatch()
-                    showMultiStopwatchDialog = true
-                },
-                painter = multiStopwatchDraw,
-                contentDesc = activity.getString(R.string.multi_stopwatch)
-            )
-            OutlineIconButton(
-                onClick = {
-                    activity.viewModel.saveStopwatch()
-                    showThemeDialog = true
-                },
-                painter = themeDraw,
-                contentDesc = activity.getString(R.string.theme)
-            )
-            OutlineIconButton(
-                onClick = {
-                    activity.viewModel.saveStopwatch()
-                    showTapOnClockDialog = true
-                },
-                painter = tapOnClockDraw,
-                contentDesc = activity.getString(R.string.tap_on_clock)
-            )
-            OutlineIconButton(
-                onClick = {
-                    activity.viewModel.saveStopwatch()
-                    showResetStopwatchDialog = true
-                },
-                painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
-                contentDesc = activity.getString(R.string.turn_off_notif)
-            )
-        }
+        OutlineIconButton(
+            onClick = {
+                activity.viewModel.saveStopwatch()
+                showTapOnClockDialog = true
+            },
+            painter = tapOnClockDraw,
+            contentDesc = activity.getString(R.string.tap_on_clock)
+        )
+        OutlineIconButton(
+            onClick = {
+                activity.viewModel.saveStopwatch()
+                showResetStopwatchDialog = true
+            },
+            painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
+            contentDesc = activity.getString(R.string.turn_off_notif)
+        )
+        OutlineIconButton(
+            onClick = {
+                activity.viewModel.saveStopwatch()
+                showThemeDialog = true
+            },
+            painter = themeDraw,
+            contentDesc = activity.getString(R.string.theme)
+        )
+        OutlineIconButton(
+            onClick = {
+                activity.viewModel.saveStopwatch()
+                showMultiStopwatchDialog = true
+            },
+            painter = multiStopwatchDraw,
+            contentDesc = activity.getString(R.string.multi_stopwatch)
+        )
     }
 
-    if (showMultiStopwatchDialog) {
-        OkayDialog(
-            title = activity.getString(R.string.multi_stopwatch_not_available),
-            desc = activity.getString(R.string.multi_stopwatch_not_available_desc),
-            confirmText = activity.getString(R.string.ok),
-            onConfirm = { showMultiStopwatchDialog = false }
-        )
-    }
-    if (showThemeDialog) {
-        RadioDialog(
-            title = activity.getString(R.string.change_theme),
-            desc = "",
-            defaultIndex = themeCode,
-            options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                activity.resources.getStringArray(R.array.theme12)
-            else
-                activity.resources.getStringArray(R.array.theme),
-            setSelectedIndex = { newState -> changeTheme(newState)},
-            onDismiss = { showThemeDialog = false },
-            onConfirm = { showThemeDialog = false },
-            confirmText = activity.getString(R.string.apply)
-        )
-    }
     if (showTapOnClockDialog) {
         RadioDialog(
             title = activity.getString(R.string.change_tap_on_clock),
@@ -342,17 +308,52 @@ fun DisplayActions(
             )
         }
     }
+    if (showThemeDialog) {
+        RadioDialog(
+            title = activity.getString(R.string.change_theme),
+            desc = "",
+            defaultIndex = themeCode,
+            options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                activity.resources.getStringArray(R.array.theme12)
+            else
+                activity.resources.getStringArray(R.array.theme),
+            setSelectedIndex = { newState -> changeTheme(newState)},
+            onDismiss = { showThemeDialog = false },
+            onConfirm = { showThemeDialog = false },
+            confirmText = activity.getString(R.string.apply)
+        )
+    }
+    if (showMultiStopwatchDialog) {
+        OkayDialog(
+            title = activity.getString(R.string.multi_stopwatch_not_available),
+            desc = activity.getString(R.string.multi_stopwatch_not_available_desc),
+            confirmText = activity.getString(R.string.ok),
+            onConfirm = { showMultiStopwatchDialog = false }
+        )
+    }
 
     if (isPortrait)
-        FlowRow(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) { actionDialogs() }
+        androidx.compose.animation.AnimatedVisibility(
+            visible = show,
+            enter = fadeIn(tween(500)) + slideInVertically(tween(500)) { 80 },
+            exit = fadeOut(tween(300)) + slideOutVertically(tween(300)) { 80 }
+        ) {
+            FlowRow(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) { actionDialogs() }
+        }
     else
-        FlowColumn(
-            modifier = modifier,
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) { actionDialogs() }
+        androidx.compose.animation.AnimatedVisibility(
+            visible = show,
+            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { 40 },
+            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { 40 }
+        ) {
+            FlowColumn(
+                modifier = modifier,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) { actionDialogs() }
+        }
 }
 
 @Composable
@@ -383,11 +384,7 @@ fun DisplayButton(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
-            androidx.compose.animation.AnimatedVisibility(
-                visible = timerStarted,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
+            if (timerStarted) {
                 Row {
                     IconButton(
                         onClick = { showAdditionals(!showAdditional) },
@@ -471,8 +468,8 @@ fun DisplayButtonInLandscape(
         Box(contentAlignment = Alignment.Center) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = timerStarted,
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = fadeIn() + slideInVertically { 40 },
+                exit = fadeOut() + slideOutVertically { 40 }
             ) {
                 Column {
                     IconButton(

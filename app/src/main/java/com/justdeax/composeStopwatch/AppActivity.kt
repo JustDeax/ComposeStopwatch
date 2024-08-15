@@ -108,20 +108,17 @@ class AppActivity : ComponentActivity() {
                         Column(modifier = Modifier.padding(innerPadding)) {
                             DisplayAppName(
                                 Modifier
-                                    .animateContentSize()
                                     .fillMaxWidth()
                                     .wrapContentHeight()
-                                    .padding(21.dp, 18.dp),
+                                    .padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                additionalActionsShow
+                                elapsedMs == 0L
                             )
                             DisplayTime(
                                 if (laps.isEmpty()) Modifier
-                                    .animateContentSize()
                                     .fillMaxWidth()
                                     .weight(1F)
                                 else Modifier
-                                    .animateContentSize()
                                     .fillMaxWidth()
                                     .heightIn(min = 100.dp),
                                 true,
@@ -130,7 +127,6 @@ class AppActivity : ComponentActivity() {
                             ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                             DisplayLaps(
                                 if (laps.isEmpty()) Modifier
-                                    .animateContentSize()
                                 else Modifier
                                     .animateContentSize()
                                     .weight(1F),
@@ -138,7 +134,6 @@ class AppActivity : ComponentActivity() {
                             )
                             DisplayActions(
                                 Modifier
-                                    .animateContentSize()
                                     .fillMaxWidth()
                                     .wrapContentHeight()
                                     .padding(8.dp, 8.dp, 8.dp, 14.dp),
@@ -182,7 +177,6 @@ class AppActivity : ComponentActivity() {
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                                 DisplayLaps(
                                     if (laps.isEmpty()) Modifier
-                                        .animateContentSize()
                                     else Modifier
                                         .animateContentSize()
                                         .weight(1F),
@@ -192,10 +186,9 @@ class AppActivity : ComponentActivity() {
                             Row {
                                 DisplayActions(
                                     Modifier
-                                        .animateContentSize()
                                         .fillMaxHeight()
                                         .wrapContentWidth()
-                                        .padding(8.dp, 8.dp, 8.dp, 14.dp),
+                                        .padding(8.dp, 8.dp, 14.dp, 8.dp),
                                     this@AppActivity,
                                     false,
                                     additionalActionsShow,

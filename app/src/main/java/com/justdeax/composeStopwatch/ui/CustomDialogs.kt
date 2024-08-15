@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.AlertDialog
@@ -52,8 +54,8 @@ fun RadioDialog(
                 if (desc != "")
                     Text(modifier = Modifier.padding(bottom = 4.dp), text = desc, fontSize = 15.sp)
 
-                Column(Modifier.selectableGroup()) {
-                    options.forEachIndexed { index, text ->
+                LazyColumn(Modifier.selectableGroup()) {
+                    itemsIndexed(options) { index, text ->
                         Row(
                             Modifier
                                 .fillMaxWidth()
@@ -130,7 +132,10 @@ fun OkayDialog(
 ) {
     AlertDialog(
         title = { Text(title) },
-        text = { Text(desc, fontSize = 20.sp) },
+        text = { Text(
+            text = desc,
+            style = MaterialTheme.typography.titleMedium
+        ) },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)
