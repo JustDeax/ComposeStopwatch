@@ -346,8 +346,8 @@ fun DisplayActions(
     else
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { 40 },
-            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { 40 }
+            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { 80 },
+            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { 80 }
         ) {
             FlowColumn(
                 modifier = modifier,

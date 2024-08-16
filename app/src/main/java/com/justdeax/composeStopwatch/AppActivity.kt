@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -77,7 +78,6 @@ class AppActivity : ComponentActivity() {
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
-        val context = LocalContext.current
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -87,9 +87,9 @@ class AppActivity : ComponentActivity() {
             else -> { // == 0
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (isSystemInDarkTheme())
-                        dynamicDarkColorScheme(context)
+                        dynamicDarkColorScheme(this)
                     else
-                        dynamicLightColorScheme(context)
+                        dynamicLightColorScheme(this)
                 } else {
                     if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
                 }
@@ -100,6 +100,16 @@ class AppActivity : ComponentActivity() {
         fun StopwatchScreen(isRunning: Boolean, elapsedMs: Long, elapsedSec: Long, laps: List<Lap>) {
             MaterialTheme(colorScheme = colorScheme, typography = Typography) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val weightFrom0to1 by animateFloatAsState(
+                        targetValue = if (laps.isEmpty()) 0f else 1f,
+                        animationSpec = tween(durationMillis = 500),
+                        label = ""
+                    )
+                    val weightFrom1to0 by animateFloatAsState(
+                        targetValue = if (laps.isEmpty()) 1f else 0.001f,
+                        animationSpec = tween(durationMillis = 500),
+                        label = ""
+                    )
                     LaunchedEffect(Unit) {
                         if (elapsedMs == 0L) additionalActionsShow = true
                     }
@@ -115,12 +125,10 @@ class AppActivity : ComponentActivity() {
                                 elapsedMs == 0L
                             )
                             DisplayTime(
-                                if (laps.isEmpty()) Modifier
+                                Modifier
                                     .fillMaxWidth()
-                                    .weight(1F)
-                                else Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 100.dp),
+                                    .heightIn(min = 100.dp)
+                                    .weight(weightFrom1to0),
                                 true,
                                 elapsedSec,
                                 elapsedMs
@@ -128,8 +136,9 @@ class AppActivity : ComponentActivity() {
                             DisplayLaps(
                                 if (laps.isEmpty()) Modifier
                                 else Modifier
-                                    .animateContentSize()
-                                    .weight(1F),
+                                    .fillMaxWidth()
+                                    .weight(weightFrom0to1)
+                                    .animateContentSize(tween()),
                                 laps
                             )
                             DisplayActions(
@@ -178,7 +187,7 @@ class AppActivity : ComponentActivity() {
                                 DisplayLaps(
                                     if (laps.isEmpty()) Modifier
                                     else Modifier
-                                        .animateContentSize()
+                                        .animateContentSize(tween())
                                         .weight(1F),
                                     laps
                                 )
