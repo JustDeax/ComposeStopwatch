@@ -8,9 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.stopwatch.DisplayActions
@@ -63,7 +62,7 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { AppPreviewScreen() }
+        setContent { AppScreen() }
     }
 
     override fun onStop() {
@@ -71,16 +70,31 @@ class AppActivity : ComponentActivity() {
         if (!viewModel.notificationEnabled.value!!) viewModel.saveStopwatch()
     }
 
-    @Preview(showSystemUi = true, showBackground = true)
     @Composable
-    fun AppPreviewScreen() {
+    fun AppScreen() {
+        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
+        if (notificationEnabled) {
+            val isRunning by StopwatchService.isRunningI.observeAsState(false)
+            val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
+            val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
+            val laps by StopwatchService.lapsI.observeAsState(LinkedList())
+            StopwatchScreen(true, isRunning, elapsedMs, elapsedSec, laps)
+        } else {
+            val isRunning by viewModel.isRunningI.observeAsState(false)
+            val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
+            val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
+            val laps by viewModel.lapsI.observeAsState(LinkedList())
+            StopwatchScreen(false, isRunning, elapsedMs, elapsedSec, laps)
+        }
+    }
+
+    @Composable
+    fun StopwatchScreen(notificationEnabled: Boolean, isRunning: Boolean, elapsedMs: Long, elapsedSec: Long, laps: List<Lap>) {
         var additionalActionsShow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
-        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
         val colorScheme = when (theme) {
             1 -> LightColorScheme
             2 -> DarkColorScheme
@@ -96,145 +110,125 @@ class AppActivity : ComponentActivity() {
             }
         }
 
-        @Composable
-        fun StopwatchScreen(isRunning: Boolean, elapsedMs: Long, elapsedSec: Long, laps: List<Lap>) {
-            MaterialTheme(colorScheme = colorScheme, typography = Typography) {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val weightFrom0to1 by animateFloatAsState(
-                        targetValue = if (laps.isEmpty()) 0f else 1f,
-                        animationSpec = tween(durationMillis = 500),
-                        label = ""
-                    )
-                    val weightFrom1to0 by animateFloatAsState(
-                        targetValue = if (laps.isEmpty()) 1f else 0.001f,
-                        animationSpec = tween(durationMillis = 500),
-                        label = ""
-                    )
-                    LaunchedEffect(Unit) {
-                        if (elapsedMs == 0L) additionalActionsShow = true
-                    }
-
-                    if (isPortrait) {
-                        Column(modifier = Modifier.padding(innerPadding)) {
+        MaterialTheme(colorScheme = colorScheme, typography = Typography) {
+            Scaffold(Modifier.fillMaxSize()) { innerPadding ->
+                LaunchedEffect(Unit) {
+                    if (elapsedMs == 0L) additionalActionsShow = true
+                }
+                if (isPortrait) {
+                    Column(Modifier.padding(innerPadding)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.TopStart
+                        ) {
                             DisplayAppName(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(21.dp, 16.dp),
+                                Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
                                 elapsedMs == 0L
                             )
-                            DisplayTime(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 100.dp)
-                                    .weight(weightFrom1to0),
-                                true,
-                                elapsedSec,
-                                elapsedMs
-                            ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
-                            DisplayLaps(
-                                if (laps.isEmpty()) Modifier
-                                else Modifier
-                                    .fillMaxWidth()
-                                    .weight(weightFrom0to1)
-                                    .animateContentSize(tween()),
-                                laps
-                            )
-                            DisplayActions(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(8.dp, 8.dp, 8.dp, 14.dp),
-                                this@AppActivity,
-                                true,
-                                additionalActionsShow,
-                                { newState -> viewModel.changeTheme(newState)},
-                                theme,
-                                { newState -> viewModel.changeTapOnClock(newState) },
-                                tapOnClock,
-                                { newState -> viewModel.changeNotificationEnabled(newState) },
-                                notificationEnabled
-                            )
-                            DisplayButton(
-                                this@AppActivity,
-                                isRunning,
-                                elapsedMs != 0L,
-                                additionalActionsShow,
-                                showAdditionals = { newState -> additionalActionsShow = newState },
-                                notificationEnabled
-                            )
-                        }
-                    } else {
-                        Row(modifier = Modifier.padding(innerPadding)) {
                             Column(
-                                modifier = Modifier.weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center
                             ) {
                                 DisplayTime(
-                                    if (laps.isEmpty()) Modifier
-                                        .animateContentSize()
-                                        .fillMaxWidth()
-                                        .weight(1F)
-                                    else Modifier
+                                    Modifier
                                         .animateContentSize()
                                         .fillMaxWidth()
                                         .heightIn(min = 100.dp),
-                                    laps.isNotEmpty(),
+                                    true,
                                     elapsedSec,
                                     elapsedMs
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                                 DisplayLaps(
-                                    if (laps.isEmpty()) Modifier
-                                    else Modifier
-                                        .animateContentSize(tween())
-                                        .weight(1F),
+                                    Modifier.fillMaxWidth(),
                                     laps
                                 )
                             }
-                            Row {
-                                DisplayActions(
+                        }
+                        DisplayActions(
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(8.dp, 8.dp, 8.dp, 14.dp),
+                            this@AppActivity,
+                            true,
+                            additionalActionsShow,
+                            { newState -> viewModel.changeTheme(newState)},
+                            theme,
+                            { newState -> viewModel.changeTapOnClock(newState) },
+                            tapOnClock,
+                            { newState -> viewModel.changeNotificationEnabled(newState) },
+                            notificationEnabled
+                        )
+                        DisplayButton(
+                            this@AppActivity,
+                            isRunning,
+                            elapsedMs != 0L,
+                            additionalActionsShow,
+                            showAdditionals = { newState -> additionalActionsShow = newState },
+                            notificationEnabled
+                        )
+                    }
+                } else {
+                    Row(Modifier.padding(innerPadding)) {
+                        DisplayButtonInLandscape(
+                            this@AppActivity,
+                            isRunning,
+                            elapsedMs != 0L,
+                            additionalActionsShow,
+                            showAdditionals = { newState -> additionalActionsShow = newState },
+                            notificationEnabled
+                        )
+                        DisplayActions(
+                            Modifier
+                                .fillMaxHeight()
+                                .wrapContentWidth()
+                                .padding(14.dp, 8.dp, 8.dp, 8.dp),
+                            this@AppActivity,
+                            false,
+                            additionalActionsShow,
+                            { newState -> viewModel.changeTheme(newState)},
+                            theme,
+                            { newState -> viewModel.changeTapOnClock(newState) },
+                            tapOnClock,
+                            { newState -> viewModel.changeNotificationEnabled(newState) },
+                            notificationEnabled
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f),
+                            contentAlignment = Alignment.TopEnd
+                        ) {
+                            DisplayAppName(
+                                Modifier.padding(21.dp, 16.dp),
+                                this@AppActivity,
+                                elapsedMs == 0L
+                            )
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                DisplayTime(
                                     Modifier
-                                        .fillMaxHeight()
-                                        .wrapContentWidth()
-                                        .padding(8.dp, 8.dp, 14.dp, 8.dp),
-                                    this@AppActivity,
-                                    false,
-                                    additionalActionsShow,
-                                    { newState -> viewModel.changeTheme(newState)},
-                                    theme,
-                                    { newState -> viewModel.changeTapOnClock(newState) },
-                                    tapOnClock,
-                                    { newState -> viewModel.changeNotificationEnabled(newState) },
-                                    notificationEnabled
-                                )
-                                DisplayButtonInLandscape(
-                                    this@AppActivity,
-                                    isRunning,
-                                    elapsedMs != 0L,
-                                    additionalActionsShow,
-                                    showAdditionals = { newState -> additionalActionsShow = newState },
-                                    notificationEnabled
+                                        .animateContentSize()
+                                        .fillMaxWidth()
+                                        .heightIn(min = 100.dp),
+                                    true,
+                                    elapsedSec,
+                                    elapsedMs
+                                ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
+                                DisplayLaps(
+                                    Modifier.fillMaxWidth(),
+                                    laps
                                 )
                             }
                         }
                     }
                 }
             }
-        }
-
-        if (notificationEnabled) {
-            val isRunning by StopwatchService.isRunningI.observeAsState(false)
-            val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
-            val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
-            val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(isRunning, elapsedMs, elapsedSec, laps)
-        } else {
-            val isRunning by viewModel.isRunningI.observeAsState(false)
-            val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
-            val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
-            val laps by viewModel.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(isRunning, elapsedMs, elapsedSec, laps)
         }
     }
 

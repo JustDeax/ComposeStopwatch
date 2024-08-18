@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -104,11 +106,19 @@ fun SimpleDialog(
     confirmText: String,
     onConfirm: () -> Unit,
     dismissText: String,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     AlertDialog(
         title = { Text(title) },
-        text = { Text(desc) },
+        text = {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(16.dp)
+            ) { Text(desc) }
+               },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)
@@ -132,10 +142,19 @@ fun OkayDialog(
 ) {
     AlertDialog(
         title = { Text(title) },
-        text = { Text(
-            text = desc,
-            style = MaterialTheme.typography.titleMedium
-        ) },
+        text = {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+            ) {
+                Text(
+                    text = desc,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+               },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)

@@ -1,5 +1,7 @@
 package com.justdeax.composeStopwatch.stopwatch
 import android.os.Build
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -120,7 +122,12 @@ fun DisplayLaps(
     modifier: Modifier,
     laps: List<Lap>
 ) {
-    Row(modifier = modifier) {
+    val animateWeight by animateFloatAsState(
+        targetValue = if (laps.isEmpty()) 0.0001f else 1f,
+        animationSpec = tween(500),
+        label = ""
+    )
+    Row(modifier = modifier.fillMaxHeight(animateWeight)) {
         LazyColumn {
             items(laps, key = { laps[it.index-1].index }) { (index, elapsedTime, deltaLap) ->
                 Row(
@@ -173,10 +180,13 @@ fun DisplayAppName(
     androidx.compose.animation.AnimatedVisibility(
         visible = show,
         enter = fadeIn(tween(500)) + slideInVertically(tween(500)) { -40 },
-        exit =  fadeOut(tween(300)) + slideOutVertically(tween(300)) { -40 }
+        exit = fadeOut(tween(300)) + slideOutVertically(tween(300)) { -40 }
     ) {
-        Row(modifier.clickable(
-            remember { MutableInteractionSource() }, null) { showAboutApp = true }
+        Row(
+            modifier = modifier.clickable(
+                remember { MutableInteractionSource() }, null
+            ) { showAboutApp = true },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = activity.getString(R.string.app_name),
@@ -346,8 +356,8 @@ fun DisplayActions(
     else
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { 80 },
-            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { 80 }
+            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { -80 },
+            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { -80 }
         ) {
             FlowColumn(
                 modifier = modifier,
@@ -384,7 +394,11 @@ fun DisplayButton(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
-            if (timerStarted) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = timerStarted,
+                enter = EnterTransition.None,
+                exit = fadeOut(tween(500))
+            ) {
                 Row {
                     IconButton(
                         onClick = { showAdditionals(!showAdditional) },
@@ -461,15 +475,15 @@ fun DisplayButtonInLandscape(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .width(IntrinsicSize.Min)
-            .padding(start = 20.dp, end = 50.dp),
+            .height(IntrinsicSize.Min)
+            .padding(start = 50.dp, end = 20.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = timerStarted,
-                enter = fadeIn() + slideInVertically { 40 },
-                exit = fadeOut() + slideOutVertically { 40 }
+                enter = EnterTransition.None,
+                exit = fadeOut(tween(500))
             ) {
                 Column {
                     IconButton(
@@ -517,8 +531,8 @@ fun DisplayButtonInLandscape(
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
-                    if (isRunning) activity.getString(R.string.pause)
-                    else activity.getString(R.string.resume)
+                if (isRunning) activity.getString(R.string.pause)
+                else activity.getString(R.string.resume)
             )
         }
     }
