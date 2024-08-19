@@ -46,6 +46,7 @@ import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
+import com.justdeax.composeStopwatch.ui.theme.ExtraDarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
@@ -89,7 +90,13 @@ class AppActivity : ComponentActivity() {
     }
 
     @Composable
-    fun StopwatchScreen(notificationEnabled: Boolean, isRunning: Boolean, elapsedMs: Long, elapsedSec: Long, laps: List<Lap>) {
+    fun StopwatchScreen(
+        notificationEnabled: Boolean,
+        isRunning: Boolean,
+        elapsedMs: Long,
+        elapsedSec: Long,
+        laps: List<Lap>
+    ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
@@ -98,6 +105,7 @@ class AppActivity : ComponentActivity() {
         val colorScheme = when (theme) {
             1 -> LightColorScheme
             2 -> DarkColorScheme
+            3 -> ExtraDarkColorScheme
             else -> { // == 0
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (isSystemInDarkTheme())
@@ -126,7 +134,8 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                elapsedMs == 0L
+                                elapsedMs == 0L,
+                                true
                             )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -142,7 +151,8 @@ class AppActivity : ComponentActivity() {
                                     elapsedMs
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                                 DisplayLaps(
-                                    Modifier.fillMaxWidth(),
+                                    Modifier
+                                        .fillMaxWidth(),
                                     laps
                                 )
                             }
@@ -205,7 +215,8 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                elapsedMs == 0L
+                                elapsedMs == 0L,
+                                false
                             )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -221,7 +232,9 @@ class AppActivity : ComponentActivity() {
                                     elapsedMs
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                                 DisplayLaps(
-                                    Modifier.fillMaxWidth(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(26.dp, 0.dp),
                                     laps
                                 )
                             }

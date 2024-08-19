@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Compose Stopwatch</string>
-    <string name="app_version">1.1.4</string>
+    <string name="app_version">1.1.5</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -19,16 +19,7 @@
     <string name="multi_stopwatch">Multi stopwatch</string>
     <string name="theme">Theme</string>
     <string name="tap_on_clock">Tap on Clock</string>
-    <string name="add_notif">Add notification</string>
     <string name="turn_off_notif">Turn off notification</string>
-    <string name="add_widget">Add widget</string>
-
-    <string name="ignore_battery">Ignore Battery Optimizations</string>
-    <string name="ignore_battery_desc">This app requires permission to ignore battery optimizations to function properly.</string>
-
-    <!--    <string name="ignore_battery_denied">Ignore Battery Optimizations Permission Denied</string>-->
-    <!--    <string name="ignore_battery_denied_desc">The app may not function properly without the requested permission.</string>-->
-    <!--    <string name="try_again">Try Again</string>-->
 
     <string name="change_tap_on_clock">Change tap on clock</string>
     <string name="change_tap_on_clock_desc">Select what will happen when the tap on clock</string>
@@ -45,29 +36,23 @@
     </string-array>
 
     <string name="change_theme">Change theme</string>
+    <string name="change_theme_desc">Material You theme is only available with android 12+\nExtra Dark theme saves charging for Amoled screen</string>
     <string-array name="theme">
         <item name="system">System</item>
         <item name="light">Light</item>
         <item name="dark">Dark</item>
+        <item name="extra_dark">Extra Dark</item>
     </string-array>
     <string-array name="theme12">
         <item name="system">System (Material You)</item>
         <item name="light">Light</item>
         <item name="dark">Dark</item>
+        <item name='extra_dark'>Extra Dark</item>
     </string-array>
 
     <string name="multi_stopwatch_not_available">Multi-stopwatch not available</string>
     <string name="multi_stopwatch_not_available_desc">The function is not available and may not be available</string>
 
     <string name="about_app">About Compose Stopwatch</string>
-    <string name="about_app_desc">
-        This is a stopwatch app in the Material You theme, designed for convenience:\n
-        - Change the theme\n
-        - Change the orientation\n
-        - Choose the action when you tap on the clock that shows the time\n
-        - Switch notifications on/off\n
-        - Multi stopwatch (not available)\n
-        \n
-        Version: %s
-    </string>
+    <string name="about_app_desc">This is a stopwatch app in the Material You theme, designed for convenience:\n- Change the theme\n- Change the orientation\n- Choose the action when you tap on the clock that shows the time\n- Switch notifications on/off\n- Multi stopwatch (not available)\n\nVersion: %s</string>
 </resources>

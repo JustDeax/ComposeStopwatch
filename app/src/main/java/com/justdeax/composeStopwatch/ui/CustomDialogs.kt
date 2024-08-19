@@ -27,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun RadioDialog(
     title: String,
     desc: String,
+    isPortrait: Boolean,
     defaultIndex: Int,
     setSelectedIndex: (Int) -> Unit,
     options: Array<String>,
@@ -42,6 +44,14 @@ fun RadioDialog(
     var selectedIndex by remember { mutableIntStateOf(-1) }
 
     AlertDialog(
+        modifier = if (isPortrait)
+            Modifier
+        else
+            Modifier.fillMaxWidth(0.6f),
+        properties = if (isPortrait)
+            DialogProperties()
+        else
+            DialogProperties(usePlatformDefaultWidth = false),
         title = { Text(title) },
         text = {
             val (currentOption, onOptionSelected) = remember {
@@ -52,37 +62,39 @@ fun RadioDialog(
                 selectedIndex = defaultIndex
             }
 
-            Column {
-                if (desc != "")
-                    Text(modifier = Modifier.padding(bottom = 4.dp), text = desc, fontSize = 15.sp)
-
-                LazyColumn(Modifier.selectableGroup()) {
-                    itemsIndexed(options) { index, text ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .padding(horizontal = 4.dp)
-                                .selectable(
-                                    selected = (text == currentOption),
-                                    onClick = {
-                                        onOptionSelected(text)
-                                        selectedIndex = index
-                                    },
-                                    role = Role.RadioButton
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                modifier = Modifier.padding(16.dp, 0.dp),
+            LazyColumn(Modifier.selectableGroup()) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        text = desc,
+                        fontSize = 14.sp
+                    )
+                }
+                itemsIndexed(options) { index, text ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(horizontal = 4.dp)
+                            .selectable(
                                 selected = (text == currentOption),
-                                onClick = null
-                            )
-                            Text(
-                                text = text,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                                onClick = {
+                                    onOptionSelected(text)
+                                    selectedIndex = index
+                                },
+                                role = Role.RadioButton
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            modifier = Modifier.padding(16.dp, 0.dp),
+                            selected = (text == currentOption),
+                            onClick = null
+                        )
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
             }
@@ -103,12 +115,21 @@ fun RadioDialog(
 fun SimpleDialog(
     title: String,
     desc: String,
+    isPortrait: Boolean,
     confirmText: String,
     onConfirm: () -> Unit,
     dismissText: String,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
+        modifier = if (isPortrait)
+            Modifier
+        else
+            Modifier.fillMaxWidth(0.6f),
+        properties = if (isPortrait)
+            DialogProperties()
+        else
+            DialogProperties(usePlatformDefaultWidth = false),
         title = { Text(title) },
         text = {
             val scrollState = rememberScrollState()
@@ -117,7 +138,9 @@ fun SimpleDialog(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
                     .padding(16.dp)
-            ) { Text(desc) }
+            ) {
+                Text(desc)
+            }
                },
         confirmButton = {
             Button(onClick = onConfirm) {
@@ -137,10 +160,19 @@ fun SimpleDialog(
 fun OkayDialog(
     title: String,
     desc: String,
+    isPortrait: Boolean,
     confirmText: String,
     onConfirm: () -> Unit
 ) {
     AlertDialog(
+        modifier = if (isPortrait)
+            Modifier
+        else
+            Modifier.fillMaxWidth(0.6f),
+        properties = if (isPortrait)
+            DialogProperties()
+        else
+            DialogProperties(usePlatformDefaultWidth = false),
         title = { Text(title) },
         text = {
             val scrollState = rememberScrollState()

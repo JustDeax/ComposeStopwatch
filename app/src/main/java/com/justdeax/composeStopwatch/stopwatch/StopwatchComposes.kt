@@ -172,7 +172,8 @@ fun DisplayLaps(
 fun DisplayAppName(
     modifier: Modifier,
     activity: AppActivity,
-    show: Boolean
+    show: Boolean,
+    isPortrait: Boolean
 ) {
     val helpDraw = painterResource(R.drawable.round_help_outline_24)
     var showAboutApp by remember { mutableStateOf(false) }
@@ -205,6 +206,7 @@ fun DisplayAppName(
         OkayDialog(
             title = activity.getString(R.string.about_app),
             desc = activity.getString(R.string.about_app_desc, activity.getString(R.string.app_version)),
+            isPortrait = isPortrait,
             confirmText = activity.getString(R.string.ok),
             onConfirm = { showAboutApp = false }
         )
@@ -276,6 +278,7 @@ fun DisplayActions(
         RadioDialog(
             title = activity.getString(R.string.change_tap_on_clock),
             desc = activity.getString(R.string.change_tap_on_clock_desc),
+            isPortrait = isPortrait,
             defaultIndex = tapOnClock,
             options = activity.resources.getStringArray(R.array.tap_on_clock),
             setSelectedIndex = { newState -> changeTapOnClock(newState)},
@@ -291,12 +294,14 @@ fun DisplayActions(
             toggleNotification(true)
         } else {
             SimpleDialog(
-                activity.getString(R.string.reset_stopwatch),
-                if (notificationEnabled)
+                title = activity.getString(R.string.reset_stopwatch),
+                desc = if (notificationEnabled)
                     activity.getString(R.string.reset_stopwatch_desc_disable)
                 else
                     activity.getString(R.string.reset_stopwatch_desc_enable),
-                activity.getString(R.string.ok), {
+                isPortrait = isPortrait,
+                confirmText = activity.getString(R.string.ok),
+                onConfirm = {
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {
                             activity.commandService(StopwatchService.State.PAUSE)
@@ -314,14 +319,16 @@ fun DisplayActions(
                             showResetStopwatchDialog = false
                         }
                 },
-                activity.getString(R.string.cancel), { showResetStopwatchDialog = false }
+                dismissText = activity.getString(R.string.cancel),
+                onDismiss = { showResetStopwatchDialog = false }
             )
         }
     }
     if (showThemeDialog) {
         RadioDialog(
             title = activity.getString(R.string.change_theme),
-            desc = "",
+            isPortrait = isPortrait,
+            desc = activity.getString(R.string.change_theme_desc),
             defaultIndex = themeCode,
             options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 activity.resources.getStringArray(R.array.theme12)
@@ -337,6 +344,7 @@ fun DisplayActions(
         OkayDialog(
             title = activity.getString(R.string.multi_stopwatch_not_available),
             desc = activity.getString(R.string.multi_stopwatch_not_available_desc),
+            isPortrait = isPortrait,
             confirmText = activity.getString(R.string.ok),
             onConfirm = { showMultiStopwatchDialog = false }
         )

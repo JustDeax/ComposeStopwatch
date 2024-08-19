@@ -1,6 +1,5 @@
 package com.justdeax.composeStopwatch.util
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -72,7 +71,6 @@ class DataStoreManager(private val context: Context) {
             set.remove(SW_START_TIME)
             set.remove(SW_IS_RUNNING)
             set.remove(SW_LAPS)
-            Log.d("TAG", "resetStopwatch")
         }
     }
 }
