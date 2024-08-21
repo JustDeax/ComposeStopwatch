@@ -1,4 +1,4 @@
-package com.justdeax.composeStopwatch.stopwatch
+package com.justdeax.composeStopwatch.ui
 import android.os.Build
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.animateFloatAsState
@@ -52,17 +52,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
-import com.justdeax.composeStopwatch.ui.IconButton
-import com.justdeax.composeStopwatch.ui.IconButton2
-import com.justdeax.composeStopwatch.ui.OkayDialog
-import com.justdeax.composeStopwatch.ui.OutlineIconButton
-import com.justdeax.composeStopwatch.ui.RadioDialog
-import com.justdeax.composeStopwatch.ui.SimpleDialog
+import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.ui.theme.Copper
 import com.justdeax.composeStopwatch.ui.theme.Gold
 import com.justdeax.composeStopwatch.ui.theme.Iron
 import com.justdeax.composeStopwatch.ui.theme.Silver
 import com.justdeax.composeStopwatch.util.Lap
+import com.justdeax.composeStopwatch.util.StopWatchState
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
 import kotlinx.coroutines.delay
@@ -93,10 +89,10 @@ fun DisplayTime(
             if (miniClock) {
                 Text(
                     text = "${formatSeconds(elapsedSec)}.",
-                    fontSize = 50.sp,
+                    fontSize = 60.sp,
                     fontFamily = FontFamily.Monospace
                 )
-                Text(modifier = Modifier.offset(y = 20.dp),
+                Text(modifier = Modifier.offset(y = 30.dp),
                     text = displayMs(elapsedMs),
                     fontSize = 40.sp,
                     fontFamily = FontFamily.Monospace
@@ -104,12 +100,12 @@ fun DisplayTime(
             } else {
                 Text(
                     text = "${formatSeconds(elapsedSec)}.",
-                    fontSize = 80.sp,
+                    fontSize = 90.sp,
                     fontFamily = FontFamily.Monospace
                 )
-                Text(modifier = Modifier.offset(y = 32.dp),
+                Text(modifier = Modifier.offset(y = 45.dp),
                     text = displayMs(elapsedMs),
-                    fontSize = 64.sp,
+                    fontSize = 60.sp,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -304,9 +300,9 @@ fun DisplayActions(
                 onConfirm = {
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {
-                            activity.commandService(StopwatchService.State.PAUSE)
+                            activity.commandService(StopWatchState.PAUSE)
                             delay(20)
-                            activity.commandService(StopwatchService.State.RESET)
+                            activity.commandService(StopWatchState.RESET)
                             toggleNotification(false)
                             showResetStopwatchDialog = false
                         }
@@ -418,7 +414,7 @@ fun DisplayButton(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchService.State.ADD_LAP)
+                                    activity.commandService(StopWatchState.ADD_LAP)
                                 else
                                     activity.viewModel.addLap()
                             },
@@ -429,7 +425,7 @@ fun DisplayButton(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchService.State.RESET)
+                                    activity.commandService(StopWatchState.RESET)
                                 else
                                     activity.viewModel.reset()
                                 showAdditionals(true)
@@ -443,11 +439,11 @@ fun DisplayButton(
                 width = startButtonWidth,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopwatchService.State.PAUSE)
+                        if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
                         else activity.viewModel.pause()
                     } else {
                         if (!timerStarted) showAdditionals(false)
-                        if (notificationEnabled) activity.commandService(StopwatchService.State.START_RESUME)
+                        if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
                         else activity.viewModel.startResume()
                     }
                 },
@@ -504,7 +500,7 @@ fun DisplayButtonInLandscape(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchService.State.ADD_LAP)
+                                    activity.commandService(StopWatchState.ADD_LAP)
                                 else
                                     activity.viewModel.addLap()
                             },
@@ -515,7 +511,7 @@ fun DisplayButtonInLandscape(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchService.State.RESET)
+                                    activity.commandService(StopWatchState.RESET)
                                 else
                                     activity.viewModel.reset()
                                 showAdditionals(true)
@@ -529,11 +525,11 @@ fun DisplayButtonInLandscape(
                 height = startButtonHeight,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopwatchService.State.PAUSE)
+                        if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
                         else activity.viewModel.pause()
                     } else {
                         if (!timerStarted) showAdditionals(false)
-                        if (notificationEnabled) activity.commandService(StopwatchService.State.START_RESUME)
+                        if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
                         else activity.viewModel.startResume()
                     }
                 },

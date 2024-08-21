@@ -36,12 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import com.justdeax.composeStopwatch.stopwatch.DisplayActions
-import com.justdeax.composeStopwatch.stopwatch.DisplayAppName
-import com.justdeax.composeStopwatch.stopwatch.DisplayButton
-import com.justdeax.composeStopwatch.stopwatch.DisplayButtonInLandscape
-import com.justdeax.composeStopwatch.stopwatch.DisplayLaps
-import com.justdeax.composeStopwatch.stopwatch.DisplayTime
+import com.justdeax.composeStopwatch.ui.DisplayActions
+import com.justdeax.composeStopwatch.ui.DisplayAppName
+import com.justdeax.composeStopwatch.ui.DisplayButton
+import com.justdeax.composeStopwatch.ui.DisplayButtonInLandscape
+import com.justdeax.composeStopwatch.ui.DisplayLaps
+import com.justdeax.composeStopwatch.ui.DisplayTime
 import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
@@ -51,6 +51,7 @@ import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
+import com.justdeax.composeStopwatch.util.StopWatchState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
@@ -152,6 +153,7 @@ class AppActivity : ComponentActivity() {
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
                                 DisplayLaps(
                                     Modifier
+                                        .padding(4.dp, 0.dp)
                                         .fillMaxWidth(),
                                     laps
                                 )
@@ -227,7 +229,7 @@ class AppActivity : ComponentActivity() {
                                         .animateContentSize()
                                         .fillMaxWidth()
                                         .heightIn(min = 100.dp),
-                                    true,
+                                    laps.isNotEmpty(),
                                     elapsedSec,
                                     elapsedMs
                                 ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
@@ -245,7 +247,7 @@ class AppActivity : ComponentActivity() {
         }
     }
 
-    fun commandService(serviceState: StopwatchService.State) {
+    fun commandService(serviceState: StopWatchState) {
         val context = this
         val intent = Intent(context, StopwatchService::class.java)
         intent.action = serviceState.name
@@ -256,19 +258,19 @@ class AppActivity : ComponentActivity() {
         when (tapType) {
             1 -> {
                 if (isRunning) {
-                    if (notificationEnabled) commandService(StopwatchService.State.PAUSE)
+                    if (notificationEnabled) commandService(StopWatchState.PAUSE)
                     else viewModel.pause()
                 } else {
-                    if (notificationEnabled) commandService(StopwatchService.State.START_RESUME)
+                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
                     else viewModel.startResume()
                 }
             }
             2 -> {
                 if (isRunning) {
-                    if (notificationEnabled) commandService(StopwatchService.State.ADD_LAP)
+                    if (notificationEnabled) commandService(StopWatchState.ADD_LAP)
                     else viewModel.addLap()
                 } else {
-                    if (notificationEnabled) commandService(StopwatchService.State.START_RESUME)
+                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
                     else viewModel.startResume()
                 }
             }
@@ -276,9 +278,9 @@ class AppActivity : ComponentActivity() {
                 if (isRunning) {
                     if (notificationEnabled)
                         lifecycleScope.launch {
-                            commandService(StopwatchService.State.PAUSE)
+                            commandService(StopWatchState.PAUSE)
                             delay(20)
-                            commandService(StopwatchService.State.RESET)
+                            commandService(StopWatchState.RESET)
                         }
                     else
                         lifecycleScope.launch {
@@ -287,7 +289,7 @@ class AppActivity : ComponentActivity() {
                             viewModel.reset()
                         }
                 } else {
-                    if (notificationEnabled) commandService(StopwatchService.State.START_RESUME)
+                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
                     else viewModel.startResume()
                 }
             }

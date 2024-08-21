@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.util
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -15,13 +16,20 @@ fun formatSeconds(elapsedSeconds: Long): String {
         String.format(Locale.US, "%02d:%02d", minutes, seconds)
 }
 
-//@Immutable
+fun Long.toFormatString()
+    = formatSeconds(this / 1000) + "." + displayMs(this)
+
+@Immutable
 @Serializable
 data class Lap(
     val index: Int,
     val elapsedTime: Long,
     val deltaLap: String
 )
+
+enum class StopWatchState {
+    START_RESUME, PAUSE, RESET, ADD_LAP
+}
 
 data class StopwatchState(
     val elapsedMsBeforePause: Long,

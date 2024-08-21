@@ -14,8 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.util.Lap
+import com.justdeax.composeStopwatch.util.StopWatchState
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
+import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
@@ -43,16 +45,17 @@ class StopwatchService: LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.action?.let { action ->
             when (action) {
-                State.START_RESUME.name -> startResume()
-                State.PAUSE.name -> pause()
-                State.RESET.name -> reset()
-                State.ADD_LAP.name -> addLap()
+                StopWatchState.START_RESUME.name -> startResume()
+                StopWatchState.PAUSE.name -> pause()
+                StopWatchState.RESET.name -> reset()
+                StopWatchState.ADD_LAP.name -> addLap()
             }
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun startResume() {
+        isStarted.value = true
         isRunning.value = true
         lifecycleScope.launch(Dispatchers.IO) {
             val startTimeMillis = System.currentTimeMillis()
@@ -86,6 +89,7 @@ class StopwatchService: LifecycleService() {
     }
 
     private fun reset() {
+        isStarted.value = false
         isRunning.value = false
         elapsedMs.value = 0L
         elapsedSec.value = 0L
@@ -102,8 +106,8 @@ class StopwatchService: LifecycleService() {
                 elapsedMs.value!!
             else
                 elapsedMs.value!! - laps.value!!.first.elapsedTime
-            val deltaLapString = "+${formatSeconds(deltaLap / 1000)}.${displayMs(deltaLap)}"
-            laps.value?.addFirst(Lap(laps.value!!.size+1, elapsedMs.value!!, deltaLapString))
+            val deltaLapString = "+ ${deltaLap.toFormatString()}"
+            laps.value?.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
         }
         notificationManager.notify(
             NOTIFICATION_ID,
@@ -145,7 +149,7 @@ class StopwatchService: LifecycleService() {
             this,
             2,
             Intent(this, StopwatchService::class.java).also {
-                it.action = State.START_RESUME.name
+                it.action = StopWatchState.START_RESUME.name
             },
             flag
         )
@@ -153,7 +157,7 @@ class StopwatchService: LifecycleService() {
             this,
             3,
             Intent(this, StopwatchService::class.java).also {
-                it.action = State.PAUSE.name
+                it.action = StopWatchState.PAUSE.name
             },
             flag
         )
@@ -161,7 +165,7 @@ class StopwatchService: LifecycleService() {
             this,
             4,
             Intent(this, StopwatchService::class.java).also {
-                it.action = State.RESET.name
+                it.action = StopWatchState.RESET.name
             },
             flag
         )
@@ -169,7 +173,7 @@ class StopwatchService: LifecycleService() {
             this,
             5,
             Intent(this, StopwatchService::class.java).also {
-                it.action = State.ADD_LAP.name
+                it.action = StopWatchState.ADD_LAP.name
             },
             flag
         )
@@ -190,6 +194,7 @@ class StopwatchService: LifecycleService() {
             return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
                 .setAutoCancel(false)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
                 .setContentText(finalText)
                 .setContentIntent(pendingIntent)
@@ -208,6 +213,7 @@ class StopwatchService: LifecycleService() {
             return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
                 .setAutoCancel(false)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
                 .setContentText(finalText)
                 .setContentIntent(pendingIntent)
@@ -229,18 +235,16 @@ class StopwatchService: LifecycleService() {
         private const val NOTIFICATION_ID = 1448
         private const val NOTIFICATION_CHANNEL_ID = "stopwatch_service_channel"
 
+        private val isStarted = MutableLiveData(false)
         private val isRunning = MutableLiveData(false)
         private val elapsedMs = MutableLiveData(0L)
         private val elapsedSec = MutableLiveData(0L)
         private val laps = MutableLiveData<LinkedList<Lap>>(LinkedList())
 
+        val isStartedI: LiveData<Boolean> get() = isStarted
         val isRunningI: LiveData<Boolean> get() = isRunning
         val elapsedMsI: LiveData<Long> get() = elapsedMs
         val elapsedSecI: LiveData<Long> get() = elapsedSec
         val lapsI: LiveData<LinkedList<Lap>> get() = laps
-    }
-
-    enum class State {
-        START_RESUME, PAUSE, RESET, ADD_LAP
     }
 }

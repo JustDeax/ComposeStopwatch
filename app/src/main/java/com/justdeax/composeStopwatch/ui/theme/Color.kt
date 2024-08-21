@@ -1,12 +1,10 @@
 package com.justdeax.composeStopwatch.ui.theme
 import androidx.compose.ui.graphics.Color
-
+//4e4fa0ff стрелка
+//ccc2dc9f индикаторы
 //EXTRA DARK THEME
 val White0 = Color(0xFFFFFFFF)
 val Black0 = Color(0xFF000000)
-//val Gray05 = Color(0xFFFAFAFA)
-//val Gray10 = Color(0xFFF5F5F5)
-//val Gray90 = Color(0xFF212121)
 
 //DARK THEME
 val Purple10 =     Color(0xFFD0BCFF)

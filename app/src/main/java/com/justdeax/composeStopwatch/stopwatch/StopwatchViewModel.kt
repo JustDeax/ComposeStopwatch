@@ -7,8 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchState
-import com.justdeax.composeStopwatch.util.displayMs
-import com.justdeax.composeStopwatch.util.formatSeconds
+import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
@@ -84,6 +83,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     }
 
     fun startResume() {
+        isStarted.value = true
         isRunning.value = true
         viewModelScope.launch(Dispatchers.IO) {
             if (startTime == 0L) startTime = System.currentTimeMillis()
@@ -104,6 +104,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun reset() {
         viewModelScope.launch { dataStoreManager.resetStopwatch() }
+        isStarted.value = false
         isRunning.value = false
         elapsedMs.value = 0L
         elapsedSec.value = 0L
@@ -118,18 +119,20 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                 elapsedMs.value!!
             else
                 elapsedMs.value!! - laps.value!!.first.elapsedTime
-            val deltaLapString = "+${formatSeconds(deltaLap / 1000)}.${displayMs(deltaLap)}"
+            val deltaLapString = "+ ${deltaLap.toFormatString()}"
             val newLaps = LinkedList(laps.value!!)
             newLaps.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
             laps.value = newLaps
         }
     }
 
+    private val isStarted = MutableLiveData(false)
     private val isRunning = MutableLiveData(false)
     private val elapsedMs = MutableLiveData(0L)
     private val elapsedSec = MutableLiveData(0L)
     private val laps = MutableLiveData<LinkedList<Lap>>(LinkedList())
 
+    val isStartedI: LiveData<Boolean> get() = isStarted
     val isRunningI: LiveData<Boolean> get() = isRunning
     val elapsedMsI: LiveData<Long> get() = elapsedMs
     val elapsedSecI: LiveData<Long> get() = elapsedSec
