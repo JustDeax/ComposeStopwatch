@@ -137,7 +137,7 @@ fun SimpleDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
-                    .padding(16.dp)
+                    .padding(4.dp)
             ) {
                 Text(desc)
             }
@@ -180,6 +180,7 @@ fun OkayDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
+                    .padding(4.dp)
             ) {
                 Text(
                     text = desc,

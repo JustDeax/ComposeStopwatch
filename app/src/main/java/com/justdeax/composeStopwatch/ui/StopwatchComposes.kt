@@ -1,9 +1,13 @@
 package com.justdeax.composeStopwatch.ui
 import android.os.Build
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,9 +20,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +64,7 @@ import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopWatchState
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
+import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -68,10 +72,19 @@ import kotlinx.coroutines.launch
 fun DisplayTime(
     modifier: Modifier,
     miniClock: Boolean,
+    isPausing: Boolean,
     elapsedSec: Long,
-    elapsedMs: Long,
-    clickOnClock: () -> Unit
+    elapsedMs: Long
 ) {
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val blinkAnimation by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center,
@@ -79,23 +92,21 @@ fun DisplayTime(
     ) {
         Row(
             modifier = Modifier
+                .alpha(if (isPausing) blinkAnimation else 1f)
                 .wrapContentWidth()
                 .wrapContentHeight()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { clickOnClock() }
         ) {
             if (miniClock) {
                 Text(
                     text = "${formatSeconds(elapsedSec)}.",
                     fontSize = 60.sp,
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
                 )
-                Text(modifier = Modifier.offset(y = 30.dp),
+                Text(
                     text = displayMs(elapsedMs),
                     fontSize = 40.sp,
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.offset(y = 30.dp)
                 )
             } else {
                 Text(
@@ -103,10 +114,11 @@ fun DisplayTime(
                     fontSize = 90.sp,
                     fontFamily = FontFamily.Monospace
                 )
-                Text(modifier = Modifier.offset(y = 45.dp),
+                Text(
                     text = displayMs(elapsedMs),
                     fontSize = 60.sp,
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.offset(y = 45.dp)
                 )
             }
         }
@@ -116,51 +128,62 @@ fun DisplayTime(
 @Composable
 fun DisplayLaps(
     modifier: Modifier,
-    laps: List<Lap>
+    laps: List<Lap>,
+    elapsedMs: Long
 ) {
-    val animateWeight by animateFloatAsState(
+    val heightAnimation by animateFloatAsState(
         targetValue = if (laps.isEmpty()) 0.0001f else 1f,
         animationSpec = tween(500),
         label = ""
     )
-    Row(modifier = modifier.fillMaxHeight(animateWeight)) {
+    Row(modifier = modifier.fillMaxHeight(heightAnimation)) {
         LazyColumn {
-            items(laps, key = { laps[it.index-1].index }) { (index, elapsedTime, deltaLap) ->
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth()
-                ) {
-                    val indexColor = when (index) {
-                        1 -> Gold
-                        2 -> Silver
-                        3 -> Copper
-                        else -> Iron
-                    }
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = index.toString(),
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = indexColor
-                    )
-                    Text(
-                        modifier = Modifier.weight(2f),
-                        text = "${formatSeconds(elapsedTime / 1000)}.${displayMs(elapsedTime)}",
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.Normal
-                    )
-                    Text(
-                        modifier = Modifier.weight(2f),
-                        text = deltaLap,
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        textAlign = TextAlign.End,
-                    )
+            if (laps.isNotEmpty())
+                item {
+                    val deltaLap = "+ ${(elapsedMs - laps.first().elapsedTime).toFormatString()}"
+                    LapItem("+", MaterialTheme.colorScheme.onBackground, elapsedMs, deltaLap)
                 }
+            items(laps, key = { laps[it.index-1].index }) { (index, elapsedTime, deltaLap) ->
+                val indexColor = when (index) {
+                    1 -> Gold
+                    2 -> Silver
+                    3 -> Copper
+                    else -> Iron
+                }
+                LapItem(index.toString(), indexColor, elapsedTime, deltaLap)
             }
         }
+    }
+}
+
+@Composable
+fun LapItem(indexText: String, indexColor: Color, elapsedTime: Long, deltaLap: String) {
+    Row(
+        modifier = Modifier
+            .padding(12.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = indexText,
+            style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Bold,
+            color = indexColor
+        )
+        Text(
+            modifier = Modifier.weight(2f),
+            text = elapsedTime.toFormatString(),
+            style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Normal
+        )
+        Text(
+            modifier = Modifier.weight(2f),
+            text = deltaLap,
+            style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            textAlign = TextAlign.End,
+        )
     }
 }
 
@@ -168,8 +191,8 @@ fun DisplayLaps(
 fun DisplayAppName(
     modifier: Modifier,
     activity: AppActivity,
-    show: Boolean,
-    isPortrait: Boolean
+    isPortrait: Boolean,
+    show: Boolean
 ) {
     val helpDraw = painterResource(R.drawable.round_help_outline_24)
     var showAboutApp by remember { mutableStateOf(false) }
@@ -209,7 +232,6 @@ fun DisplayAppName(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DisplayActions(
     modifier: Modifier,
@@ -235,8 +257,9 @@ fun DisplayActions(
     var showResetStopwatchDialog by remember { mutableStateOf(false) }
 
     @Composable
-    fun actionDialogs() {
+    fun actionDialogs(modifier: Modifier) {
         OutlineIconButton(
+            modifier = modifier,
             onClick = {
                 activity.viewModel.saveStopwatch()
                 showTapOnClockDialog = true
@@ -245,6 +268,7 @@ fun DisplayActions(
             contentDesc = activity.getString(R.string.tap_on_clock)
         )
         OutlineIconButton(
+            modifier = modifier,
             onClick = {
                 activity.viewModel.saveStopwatch()
                 showResetStopwatchDialog = true
@@ -253,6 +277,7 @@ fun DisplayActions(
             contentDesc = activity.getString(R.string.turn_off_notif)
         )
         OutlineIconButton(
+            modifier = modifier,
             onClick = {
                 activity.viewModel.saveStopwatch()
                 showThemeDialog = true
@@ -261,6 +286,7 @@ fun DisplayActions(
             contentDesc = activity.getString(R.string.theme)
         )
         OutlineIconButton(
+            modifier = modifier,
             onClick = {
                 activity.viewModel.saveStopwatch()
                 showMultiStopwatchDialog = true
@@ -301,7 +327,7 @@ fun DisplayActions(
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {
                             activity.commandService(StopWatchState.PAUSE)
-                            delay(20)
+                            delay(30)
                             activity.commandService(StopWatchState.RESET)
                             toggleNotification(false)
                             showResetStopwatchDialog = false
@@ -309,7 +335,7 @@ fun DisplayActions(
                     else
                         activity.lifecycleScope.launch {
                             activity.viewModel.pause()
-                            delay(20)
+                            delay(30)
                             activity.viewModel.reset()
                             toggleNotification(true)
                             showResetStopwatchDialog = false
@@ -352,10 +378,10 @@ fun DisplayActions(
             enter = fadeIn(tween(500)) + slideInVertically(tween(500)) { 80 },
             exit = fadeOut(tween(300)) + slideOutVertically(tween(300)) { 80 }
         ) {
-            FlowRow(
+            Row(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.SpaceEvenly
-            ) { actionDialogs() }
+            ) { actionDialogs(Modifier.weight(1f)) }
         }
     else
         androidx.compose.animation.AnimatedVisibility(
@@ -363,18 +389,18 @@ fun DisplayActions(
             enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { -80 },
             exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { -80 }
         ) {
-            FlowColumn(
+            Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.SpaceEvenly
-            ) { actionDialogs() }
+            ) { actionDialogs(Modifier.weight(1f)) }
         }
 }
 
 @Composable
 fun DisplayButton(
     activity: AppActivity,
+    isStarted: Boolean,
     isRunning: Boolean,
-    timerStarted: Boolean,
     showAdditional: Boolean,
     showAdditionals: (Boolean) -> Unit,
     notificationEnabled: Boolean
@@ -384,8 +410,8 @@ fun DisplayButton(
     val stopDrawable = painterResource(R.drawable.round_stop_24)
     val addLapsDrawable = painterResource(R.drawable.round_add_circle_24)
     val additionalsDrawable = painterResource(R.drawable.round_grid_view_24)
-    val startButtonWidth by animateIntAsState(
-        targetValue = if (timerStarted) 120 else 300,
+    val startButtonSizeAnimation by animateIntAsState(
+        targetValue = if (isStarted) 120 else 300,
         animationSpec = keyframes { durationMillis = 250 },
         label = ""
     )
@@ -399,7 +425,7 @@ fun DisplayButton(
     ) {
         Box(contentAlignment = Alignment.Center) {
             androidx.compose.animation.AnimatedVisibility(
-                visible = timerStarted,
+                visible = isStarted,
                 enter = EnterTransition.None,
                 exit = fadeOut(tween(500))
             ) {
@@ -436,13 +462,13 @@ fun DisplayButton(
                 }
             }
             IconButton(
-                width = startButtonWidth,
+                width = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
                         if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
                         else activity.viewModel.pause()
                     } else {
-                        if (!timerStarted) showAdditionals(false)
+                        if (!isStarted) showAdditionals(false)
                         if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
                         else activity.viewModel.startResume()
                     }
@@ -459,8 +485,8 @@ fun DisplayButton(
 @Composable
 fun DisplayButtonInLandscape(
     activity: AppActivity,
+    isStarted: Boolean,
     isRunning: Boolean,
-    timerStarted: Boolean,
     showAdditional: Boolean,
     showAdditionals: (Boolean) -> Unit,
     notificationEnabled: Boolean
@@ -470,8 +496,8 @@ fun DisplayButtonInLandscape(
     val stopDrawable = painterResource(R.drawable.round_stop_24)
     val addLapsDrawable = painterResource(R.drawable.round_add_circle_24)
     val additionalsDrawable = painterResource(R.drawable.round_grid_view_24)
-    val startButtonHeight by animateIntAsState(
-        targetValue = if (timerStarted) 120 else 300,
+    val startButtonSizeAnimation by animateIntAsState(
+        targetValue = if (isStarted) 120 else 300,
         animationSpec = keyframes { durationMillis = 250 },
         label = ""
     )
@@ -485,7 +511,7 @@ fun DisplayButtonInLandscape(
     ) {
         Box(contentAlignment = Alignment.Center) {
             androidx.compose.animation.AnimatedVisibility(
-                visible = timerStarted,
+                visible = isStarted,
                 enter = EnterTransition.None,
                 exit = fadeOut(tween(500))
             ) {
@@ -522,13 +548,13 @@ fun DisplayButtonInLandscape(
                 }
             }
             IconButton2(
-                height = startButtonHeight,
+                height = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
                         if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
                         else activity.viewModel.pause()
                     } else {
-                        if (!timerStarted) showAdditionals(false)
+                        if (!isStarted) showAdditionals(false)
                         if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
                         else activity.viewModel.startResume()
                     }

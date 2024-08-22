@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -76,23 +78,29 @@ class AppActivity : ComponentActivity() {
     fun AppScreen() {
         val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
         if (notificationEnabled) {
+            val isStarted by StopwatchService.isStartedI.observeAsState(false)
             val isRunning by StopwatchService.isRunningI.observeAsState(false)
             val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
             val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
             val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(true, isRunning, elapsedMs, elapsedSec, laps)
+            StopwatchScreen(true, isStarted, isRunning, elapsedMs, elapsedSec, laps)
         } else {
+            LaunchedEffect(Unit) {
+                viewModel.restoreStopwatch()
+            }
+            val isStarted by viewModel.isStartedI.observeAsState(false)
             val isRunning by viewModel.isRunningI.observeAsState(false)
             val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
             val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
             val laps by viewModel.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(false, isRunning, elapsedMs, elapsedSec, laps)
+            StopwatchScreen(false, isStarted, isRunning, elapsedMs, elapsedSec, laps)
         }
     }
 
     @Composable
     fun StopwatchScreen(
         notificationEnabled: Boolean,
+        isStarted: Boolean,
         isRunning: Boolean,
         elapsedMs: Long,
         elapsedSec: Long,
@@ -135,8 +143,8 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                elapsedMs == 0L,
-                                true
+                                true,
+                                !isStarted
                             )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -146,18 +154,29 @@ class AppActivity : ComponentActivity() {
                                     Modifier
                                         .animateContentSize()
                                         .fillMaxWidth()
-                                        .heightIn(min = 100.dp),
+                                        .heightIn(min = 120.dp),
                                     true,
+                                    isStarted && !isRunning,
                                     elapsedSec,
                                     elapsedMs
-                                ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
+                                )
                                 DisplayLaps(
                                     Modifier
                                         .padding(4.dp, 0.dp)
                                         .fillMaxWidth(),
-                                    laps
+                                    laps,
+                                    elapsedMs
                                 )
                             }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
+                            )
                         }
                         DisplayActions(
                             Modifier
@@ -176,8 +195,8 @@ class AppActivity : ComponentActivity() {
                         )
                         DisplayButton(
                             this@AppActivity,
+                            isStarted,
                             isRunning,
-                            elapsedMs != 0L,
                             additionalActionsShow,
                             showAdditionals = { newState -> additionalActionsShow = newState },
                             notificationEnabled
@@ -187,8 +206,8 @@ class AppActivity : ComponentActivity() {
                     Row(Modifier.padding(innerPadding)) {
                         DisplayButtonInLandscape(
                             this@AppActivity,
+                            isStarted,
                             isRunning,
-                            elapsedMs != 0L,
                             additionalActionsShow,
                             showAdditionals = { newState -> additionalActionsShow = newState },
                             notificationEnabled
@@ -217,8 +236,8 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                elapsedMs == 0L,
-                                false
+                                false,
+                                !isStarted
                             )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -228,18 +247,29 @@ class AppActivity : ComponentActivity() {
                                     Modifier
                                         .animateContentSize()
                                         .fillMaxWidth()
-                                        .heightIn(min = 100.dp),
+                                        .heightIn(min = 120.dp),
                                     laps.isNotEmpty(),
+                                    isStarted && !isRunning,
                                     elapsedSec,
                                     elapsedMs
-                                ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
+                                )
                                 DisplayLaps(
                                     Modifier
                                         .fillMaxWidth()
                                         .padding(26.dp, 0.dp),
-                                    laps
+                                    laps,
+                                    elapsedMs
                                 )
                             }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
+                            )
                         }
                     }
                 }

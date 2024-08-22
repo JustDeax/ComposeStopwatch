@@ -1,7 +1,6 @@
 package com.justdeax.composeStopwatch.ui.theme
 import androidx.compose.ui.graphics.Color
-//4e4fa0ff стрелка
-//ccc2dc9f индикаторы
+
 //EXTRA DARK THEME
 val White0 = Color(0xFFFFFFFF)
 val Black0 = Color(0xFF000000)
@@ -19,7 +18,7 @@ val Pink40 =       Color(0xFF7D5260)
 val GrayDark =     Color(0xFF505050)
 
 //FOR RECORD
-val Gold =   Color(0xFFFFB300) //Yellow60
-val Silver = Color(0xFFBDBDBD) //Gray40
-val Copper = Color(0xFFFF9100) //OrangeA40
-val Iron =   Color(0xFF444444) //DarkGrey
+val Gold =   Color(0xFFFFB300)
+val Silver = Color(0xFFB0B0B0)
+val Copper = Color(0xFFFF9100)
+val Iron =   Color(0xFF444444)

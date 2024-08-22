@@ -82,8 +82,7 @@ class StopwatchService: LifecycleService() {
             NOTIFICATION_ID,
             getNotification(
                 getString(R.string.stopwatch_pausing),
-                formatSeconds(elapsedMsBeforePause / 1000) + "." +
-                        displayMs(elapsedMs.value!!)
+                elapsedMsBeforePause.toFormatString()
             )
         )
     }
@@ -185,8 +184,7 @@ class StopwatchService: LifecycleService() {
             finalText = text
         } else {
             val lastLap = laps.value!!.first
-            val elapsedTime =
-                "${formatSeconds(lastLap.elapsedTime / 1000)}.${displayMs(lastLap.elapsedTime)}"
+            val elapsedTime = lastLap.elapsedTime.toFormatString()
             finalText = "$text \nLast lap: ${lastLap.index} $elapsedTime ${lastLap.deltaLap}"
         }
 

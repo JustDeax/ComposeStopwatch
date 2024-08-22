@@ -11,11 +11,11 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
     ),
     displayLarge = TextStyle(
         fontFamily = FontFamily.Monospace,
-        fontSize = 18.sp
+        fontSize = 18.sp,
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

@@ -24,8 +24,6 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     val tapOnClock = dataStoreManager.getTapOnClock().asLiveData()
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
 
-    init { restoreStopwatch() }
-
     fun changeTheme(themeCode: Int) {
         viewModelScope.launch {
             dataStoreManager.changeTheme(themeCode)
@@ -59,10 +57,11 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         }
     }
 
-    private fun restoreStopwatch() {
+    fun restoreStopwatch() {
         viewModelScope.launch {
             dataStoreManager.restoreStopwatch().collect { restoredState ->
                 elapsedMsBeforePause = restoredState.elapsedMsBeforePause
+                isStarted.value = elapsedMsBeforePause != 0L
                 startTime = restoredState.startTime
                 laps.value =
                     if (restoredState.laps.isNotEmpty())
@@ -103,14 +102,16 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     }
 
     fun reset() {
-        viewModelScope.launch { dataStoreManager.resetStopwatch() }
-        isStarted.value = false
-        isRunning.value = false
-        elapsedMs.value = 0L
-        elapsedSec.value = 0L
-        elapsedMsBeforePause = 0L
-        laps.value!!.clear()
-        viewModelScope.coroutineContext.cancelChildren()
+        viewModelScope.launch {
+            isStarted.value = false
+            isRunning.value = false
+            elapsedMs.value = 0L
+            elapsedSec.value = 0L
+            elapsedMsBeforePause = 0L
+            laps.value!!.clear()
+            dataStoreManager.resetStopwatch()
+            viewModelScope.coroutineContext.cancelChildren()
+        }
     }
 
     fun addLap() {
