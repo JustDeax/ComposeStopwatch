@@ -238,11 +238,6 @@ fun DisplayActions(
     activity: AppActivity,
     isPortrait: Boolean,
     show: Boolean,
-    changeTheme: (Int) -> Unit,
-    themeCode: Int,
-    changeTapOnClock: (Int) -> Unit,
-    tapOnClock: Int,
-    toggleNotification: (Boolean) -> Unit,
     notificationEnabled: Boolean
 ) {
     val multiStopwatchDraw = painterResource(R.drawable.round_casino_24)
@@ -301,9 +296,9 @@ fun DisplayActions(
             title = activity.getString(R.string.change_tap_on_clock),
             desc = activity.getString(R.string.change_tap_on_clock_desc),
             isPortrait = isPortrait,
-            defaultIndex = tapOnClock,
+            defaultIndex = activity.viewModel.tapOnClock.value!!,
             options = activity.resources.getStringArray(R.array.tap_on_clock),
-            setSelectedIndex = { newState -> changeTapOnClock(newState)},
+            setSelectedIndex = { newState -> activity.viewModel.changeTapOnClock(newState)},
             onDismiss = { showTapOnClockDialog = false },
             onConfirm = { showTapOnClockDialog = false },
             confirmText = activity.getString(R.string.apply)
@@ -311,9 +306,9 @@ fun DisplayActions(
     }
     if (showResetStopwatchDialog) {
         if (notificationEnabled && StopwatchService.elapsedMsI.value!! == 0L) {
-            toggleNotification(false)
+            activity.viewModel.changeNotificationEnabled(false)
         } else if (!notificationEnabled && activity.viewModel.elapsedMsI.value!! == 0L) {
-            toggleNotification(true)
+            activity.viewModel.changeNotificationEnabled(true)
         } else {
             SimpleDialog(
                 title = activity.getString(R.string.reset_stopwatch),
@@ -329,7 +324,7 @@ fun DisplayActions(
                             activity.commandService(StopWatchState.PAUSE)
                             delay(30)
                             activity.commandService(StopWatchState.RESET)
-                            toggleNotification(false)
+                            activity.viewModel.changeNotificationEnabled(false)
                             showResetStopwatchDialog = false
                         }
                     else
@@ -337,7 +332,7 @@ fun DisplayActions(
                             activity.viewModel.pause()
                             delay(30)
                             activity.viewModel.reset()
-                            toggleNotification(true)
+                            activity.viewModel.changeNotificationEnabled(true)
                             showResetStopwatchDialog = false
                         }
                 },
@@ -351,12 +346,12 @@ fun DisplayActions(
             title = activity.getString(R.string.change_theme),
             isPortrait = isPortrait,
             desc = activity.getString(R.string.change_theme_desc),
-            defaultIndex = themeCode,
+            defaultIndex = activity.viewModel.theme.value!!,
             options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 activity.resources.getStringArray(R.array.theme12)
             else
                 activity.resources.getStringArray(R.array.theme),
-            setSelectedIndex = { newState -> changeTheme(newState)},
+            setSelectedIndex = { newState -> activity.viewModel.changeTheme(newState)},
             onDismiss = { showThemeDialog = false },
             onConfirm = { showThemeDialog = false },
             confirmText = activity.getString(R.string.apply)

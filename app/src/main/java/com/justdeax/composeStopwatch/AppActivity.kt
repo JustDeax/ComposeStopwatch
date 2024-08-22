@@ -154,7 +154,12 @@ class AppActivity : ComponentActivity() {
                                     Modifier
                                         .animateContentSize()
                                         .fillMaxWidth()
-                                        .heightIn(min = 120.dp),
+                                        .padding(10.dp)
+                                        .heightIn(min = 100.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) },
                                     true,
                                     isStarted && !isRunning,
                                     elapsedSec,
@@ -168,15 +173,6 @@ class AppActivity : ComponentActivity() {
                                     elapsedMs
                                 )
                             }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(30.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
-                            )
                         }
                         DisplayActions(
                             Modifier
@@ -186,11 +182,6 @@ class AppActivity : ComponentActivity() {
                             this@AppActivity,
                             true,
                             additionalActionsShow,
-                            { newState -> viewModel.changeTheme(newState)},
-                            theme,
-                            { newState -> viewModel.changeTapOnClock(newState) },
-                            tapOnClock,
-                            { newState -> viewModel.changeNotificationEnabled(newState) },
                             notificationEnabled
                         )
                         DisplayButton(
@@ -220,11 +211,6 @@ class AppActivity : ComponentActivity() {
                             this@AppActivity,
                             false,
                             additionalActionsShow,
-                            { newState -> viewModel.changeTheme(newState)},
-                            theme,
-                            { newState -> viewModel.changeTapOnClock(newState) },
-                            tapOnClock,
-                            { newState -> viewModel.changeNotificationEnabled(newState) },
                             notificationEnabled
                         )
                         Box(
@@ -247,7 +233,12 @@ class AppActivity : ComponentActivity() {
                                     Modifier
                                         .animateContentSize()
                                         .fillMaxWidth()
-                                        .heightIn(min = 120.dp),
+                                        .padding(10.dp)
+                                        .heightIn(min = 100.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) },
                                     laps.isNotEmpty(),
                                     isStarted && !isRunning,
                                     elapsedSec,
@@ -261,15 +252,6 @@ class AppActivity : ComponentActivity() {
                                     elapsedMs
                                 )
                             }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(30.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) }
-                            )
                         }
                     }
                 }
