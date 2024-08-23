@@ -7,7 +7,7 @@ This is an open source stopwatch app in the Material You theme, designed for eas
 
 - Change orientation
     - Portrait mode has more space for laps
-    - In Landscape mode, text is larger
+    - In Landscape mode, time text is larger
 
 - Select an action when you tap on the clock that shows the time
     - Resume or pause
