@@ -53,26 +53,29 @@
 
     <string name="about_app">About Compose Stopwatch</string>
     <string name="about_app_desc">
-This is an open source stopwatch app in the Material You theme, designed for ease of use:
-- Change theme, new themes are available
-    • Dynamic theme is only available with android 12+
-    • Extra Dark theme saves charging for Amoled screen
-- Change orientation
-    • Portrait mode has more space for laps
-    • In Landscape mode, text is larger.
-- Select an action when you tap on the clock that shows the time
-    • Resume or pause
-    • Resume or add a circle
-    • Resume or pause
-    • If you don't want to do this, you can remove the action.
-- Switching notifications on/off
-    • When switched off, the stopwatch works on ViewModel and DataStore.
-    • When enabled, the stopwatch works on LifecycleService and ForegroundService.
-- Multi-second stopwatch (not available)
-    • Probably will not be added.
+This is an open source stopwatch app in the Material You theme, designed for ease of use:\n
+- Change theme, new themes are available\n
+    - Dynamic theme is only available with android 12+\n
+    - Extra Dark theme saves charging for Amoled screen\n
+- Change orientation\n
+    - Portrait mode has more space for laps\n
+    - In Landscape mode, text is larger\n
+- Select an action when you tap on the clock that shows the time\n
+    - Resume or pause\n
+    - Resume or add a circle\n
+    - Resume or pause\n
+    - If you don't want to do this, you can remove the action\n
+- Switching notifications on/off\n
+    - When switched off, the stopwatch works on ViewModel and DataStore\n
+    - When enabled, the stopwatch works on LifecycleService and ForegroundService\n
+- Multi-second stopwatch (not available)\n
+    - Probably will not be added\n
+\n
+Author: JustDeax (https://github.com/JustDeax)\n
+Version: 1.1.6
     </string>
     <string name="about_app_desc_a">Author: </string>
     <string name="about_app_desc_l">JustDeax (https://github.com/JustDeax)</string>
-    <string name="about_app_desc_v">Version: 1.1.5</string>
+    <string name="about_app_desc_v">Version: 1.1.6</string>
 
 </resources>
