@@ -23,5 +23,5 @@ This is an open source stopwatch app in the Material You theme, designed for eas
     - Probably will not be added
 
 Author: JustDeax (https://github.com/JustDeax)  
-Version: 1.1.6
+Version: 1.1.6  
 Minimal android: 6 (SDK 23)
