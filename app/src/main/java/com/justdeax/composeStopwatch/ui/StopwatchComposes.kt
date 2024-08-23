@@ -36,13 +36,20 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -193,11 +200,11 @@ fun LapItem(indexText: String, indexColor: Color, elapsedTime: Long, deltaLap: S
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayAppName(
     modifier: Modifier,
     activity: AppActivity,
-    isPortrait: Boolean,
     show: Boolean
 ) {
     val helpDraw = painterResource(R.drawable.round_help_outline_24)
@@ -227,36 +234,72 @@ fun DisplayAppName(
             )
         }
     }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     if (showAboutApp) {
-        OkayDialog(
-            title = activity.getString(R.string.about_app),
-            content = {
-                Text(
-                    text = activity.getString(R.string.about_app_desc),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                val annotatedString = buildAnnotatedString {
-                    append(activity.getString(R.string.about_app_desc_a))
-
-                    withStyle(style = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)) {
-                        append(activity.getString(R.string.about_app_desc_l))
+        ModalBottomSheet(
+            onDismissRequest = { showAboutApp = false },
+            sheetState = sheetState,
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp, 2.dp)
+            ) {
+                val scrollState = rememberScrollState()
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                ) {
+                    Text(
+                        text = activity.getString(R.string.about_app),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = activity.getString(R.string.about_app_desc),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    val annotatedString = buildAnnotatedString {
+                        append(activity.getString(R.string.about_app_desc_a))
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Blue,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        ) {
+                            append(" " + activity.getString(R.string.app_author))
+                        }
+                        append(activity.getString(R.string.about_app_desc_v))
+                        append(" " + activity.getString(R.string.app_version))
                     }
-
-                    append(activity.getString(R.string.about_app_desc_v))
+                    Text(
+                        text = annotatedString,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JustDeax"))
+                            activity.startActivity(intent)
+                        }
+                    )
                 }
-                Text(
-                    text = annotatedString,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.clickable {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JustDeax"))
-                        activity.startActivity(intent)
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    onClick = {
+                        scope
+                            .launch { sheetState.hide() }
+                            .invokeOnCompletion {
+                                if (!sheetState.isVisible)
+                                    showAboutApp = false
+                            }
                     }
-                )
-            },
-            isPortrait = isPortrait,
-            confirmText = activity.getString(R.string.ok),
-            onConfirm = { showAboutApp = false }
-        )
+                ) {
+                    Text(activity.getString(R.string.ok))
+                }
+            }
+        }
     }
 }
 
@@ -463,7 +506,7 @@ fun DisplayButton(
                         painter = additionalsDrawable,
                         contentDesc = activity.getString(R.string.additional_action)
                     )
-                    Spacer(modifier = Modifier.width(170.dp))
+                    Spacer(Modifier.width(170.dp))
                     if (isRunning)
                         IconButton(
                             onClick = {
@@ -549,7 +592,7 @@ fun DisplayButtonInLandscape(
                         painter = additionalsDrawable,
                         contentDesc = activity.getString(R.string.additional_action)
                     )
-                    Spacer(modifier = Modifier.height(170.dp))
+                    Spacer(Modifier.height(170.dp))
                     if (isRunning)
                         IconButton(
                             onClick = {

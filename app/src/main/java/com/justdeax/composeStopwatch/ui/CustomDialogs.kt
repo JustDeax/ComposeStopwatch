@@ -137,7 +137,6 @@ fun SimpleDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
-                    .padding(4.dp)
             ) { Text(desc) }
         },
         confirmButton = {
@@ -178,7 +177,6 @@ fun OkayDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
-                    .padding(4.dp)
             ) { content() }
         },
         confirmButton = {

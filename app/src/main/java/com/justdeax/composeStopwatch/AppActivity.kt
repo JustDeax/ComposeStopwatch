@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.ui.DisplayActions
@@ -97,6 +98,19 @@ class AppActivity : ComponentActivity() {
         }
     }
 
+    @Preview
+    @Composable
+    fun PreviewStopwatchScreen() {
+        StopwatchScreen(
+            notificationEnabled = true,
+            isStarted = false,
+            isRunning = false,
+            elapsedMs = 0,
+            elapsedSec = 0,
+            laps = listOf()
+        )
+    }
+
     @Composable
     fun StopwatchScreen(
         notificationEnabled: Boolean,
@@ -143,7 +157,6 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                true,
                                 !isStarted
                             )
                             Column(
@@ -159,7 +172,13 @@ class AppActivity : ComponentActivity() {
                                         .clickable(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
-                                        ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) },
+                                        ) {
+                                            clickOnClock(
+                                                tapOnClock,
+                                                isRunning,
+                                                notificationEnabled
+                                            )
+                                        },
                                     true,
                                     isStarted && !isRunning,
                                     elapsedSec,
@@ -222,7 +241,6 @@ class AppActivity : ComponentActivity() {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
                                 this@AppActivity,
-                                false,
                                 !isStarted
                             )
                             Column(
@@ -238,7 +256,13 @@ class AppActivity : ComponentActivity() {
                                         .clickable(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
-                                        ) { clickOnClock(tapOnClock, isRunning, notificationEnabled) },
+                                        ) {
+                                            clickOnClock(
+                                                tapOnClock,
+                                                isRunning,
+                                                notificationEnabled
+                                            )
+                                        },
                                     laps.isNotEmpty(),
                                     isStarted && !isRunning,
                                     elapsedSec,
