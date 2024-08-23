@@ -138,10 +138,8 @@ fun SimpleDialog(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
                     .padding(4.dp)
-            ) {
-                Text(desc)
-            }
-               },
+            ) { Text(desc) }
+        },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)
@@ -159,7 +157,7 @@ fun SimpleDialog(
 @Composable
 fun OkayDialog(
     title: String,
-    desc: String,
+    content: @Composable () -> Unit,
     isPortrait: Boolean,
     confirmText: String,
     onConfirm: () -> Unit
@@ -181,13 +179,8 @@ fun OkayDialog(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
                     .padding(4.dp)
-            ) {
-                Text(
-                    text = desc,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-               },
+            ) { content() }
+        },
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(confirmText)

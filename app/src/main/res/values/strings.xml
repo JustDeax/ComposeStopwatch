@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Compose Stopwatch</string>
-    <string name="app_version">1.1.5</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -16,18 +15,13 @@
     <string name="add_lap">Add Lap</string>
 
     <string name="additional_action">Additional Actions</string>
-    <string name="multi_stopwatch">Multi stopwatch</string>
-    <string name="theme">Theme</string>
     <string name="tap_on_clock">Tap on Clock</string>
     <string name="turn_off_notif">Turn off notification</string>
+    <string name="theme">Theme</string>
+    <string name="multi_stopwatch">Multi stopwatch</string>
 
     <string name="change_tap_on_clock">Change tap on clock</string>
     <string name="change_tap_on_clock_desc">Select what will happen when the tap on clock</string>
-
-    <string name="reset_stopwatch">Reset Stopwatch?</string>
-    <string name="reset_stopwatch_desc_enable">To enable notifications you need to reset the stopwatch</string>
-    <string name="reset_stopwatch_desc_disable">To disable notifications you need to reset the stopwatch</string>
-
     <string-array name="tap_on_clock">
         <item name="none">None</item>
         <item name="resume_or_pause">Resume or Pause</item>
@@ -35,8 +29,12 @@
         <item name="resume_or_stop">Resume or Stop</item>
     </string-array>
 
+    <string name="reset_stopwatch">Reset Stopwatch?</string>
+    <string name="reset_stopwatch_desc_enable">To enable notifications you need to reset the stopwatch</string>
+    <string name="reset_stopwatch_desc_disable">To disable notifications you need to reset the stopwatch</string>
+
     <string name="change_theme">Change theme</string>
-    <string name="change_theme_desc">Material You theme is only available with android 12+\nExtra Dark theme saves charging for Amoled screen</string>
+    <string name="change_theme_desc">Dynamic theme is only available with android 12+\nExtra Dark theme saves charging for Amoled screen</string>
     <string-array name="theme">
         <item name="system">System</item>
         <item name="light">Light</item>
@@ -44,7 +42,7 @@
         <item name="extra_dark">Extra Dark</item>
     </string-array>
     <string-array name="theme12">
-        <item name="system">System (Material You)</item>
+        <item name="system">System (Dynamic colors)</item>
         <item name="light">Light</item>
         <item name="dark">Dark</item>
         <item name='extra_dark'>Extra Dark</item>
@@ -54,5 +52,27 @@
     <string name="multi_stopwatch_not_available_desc">The function is not available and may not be available</string>
 
     <string name="about_app">About Compose Stopwatch</string>
-    <string name="about_app_desc">This is a stopwatch app in the Material You theme, designed for convenience:\n- Change the theme\n- Change the orientation\n- Choose the action when you tap on the clock that shows the time\n- Switch notifications on/off\n- Multi stopwatch (not available)\n\nVersion: %s</string>
+    <string name="about_app_desc">
+This is an open source stopwatch app in the Material You theme, designed for ease of use:
+- Change theme, new themes are available
+    • Dynamic theme is only available with android 12+
+    • Extra Dark theme saves charging for Amoled screen
+- Change orientation
+    • Portrait mode has more space for laps
+    • In Landscape mode, text is larger.
+- Select an action when you tap on the clock that shows the time
+    • Resume or pause
+    • Resume or add a circle
+    • Resume or pause
+    • If you don't want to do this, you can remove the action.
+- Switching notifications on/off
+    • When switched off, the stopwatch works on ViewModel and DataStore.
+    • When enabled, the stopwatch works on LifecycleService and ForegroundService.
+- Multi-second stopwatch (not available)
+    • Probably will not be added.
+    </string>
+    <string name="about_app_desc_a">Author: </string>
+    <string name="about_app_desc_l">JustDeax (https://github.com/JustDeax)</string>
+    <string name="about_app_desc_v">Version: 1.1.5</string>
+
 </resources>

@@ -1,4 +1,6 @@
 package com.justdeax.composeStopwatch.ui
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.RepeatMode
@@ -47,9 +49,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
@@ -224,7 +230,29 @@ fun DisplayAppName(
     if (showAboutApp) {
         OkayDialog(
             title = activity.getString(R.string.about_app),
-            desc = activity.getString(R.string.about_app_desc, activity.getString(R.string.app_version)),
+            content = {
+                Text(
+                    text = activity.getString(R.string.about_app_desc),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                val annotatedString = buildAnnotatedString {
+                    append(activity.getString(R.string.about_app_desc_a))
+
+                    withStyle(style = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)) {
+                        append(activity.getString(R.string.about_app_desc_l))
+                    }
+
+                    append(activity.getString(R.string.about_app_desc_v))
+                }
+                Text(
+                    text = annotatedString,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JustDeax"))
+                        activity.startActivity(intent)
+                    }
+                )
+            },
             isPortrait = isPortrait,
             confirmText = activity.getString(R.string.ok),
             onConfirm = { showAboutApp = false }
@@ -240,16 +268,16 @@ fun DisplayActions(
     show: Boolean,
     notificationEnabled: Boolean
 ) {
-    val multiStopwatchDraw = painterResource(R.drawable.round_casino_24)
-    val themeDraw = painterResource(R.drawable.round_invert_colors_24)
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
+    val themeDraw = painterResource(R.drawable.round_invert_colors_24)
+    val multiStopwatchDraw = painterResource(R.drawable.round_casino_24)
 
-    var showMultiStopwatchDialog by remember { mutableStateOf(false) }
-    var showThemeDialog by remember { mutableStateOf(false) }
     var showTapOnClockDialog by remember { mutableStateOf(false) }
     var showResetStopwatchDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showMultiStopwatchDialog by remember { mutableStateOf(false) }
 
     @Composable
     fun actionDialogs(modifier: Modifier) {
@@ -360,7 +388,12 @@ fun DisplayActions(
     if (showMultiStopwatchDialog) {
         OkayDialog(
             title = activity.getString(R.string.multi_stopwatch_not_available),
-            desc = activity.getString(R.string.multi_stopwatch_not_available_desc),
+            content = {
+                Text(
+                    text = activity.getString(R.string.multi_stopwatch_not_available_desc),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
             isPortrait = isPortrait,
             confirmText = activity.getString(R.string.ok),
             onConfirm = { showMultiStopwatchDialog = false }
