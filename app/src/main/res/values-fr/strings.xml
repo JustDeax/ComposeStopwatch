@@ -1,0 +1,78 @@
+<resources>
+    <string name="cancel">Annuler</string>
+    <string name="ok">OK</string>
+    <string name="apply">Appliquer</string>
+
+    <string name="stopwatch_channel">Notifications du chronomètre</string>
+    <string name="stopwatch_running">Stopwatch en cours</string>
+    <string name="stopwatch_pausing">Stopwatch en pause</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
+    <string name="add_lap">Ajouter un tour</string>
+
+    <string name="additional_action">Actions supplémentaires</string>
+    <string name="tap_on_clock">Tap on Clock</string>
+    <string name="turn_off_notif">Activer/désactiver la notification</string>
+    <string name="theme">Theme</string>
+    <string name="multi_stopwatch">Multi-stopwatch</string>
+
+    <string name="change_tap_on_clock">Modifier le tap sur l\'horloge</string>
+    <string name="change_tap_on_clock_desc">Sélectionnez une action lorsque vous tapez sur l\'horloge qui affiche l\'heure</string>
+    <string-array name="tap_on_clock">
+        <item name="none">None</item>
+        <item name="resume_or_pause">Reprise ou pause</item>
+        <item name="resume_or_add_lap">Reprendre ou ajouter un tour</item>
+        <item name="resume_or_stop">Reprendre ou Arrêter</item>
+    </string-array>
+
+    <string name="reset_stopwatch">Réinitialiser le chronomètre?</string>
+    <string name="reset_stopwatch_desc_enable">Pour activer les notifications, vous devez réinitialiser le chronomètre</string>
+    <string name="reset_stopwatch_desc_disable">Pour désactiver les notifications, vous devez réinitialiser le chronomètre</string>
+
+    <string name="change_theme">Changer de thème</string>
+    <string name="change_theme_desc">Le thème dynamique n\'est disponible qu\'avec Android 12+\nLe thème Extra Dark permet d\'économiser de l\'énergie pour l\'écran Amoled.</string>
+    <string-array name="theme">
+        <item name="system">Système</item>
+        <item name="light">Light</item>
+        <item name="dark">Sombre</item>
+        <item name="extra_dark">Extra Dark</item>
+    </string-array>
+    <string-array name="theme12">
+        <item name="system">Système (thème dynamique)</item>
+        <item name="light">Light</item>
+        <item name="dark">Sombre</item>
+        <item name='extra_dark'>Extra Dark</item>
+    </string-array>
+
+    <string name="multi_stopwatch_not_available">Multi-stopwatch non disponible</string>
+    <string name="multi_stopwatch_not_available_desc">La fonction n\'est pas disponible et peut ne pas être disponible</string>
+
+    <string name="about_app">A propos de Compose Stopwatch</string>
+    <string name="about_app_desc">"Ceci est une application de chronomètre open source dans le thème Material You, conçu pour la facilité d'utilisation :
+
+    - Changer de thème, de nouveaux thèmes sont disponibles
+    - Le thème dynamique n'est disponible qu'avec Android 12+.
+    - Le thème Extra Dark permet d'économiser de la charge pour l'écran Amoled
+
+    - Changer d'orientation
+    - Le mode portrait offre plus d'espace pour les tours de piste
+    - En mode paysage, le texte de l'heure est plus grand
+
+    - Sélectionnez une action lorsque vous appuyez sur l'horloge qui affiche l'heure
+    - Reprendre ou mettre en pause
+    - Reprendre ou ajouter un tour
+    - Reprendre ou mettre en pause
+    - Si vous ne souhaitez pas effectuer cette action, vous pouvez la supprimer.
+
+    - Activation/désactivation des notifications
+    - Lorsqu'il est désactivé, le chronomètre fonctionne sur le ViewModel et le DataStore.
+    - Lorsqu'il est activé, le chronomètre fonctionne sur LifecycleService et ForegroundService.
+
+    - Chronomètre multiseconde (non disponible)
+    - Ne sera probablement pas ajouté
+"</string>
+    <string name="about_app_desc_a">Auteur:</string>
+    <string name="about_app_desc_v">\nVersion:</string>
+
+</resources>
