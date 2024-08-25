@@ -49,28 +49,28 @@
     <string name="multi_stopwatch_not_available_desc">La función no está disponible y es posible que no esté disponible</string>
 
     <string name="about_app">Acerca de Compose Stopwatch</string>
-    <string name="about_app_desc">"Esta es una app de cronómetro de código abierto en el tema Material You, diseñada para facilitar su uso:
-
-- Cambiar tema, hay nuevos temas disponibles
+    <string name="about_app_desc">"Esta es una aplicación de cronómetro de código abierto en el tema Material You, diseñado para la facilidad de uso y las mejores características
+    
+► Cambiar el tema, nuevos temas están disponibles
     • Tema dinámico sólo está disponible con android 12+
     • El tema Extra Dark ahorra carga para la pantalla Amoled
 
-- Cambia la orientación
+► Cambia la orientación
     • El modo vertical tiene más espacio para las vueltas
     • En modo horizontal, el texto de la hora es más grande
 
-- Selecciona una acción al tocar el reloj que muestra la hora
+► Selecciona una acción al tocar el reloj que muestra la hora
     • Reanudar o pausar
     • Reanudar o añadir vuelta
     • Reanudar o pausar
     • Si no quieres hacer esto, puedes eliminar la acción
 
-- Activar o desactivar las notificaciones
+► Activar o desactivar las notificaciones
     • Cuando está desactivado, el cronómetro funciona en ViewModel y DataStore
     • Cuando está activado, el cronómetro funciona en LifecycleService y ForegroundService
 
-- Cronómetro de varios segundos (no disponible)
-    • Probablemente no se añadirá
+► Cronómetro múltiple (no disponible)
+    • No se puede añadir
 "</string>
     <string name="about_app_desc_a">Autor:</string>
     <string name="about_app_desc_v">\nVersión:</string>

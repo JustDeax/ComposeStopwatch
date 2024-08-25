@@ -53,28 +53,28 @@
     <string name="multi_stopwatch_not_available_desc">The function is not available and may not be available</string>
 
     <string name="about_app">About Compose Stopwatch</string>
-    <string name="about_app_desc">"This is an open source stopwatch app in the Material You theme, designed for ease of use:
+    <string name="about_app_desc">"This is an open source stopwatch app in the Material You theme, designed for ease of use and best features
 
-- Change theme, new themes are available
+► Change theme, new themes are available
     • Dynamic theme is only available with android 12+
     • Extra Dark theme saves charging for Amoled screen
 
-- Change orientation
+► Change orientation
     • Portrait mode has more space for laps
     • In Landscape mode, time text is larger
 
-- Select an action when you tap on the clock that shows the time
+► Select an action when you tap on the clock that shows the time
     • Resume or pause
     • Resume or add lap
     • Resume or pause
     • If you don't want to do this, you can remove the action
 
-- Switching notifications on/off
+► Switching notifications on/off
     • When switched off, the stopwatch works on ViewModel and DataStore
     • When enabled, the stopwatch works on LifecycleService and ForegroundService
 
-- Multi-second stopwatch (not available)
-    • Probably will not be added
+► Multi-stopwatch (not available)
+    • May not be added
 "</string>
     <string name="about_app_desc_a">Author:</string>
     <string name="about_app_desc_v">\nVersion:</string>
