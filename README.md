@@ -14,8 +14,6 @@
   <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" width="30%" />
   <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" width="30%" />
   <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" width="30%" />
-
-  <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/7.jpg" width="30%" />
 </p>
 
 ### Compose Stopwatch
