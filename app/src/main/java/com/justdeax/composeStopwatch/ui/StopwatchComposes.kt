@@ -86,8 +86,8 @@ fun DisplayTime(
     modifier: Modifier,
     miniClock: Boolean,
     isPausing: Boolean,
-    elapsedSec: Long,
-    elapsedMs: Long
+    seconds: Long,
+    milliseconds: Long
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val blinkAnimation by infiniteTransition.animateFloat(
@@ -111,24 +111,24 @@ fun DisplayTime(
         ) {
             if (miniClock) {
                 Text(
-                    text = "${formatSeconds(elapsedSec)}.",
+                    text = "${formatSeconds(seconds)}.",
                     fontSize = 60.sp,
                     fontFamily = FontFamily.Monospace,
                 )
                 Text(
-                    text = displayMs(elapsedMs),
+                    text = displayMs(milliseconds),
                     fontSize = 40.sp,
                     fontFamily = FontFamily.Monospace,
                     modifier = Modifier.offset(y = 30.dp)
                 )
             } else {
                 Text(
-                    text = "${formatSeconds(elapsedSec)}.",
+                    text = "${formatSeconds(seconds)}.",
                     fontSize = 90.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text = displayMs(elapsedMs),
+                    text = displayMs(milliseconds),
                     fontSize = 60.sp,
                     fontFamily = FontFamily.Monospace,
                     modifier = Modifier.offset(y = 45.dp)
