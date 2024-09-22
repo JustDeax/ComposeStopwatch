@@ -1,7 +1,6 @@
 package com.justdeax.composeStopwatch.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -14,7 +13,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OutlineIconButton(modifier: Modifier, onClick: () -> Unit, painter: Painter, contentDesc: String) {
+fun OutlineIconButton(modifier: Modifier, painter: Painter, contentDesc: String, onClick: () -> Unit) {
     Box {
         OutlinedButton(
             modifier = modifier
@@ -33,7 +32,7 @@ fun OutlineIconButton(modifier: Modifier, onClick: () -> Unit, painter: Painter,
 }
 
 @Composable
-fun IconButton(width: Int = 70, onClick: () -> Unit, painter: Painter, contentDesc: String) {
+fun IconButton(width: Int = 70, painter: Painter, contentDesc: String, onClick: () -> Unit) {
     Button(
         modifier = Modifier
             .width(width.dp)

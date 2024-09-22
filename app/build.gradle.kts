@@ -10,12 +10,16 @@ android {
 
     defaultConfig {
         applicationId = "com.justdeax.composeStopwatch"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.1.6"
+        versionCode = 1007000
+        versionName = "1.7.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+
+        resValue("string", "build_time", System.getenv("SOURCE_DATE_EPOCH") ?: "0")
+        renderscriptTargetApi = 0
+        renderscriptSupportModeEnabled = false
     }
 
     buildTypes {
@@ -24,6 +28,16 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+
+            isDebuggable = false
+            isJniDebuggable = false
+            isPseudoLocalesEnabled = false
+
+            buildConfigField(
+                "long",
+                "BUILD_TIME",
+                "${System.getenv("SOURCE_DATE_EPOCH") ?: "0"}L"
             )
         }
     }
@@ -36,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -43,6 +58,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 }

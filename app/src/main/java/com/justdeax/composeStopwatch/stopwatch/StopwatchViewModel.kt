@@ -17,12 +17,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
-class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
+class StopwatchViewModel(
+    private val dataStoreManager: DataStoreManager
+) : ViewModel() {
     private var elapsedMsBeforePause = 0L
     private var startTime = 0L
     val theme = dataStoreManager.getTheme().asLiveData()
     val tapOnClock = dataStoreManager.getTapOnClock().asLiveData()
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
+    val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
 
     fun changeTheme(themeCode: Int) {
         viewModelScope.launch {
@@ -39,6 +42,13 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     fun changeNotificationEnabled(enabled: Boolean) {
         viewModelScope.launch {
             dataStoreManager.changeNotificationEnabled(enabled)
+            if (enabled) reset()
+        }
+    }
+
+    fun changeLockAwakeEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.changeLockAwakeEnabled(enabled)
         }
     }
 

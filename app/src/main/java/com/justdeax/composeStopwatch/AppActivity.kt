@@ -1,13 +1,14 @@
 package com.justdeax.composeStopwatch
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -38,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.DisplayAppName
@@ -54,7 +57,7 @@ import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
-import com.justdeax.composeStopwatch.util.StopWatchState
+import com.justdeax.composeStopwatch.util.StopwatchAction
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
@@ -67,7 +70,23 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestNotificationPermission()
         setContent { AppScreen() }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
     }
 
     override fun onStop() {
@@ -86,9 +105,7 @@ class AppActivity : ComponentActivity() {
             val laps by StopwatchService.lapsI.observeAsState(LinkedList())
             StopwatchScreen(true, isStarted, isRunning, elapsedMs, elapsedSec, laps)
         } else {
-            LaunchedEffect(Unit) {
-                viewModel.restoreStopwatch()
-            }
+            LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
             val isStarted by viewModel.isStartedI.observeAsState(false)
             val isRunning by viewModel.isRunningI.observeAsState(false)
             val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
@@ -123,6 +140,7 @@ class AppActivity : ComponentActivity() {
         var additionalActionsShow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
+        val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val colorScheme = when (theme) {
@@ -143,8 +161,11 @@ class AppActivity : ComponentActivity() {
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
             Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                LaunchedEffect(Unit) {
-                    if (elapsedMs == 0L) additionalActionsShow = true
+                LaunchedEffect(lockAwakeEnabled) {
+                    if (lockAwakeEnabled)
+                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    else
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 }
                 if (isPortrait) {
                     Column(Modifier.padding(innerPadding)) {
@@ -165,7 +186,6 @@ class AppActivity : ComponentActivity() {
                             ) {
                                 DisplayTime(
                                     Modifier
-                                        .animateContentSize()
                                         .fillMaxWidth()
                                         .padding(10.dp)
                                         .heightIn(min = 100.dp)
@@ -174,9 +194,7 @@ class AppActivity : ComponentActivity() {
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
                                             clickOnClock(
-                                                tapOnClock,
-                                                isRunning,
-                                                notificationEnabled
+                                                tapOnClock, isRunning, notificationEnabled
                                             )
                                         },
                                     true,
@@ -200,16 +218,17 @@ class AppActivity : ComponentActivity() {
                                 .padding(8.dp, 8.dp, 8.dp, 14.dp),
                             this@AppActivity,
                             true,
-                            additionalActionsShow,
-                            notificationEnabled
+                            !isStarted || additionalActionsShow,
+                            notificationEnabled,
+                            lockAwakeEnabled
                         )
                         DisplayButton(
                             this@AppActivity,
                             isStarted,
                             isRunning,
+                            notificationEnabled,
                             additionalActionsShow,
-                            showAdditionals = { newState -> additionalActionsShow = newState },
-                            notificationEnabled
+                            showHideAdditionals = { additionalActionsShow = !additionalActionsShow }
                         )
                     }
                 } else {
@@ -218,9 +237,9 @@ class AppActivity : ComponentActivity() {
                             this@AppActivity,
                             isStarted,
                             isRunning,
+                            notificationEnabled,
                             additionalActionsShow,
-                            showAdditionals = { newState -> additionalActionsShow = newState },
-                            notificationEnabled
+                            showHideAdditionals = { additionalActionsShow = !additionalActionsShow }
                         )
                         DisplayActions(
                             Modifier
@@ -229,8 +248,9 @@ class AppActivity : ComponentActivity() {
                                 .padding(14.dp, 8.dp, 8.dp, 8.dp),
                             this@AppActivity,
                             false,
-                            additionalActionsShow,
-                            notificationEnabled
+                            !isStarted || additionalActionsShow,
+                            notificationEnabled,
+                            lockAwakeEnabled
                         )
                         Box(
                             modifier = Modifier
@@ -249,7 +269,6 @@ class AppActivity : ComponentActivity() {
                             ) {
                                 DisplayTime(
                                     Modifier
-                                        .animateContentSize()
                                         .fillMaxWidth()
                                         .padding(10.dp)
                                         .heightIn(min = 100.dp)
@@ -258,9 +277,7 @@ class AppActivity : ComponentActivity() {
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
                                             clickOnClock(
-                                                tapOnClock,
-                                                isRunning,
-                                                notificationEnabled
+                                                tapOnClock, isRunning, notificationEnabled
                                             )
                                         },
                                     laps.isNotEmpty(),
@@ -283,7 +300,7 @@ class AppActivity : ComponentActivity() {
         }
     }
 
-    fun commandService(serviceState: StopWatchState) {
+    fun commandService(serviceState: StopwatchAction) {
         val context = this
         val intent = Intent(context, StopwatchService::class.java)
         intent.action = serviceState.name
@@ -294,19 +311,19 @@ class AppActivity : ComponentActivity() {
         when (tapType) {
             1 -> {
                 if (isRunning) {
-                    if (notificationEnabled) commandService(StopWatchState.PAUSE)
+                    if (notificationEnabled) commandService(StopwatchAction.PAUSE)
                     else viewModel.pause()
                 } else {
-                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
+                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
                     else viewModel.startResume()
                 }
             }
             2 -> {
                 if (isRunning) {
-                    if (notificationEnabled) commandService(StopWatchState.ADD_LAP)
+                    if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
                     else viewModel.addLap()
                 } else {
-                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
+                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
                     else viewModel.startResume()
                 }
             }
@@ -314,18 +331,18 @@ class AppActivity : ComponentActivity() {
                 if (isRunning) {
                     if (notificationEnabled)
                         lifecycleScope.launch {
-                            commandService(StopWatchState.PAUSE)
-                            delay(20)
-                            commandService(StopWatchState.RESET)
+                            commandService(StopwatchAction.PAUSE)
+                            delay(10)
+                            commandService(StopwatchAction.RESET)
                         }
                     else
                         lifecycleScope.launch {
                             viewModel.pause()
-                            delay(20)
+                            delay(10)
                             viewModel.reset()
                         }
                 } else {
-                    if (notificationEnabled) commandService(StopWatchState.START_RESUME)
+                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
                     else viewModel.startResume()
                 }
             }

@@ -1,0 +1,23 @@
+Dies ist eine Open-Source-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
+
+► Thema ändern, neue Themen verfügbar
+    • Dynamisches Thema ist nur ab Android 12+ verfügbar
+    • Extra Dunkel-Thema spart Akku bei AMOLED-Bildschirmen
+
+► Ausrichtung ändern
+    • Porträtmodus bietet mehr Platz für Runden
+    • Im Querformat ist der Zeittext größer
+
+► Wählen Sie eine Aktion aus, wenn Sie auf die Zeit anzeigende Uhr tippen
+    • Fortsetzen oder Pause
+    • Fortsetzen oder Runde hinzufügen
+    • Fortsetzen oder Stopp
+    • Wenn Sie dies nicht möchten, können Sie die Aktion entfernen
+
+► Benachrichtigungen ein-/ausschalten
+    • Stoppuhr-Steuerung in Benachrichtigungen
+    • Bei Deaktivierung arbeitet die Stoppuhr mit ViewModel und DataStore
+    • Bei Aktivierung arbeitet die Stoppuhr mit LifecycleService und ForegroundService
+
+► Bildschirm-Wachmodus
+    • Möglichkeit, die Stoppuhr zu beobachten, ohne dass der Bildschirm in den Ruhezustand geht

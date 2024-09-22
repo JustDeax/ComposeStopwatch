@@ -1,0 +1,23 @@
+Esta es una aplicación de cronómetro de código abierto con el tema Material You, diseñada para facilidad de uso y las mejores características
+
+► Cambiar tema, nuevos temas disponibles
+    • El tema dinámico solo está disponible en Android 12+
+    • El tema Extra Oscuro ahorra batería en pantallas AMOLED
+
+► Cambiar orientación
+    • El modo retrato tiene más espacio para las vueltas
+    • En modo paisaje, el texto del tiempo es más grande
+
+► Selecciona una acción cuando toques el reloj que muestra el tiempo
+    • Reanudar o pausar
+    • Reanudar o añadir vuelta
+    • Reanudar o detener
+    • Si no quieres hacer esto, puedes eliminar la acción
+
+► Activar/desactivar notificaciones
+    • Control del cronómetro en las notificaciones
+    • Cuando está desactivado, el cronómetro funciona con ViewModel y DataStore
+    • Cuando está activado, el cronómetro funciona con LifecycleService y ForegroundService
+
+► Modo de pantalla siempre activa
+    • Posibilidad de ver el cronómetro sin que la pantalla se apague

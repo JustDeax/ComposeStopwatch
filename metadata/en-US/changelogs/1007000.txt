@@ -1,0 +1,7 @@
+- Updated metadata
+- Metadata localised into 5 languages
+- Added Screen Awake mode
+- Changed version naming type (1.1.7 -> 1.7.0)
+- Removed multi stopwatch button (was unavailable) and replaced with new mode
+- Improved app translation
+- Fixed bugs and improved code

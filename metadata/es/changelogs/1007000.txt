@@ -1,0 +1,7 @@
+- Metadatos actualizados
+- Metadatos localizados en 5 idiomas
+- Añadido el modo Screen Awake
+- Cambiado el tipo de nombre de la versión (1.1.7 -> 1.7.0)
+- Eliminado el botón multi cronómetro (no estaba disponible) y sustituido por un nuevo modo
+- Mejorada la traducción de la aplicación
+- Corrección de errores y mejora del código

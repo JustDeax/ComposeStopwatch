@@ -27,7 +27,7 @@ data class Lap(
     val deltaLap: String
 )
 
-enum class StopWatchState {
+enum class StopwatchAction {
     START_RESUME, PAUSE, RESET, ADD_LAP
 }
 

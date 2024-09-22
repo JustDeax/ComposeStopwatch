@@ -1,0 +1,7 @@
+- Aktualisierte Metadaten
+- Metadaten in 5 Sprachen lokalisiert
+- Screen Awake Modus hinzugefügt
+- Die Versionsbezeichnung wurde geändert (1.1.7 -> 1.7.0)
+- Multi-Stoppuhr-Button entfernt (war nicht verfügbar) und durch neuen Modus ersetzt
+- Verbesserte App-Übersetzung
+- Bugs behoben und Code verbessert

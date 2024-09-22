@@ -20,6 +20,7 @@ class DataStoreManager(private val context: Context) {
         private val SW_LAPS = stringPreferencesKey("SW_LAPS")
         private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIF_ENABLED")
         private val SW_TAP_ON_CLOCK = intPreferencesKey("SW_TAP_ON_CLOCK")
+        private val LOCK_AWAKE = booleanPreferencesKey("LOCK_AWAKE")
         private val APP_THEME = intPreferencesKey("APP_THEME_CODE")
     }
 
@@ -45,6 +46,14 @@ class DataStoreManager(private val context: Context) {
 
     fun notificationEnabled() = context.dataStore.data.map { get ->
         get[SW_NOTIFICATION_ENABLED] ?: true
+    }
+
+    suspend fun changeLockAwakeEnabled(enabled: Boolean) {
+        context.dataStore.edit { set -> set[LOCK_AWAKE] = enabled }
+    }
+
+    fun lockAwakeEnabled() = context.dataStore.data.map { get ->
+        get[LOCK_AWAKE] ?: false
     }
 
     suspend fun saveStopwatch(stopwatchState: StopwatchState) {

@@ -74,7 +74,7 @@ import com.justdeax.composeStopwatch.ui.theme.Gold
 import com.justdeax.composeStopwatch.ui.theme.Iron
 import com.justdeax.composeStopwatch.ui.theme.Silver
 import com.justdeax.composeStopwatch.util.Lap
-import com.justdeax.composeStopwatch.util.StopWatchState
+import com.justdeax.composeStopwatch.util.StopwatchAction
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
 import com.justdeax.composeStopwatch.util.toFormatString
@@ -291,8 +291,7 @@ fun DisplayAppName(
                         scope
                             .launch { sheetState.hide() }
                             .invokeOnCompletion {
-                                if (!sheetState.isVisible)
-                                    showAboutApp = false
+                                if (!sheetState.isVisible) showAboutApp = false
                             }
                     }
                 ) {
@@ -309,18 +308,20 @@ fun DisplayActions(
     activity: AppActivity,
     isPortrait: Boolean,
     show: Boolean,
-    notificationEnabled: Boolean
+    notificationEnabled: Boolean,
+    lockAwakeEnabled: Boolean
 ) {
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
     val themeDraw = painterResource(R.drawable.round_invert_colors_24)
-    val multiStopwatchDraw = painterResource(R.drawable.round_casino_24)
+    val unlockAwake = painterResource(R.drawable.round_lock_outline_24)
+    val lockAwake = painterResource(R.drawable.round_lock_24)
 
     var showTapOnClockDialog by remember { mutableStateOf(false) }
     var showResetStopwatchDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
-    var showMultiStopwatchDialog by remember { mutableStateOf(false) }
+    var showLockAwakeDialog by remember { mutableStateOf(false) }
 
     @Composable
     fun actionDialogs(modifier: Modifier) {
@@ -355,10 +356,11 @@ fun DisplayActions(
             modifier = modifier,
             onClick = {
                 activity.viewModel.saveStopwatch()
-                showMultiStopwatchDialog = true
+                activity.viewModel.changeLockAwakeEnabled(!lockAwakeEnabled)
+                showLockAwakeDialog = true
             },
-            painter = multiStopwatchDraw,
-            contentDesc = activity.getString(R.string.multi_stopwatch)
+            painter = if (lockAwakeEnabled) lockAwake else unlockAwake,
+            contentDesc = activity.getString(R.string.lock_awake)
         )
     }
 
@@ -392,17 +394,16 @@ fun DisplayActions(
                 onConfirm = {
                     if (notificationEnabled)
                         activity.lifecycleScope.launch {
-                            activity.commandService(StopWatchState.PAUSE)
-                            delay(30)
-                            activity.commandService(StopWatchState.RESET)
+                            activity.commandService(StopwatchAction.PAUSE)
+                            delay(10)
+                            activity.commandService(StopwatchAction.RESET)
                             activity.viewModel.changeNotificationEnabled(false)
                             showResetStopwatchDialog = false
                         }
                     else
                         activity.lifecycleScope.launch {
                             activity.viewModel.pause()
-                            delay(30)
-                            activity.viewModel.reset()
+                            delay(10)
                             activity.viewModel.changeNotificationEnabled(true)
                             showResetStopwatchDialog = false
                         }
@@ -428,18 +429,21 @@ fun DisplayActions(
             confirmText = activity.getString(R.string.apply)
         )
     }
-    if (showMultiStopwatchDialog) {
+    if (showLockAwakeDialog) {
         OkayDialog(
-            title = activity.getString(R.string.multi_stopwatch_not_available),
+            title = activity.getString(R.string.lock_awake_mode),
             content = {
                 Text(
-                    text = activity.getString(R.string.multi_stopwatch_not_available_desc),
+                    text = if (lockAwakeEnabled)
+                        activity.getString(R.string.lock_awake_mode_desc_enable)
+                    else
+                        activity.getString(R.string.lock_awake_mode_desc_disable),
                     style = MaterialTheme.typography.titleMedium
                 )
             },
             isPortrait = isPortrait,
             confirmText = activity.getString(R.string.ok),
-            onConfirm = { showMultiStopwatchDialog = false }
+            onConfirm = { showLockAwakeDialog = false }
         )
     }
 
@@ -472,9 +476,9 @@ fun DisplayButton(
     activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
-    showAdditional: Boolean,
-    showAdditionals: (Boolean) -> Unit,
-    notificationEnabled: Boolean
+    notificationEnabled: Boolean,
+    isAdditionalsShow: Boolean,
+    showHideAdditionals: () -> Unit
 ) {
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
@@ -502,7 +506,7 @@ fun DisplayButton(
             ) {
                 Row {
                     IconButton(
-                        onClick = { showAdditionals(!showAdditional) },
+                        onClick = { showHideAdditionals() },
                         painter = additionalsDrawable,
                         contentDesc = activity.getString(R.string.additional_action)
                     )
@@ -511,7 +515,7 @@ fun DisplayButton(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopWatchState.ADD_LAP)
+                                    activity.commandService(StopwatchAction.ADD_LAP)
                                 else
                                     activity.viewModel.addLap()
                             },
@@ -521,11 +525,11 @@ fun DisplayButton(
                     else
                         IconButton(
                             onClick = {
+                                if (isAdditionalsShow) showHideAdditionals()
                                 if (notificationEnabled)
-                                    activity.commandService(StopWatchState.RESET)
+                                    activity.commandService(StopwatchAction.RESET)
                                 else
                                     activity.viewModel.reset()
-                                showAdditionals(true)
                             },
                             painter = stopDrawable,
                             contentDesc = activity.getString(R.string.stop)
@@ -536,11 +540,10 @@ fun DisplayButton(
                 width = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
+                        if (notificationEnabled) activity.commandService(StopwatchAction.PAUSE)
                         else activity.viewModel.pause()
                     } else {
-                        if (!isStarted) showAdditionals(false)
-                        if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
+                        if (notificationEnabled) activity.commandService(StopwatchAction.START_RESUME)
                         else activity.viewModel.startResume()
                     }
                 },
@@ -558,9 +561,9 @@ fun DisplayButtonInLandscape(
     activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
-    showAdditional: Boolean,
-    showAdditionals: (Boolean) -> Unit,
-    notificationEnabled: Boolean
+    notificationEnabled: Boolean,
+    isAdditionalsShow: Boolean,
+    showHideAdditionals: () -> Unit,
 ) {
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
@@ -588,7 +591,7 @@ fun DisplayButtonInLandscape(
             ) {
                 Column {
                     IconButton(
-                        onClick = { showAdditionals(!showAdditional) },
+                        onClick = { showHideAdditionals() },
                         painter = additionalsDrawable,
                         contentDesc = activity.getString(R.string.additional_action)
                     )
@@ -597,7 +600,7 @@ fun DisplayButtonInLandscape(
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopWatchState.ADD_LAP)
+                                    activity.commandService(StopwatchAction.ADD_LAP)
                                 else
                                     activity.viewModel.addLap()
                             },
@@ -607,11 +610,11 @@ fun DisplayButtonInLandscape(
                     else
                         IconButton(
                             onClick = {
+                                if (isAdditionalsShow) showHideAdditionals()
                                 if (notificationEnabled)
-                                    activity.commandService(StopWatchState.RESET)
+                                    activity.commandService(StopwatchAction.RESET)
                                 else
                                     activity.viewModel.reset()
-                                showAdditionals(true)
                             },
                             painter = stopDrawable,
                             contentDesc = activity.getString(R.string.stop)
@@ -622,11 +625,10 @@ fun DisplayButtonInLandscape(
                 height = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopWatchState.PAUSE)
+                        if (notificationEnabled) activity.commandService(StopwatchAction.PAUSE)
                         else activity.viewModel.pause()
                     } else {
-                        if (!isStarted) showAdditionals(false)
-                        if (notificationEnabled) activity.commandService(StopWatchState.START_RESUME)
+                        if (notificationEnabled) activity.commandService(StopwatchAction.START_RESUME)
                         else activity.viewModel.startResume()
                     }
                 },

@@ -1,10 +1,10 @@
 <resources>
     <string name="cancel">Abbrechen</string>
     <string name="ok">OK</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Anwenden</string>
 
-    <string name="stopwatch_channel">Stopwatch Benachrichtigungen</string>
-    <string name="stopwatch_running">Stopwatch läuft</string>
+    <string name="stopwatch_channel">Stoppuhr-Benachrichtigungen</string>
+    <string name="stopwatch_running">Stoppuhr läuft</string>
     <string name="stopwatch_pausing">Stoppuhr pausiert</string>
     <string name="pause">Pause</string>
     <string name="resume">Fortsetzen</string>
@@ -12,65 +12,67 @@
     <string name="add_lap">Runde hinzufügen</string>
 
     <string name="additional_action">Zusätzliche Aktionen</string>
-    <string name="tap_on_clock">Tap on Clock</string>
-    <string name="turn_off_notif">Benachrichtigung ein-/ausschalten</string>
+    <string name="tap_on_clock">Auf die Uhr tippen</string>
+    <string name="turn_off_notif">Benachrichtigungen ein-/ausschalten</string>
     <string name="theme">Thema</string>
-    <string name="multi_stopwatch">Multi-Stoppuhr</string>
+    <string name="lock_awake">Bildschirm wach halten</string>
 
-    <string name="change_tap_on_clock">Tipp auf Uhr ändern</string>
-    <string name="change_tap_on_clock_desc">Wählen Sie eine Aktion, wenn Sie auf die Uhr tippen, die Zeit anzeigt</string>
+    <string name="change_tap_on_clock">Aktion bei Tippen auf die Uhr ändern</string>
+    <string name="change_tap_on_clock_desc">Wählen Sie eine Aktion aus, wenn Sie auf die Zeit anzeigende Uhr tippen</string>
     <string-array name="tap_on_clock">
         <item name="none">Keine</item>
         <item name="resume_or_pause">Fortsetzen oder Pause</item>
         <item name="resume_or_add_lap">Fortsetzen oder Runde hinzufügen</item>
-        <item name="resume_or_stop">Fortsetzen oder anhalten</item>
+        <item name="resume_or_stop">Fortsetzen oder Stopp</item>
     </string-array>
 
     <string name="reset_stopwatch">Stoppuhr zurücksetzen?</string>
     <string name="reset_stopwatch_desc_enable">Um Benachrichtigungen zu aktivieren, müssen Sie die Stoppuhr zurücksetzen</string>
     <string name="reset_stopwatch_desc_disable">Um Benachrichtigungen zu deaktivieren, müssen Sie die Stoppuhr zurücksetzen</string>
 
-    <string name="change_theme">Thema wechseln</string>
-    <string name="change_theme_desc">Das dynamische Thema ist nur mit Android 12+ verfügbar\nExtra Dunkles Thema spart Ladung für Amoled-Bildschirm</string>
+    <string name="change_theme">Thema ändern</string>
+    <string name="change_theme_desc">Dynamisches Thema ist nur ab Android 12+ verfügbar\nExtra Dunkel-Thema spart Akku bei AMOLED-Bildschirmen</string>
     <string-array name="theme">
         <item name="system">System</item>
-        <item name="light">Leicht</item>
+        <item name="light">Hell</item>
         <item name="dark">Dunkel</item>
         <item name="extra_dark">Extra Dunkel</item>
     </string-array>
     <string-array name="theme12">
         <item name="system">System (Dynamisches Thema)</item>
-        <item name="light">Leicht</item>
+        <item name="light">Hell</item>
         <item name="dark">Dunkel</item>
-        <item name="extra_dark">Extra Dunkel</item>
+        <item name='extra_dark'>Extra Dunkel</item>
     </string-array>
 
-    <string name="multi_stopwatch_not_available">Multi-Stoppuhr nicht verfügbar</string>
-    <string name="multi_stopwatch_not_available_desc">Die Funktion ist nicht verfügbar und darf nicht verfügbar sein</string>
+    <string name="lock_awake_mode">Bildschirm-Wachmodus</string>
+    <string name="lock_awake_mode_desc_enable">Der Bildschirm-Wachmodus ist eingeschaltet</string>
+    <string name="lock_awake_mode_desc_disable">Der Bildschirm-Wachmodus ist ausgeschaltet</string>
 
     <string name="about_app">Über Compose Stopwatch</string>
-    <string name="about_app_desc">"Dies ist eine Open-Source-Stoppuhr-App im Material-You-Thema, die auf Benutzerfreundlichkeit und beste Funktionen ausgelegt ist
+    <string name="about_app_desc">"Dies ist eine Open-Source-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
 
-► Theme wechseln, neue Themes sind verfügbar
-    • Das dynamische Thema ist nur mit Android 12+ verfügbar
-    • Extra Dunkles Thema spart Ladung für Amoled-Bildschirm
+► Thema ändern, neue Themen verfügbar
+    • Dynamisches Thema ist nur ab Android 12+ verfügbar
+    • Extra Dunkel-Thema spart Akku bei AMOLED-Bildschirmen
 
 ► Ausrichtung ändern
-    • Der Hochformatmodus bietet mehr Platz für Runden
+    • Porträtmodus bietet mehr Platz für Runden
     • Im Querformat ist der Zeittext größer
 
-► Wählen Sie eine Aktion, wenn Sie auf die Uhr tippen, die Zeit anzeigt
-    • Fortsetzen oder Anhalten
-    • Fortsetzen oder hinzufügen
-    • Fortsetzen oder pausieren
+► Wählen Sie eine Aktion aus, wenn Sie auf die Zeit anzeigende Uhr tippen
+    • Fortsetzen oder Pause
+    • Fortsetzen oder Runde hinzufügen
+    • Fortsetzen oder Stopp
     • Wenn Sie dies nicht möchten, können Sie die Aktion entfernen
 
 ► Benachrichtigungen ein-/ausschalten
-    • Wenn ausgeschaltet, funktioniert die Stoppuhr auf ViewModel und DataStore
-    • Wenn aktiviert, funktioniert die Stoppuhr auf LifecycleService und ForegroundService
+    • Stoppuhr-Steuerung in Benachrichtigungen
+    • Bei Deaktivierung arbeitet die Stoppuhr mit ViewModel und DataStore
+    • Bei Aktivierung arbeitet die Stoppuhr mit LifecycleService und ForegroundService
 
-► Multi-Stoppuhr (nicht verfügbar)
-    • Darf nicht hinzugefügt werden
+► Bildschirm-Wachmodus
+    • Möglichkeit, die Stoppuhr zu beobachten, ohne dass der Bildschirm in den Ruhezustand geht
 "</string>
     <string name="about_app_desc_a">Autor:</string>
     <string name="about_app_desc_v">\nVersion:</string>

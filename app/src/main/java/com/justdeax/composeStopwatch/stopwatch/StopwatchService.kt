@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.util.Lap
-import com.justdeax.composeStopwatch.util.StopWatchState
+import com.justdeax.composeStopwatch.util.StopwatchAction
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
 import com.justdeax.composeStopwatch.util.toFormatString
@@ -45,10 +45,10 @@ class StopwatchService: LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.action?.let { action ->
             when (action) {
-                StopWatchState.START_RESUME.name -> startResume()
-                StopWatchState.PAUSE.name -> pause()
-                StopWatchState.RESET.name -> reset()
-                StopWatchState.ADD_LAP.name -> addLap()
+                StopwatchAction.START_RESUME.name -> startResume()
+                StopwatchAction.PAUSE.name -> pause()
+                StopwatchAction.RESET.name -> reset()
+                StopwatchAction.ADD_LAP.name -> addLap()
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -148,7 +148,7 @@ class StopwatchService: LifecycleService() {
             this,
             2,
             Intent(this, StopwatchService::class.java).also {
-                it.action = StopWatchState.START_RESUME.name
+                it.action = StopwatchAction.START_RESUME.name
             },
             flag
         )
@@ -156,7 +156,7 @@ class StopwatchService: LifecycleService() {
             this,
             3,
             Intent(this, StopwatchService::class.java).also {
-                it.action = StopWatchState.PAUSE.name
+                it.action = StopwatchAction.PAUSE.name
             },
             flag
         )
@@ -164,7 +164,7 @@ class StopwatchService: LifecycleService() {
             this,
             4,
             Intent(this, StopwatchService::class.java).also {
-                it.action = StopWatchState.RESET.name
+                it.action = StopwatchAction.RESET.name
             },
             flag
         )
@@ -172,7 +172,7 @@ class StopwatchService: LifecycleService() {
             this,
             5,
             Intent(this, StopwatchService::class.java).also {
-                it.action = StopWatchState.ADD_LAP.name
+                it.action = StopwatchAction.ADD_LAP.name
             },
             flag
         )

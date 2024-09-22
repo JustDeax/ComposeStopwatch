@@ -4,75 +4,77 @@
     <string name="apply">Appliquer</string>
 
     <string name="stopwatch_channel">Notifications du chronomètre</string>
-    <string name="stopwatch_running">Stopwatch en cours</string>
-    <string name="stopwatch_pausing">Stopwatch en pause</string>
+    <string name="stopwatch_running">Chronomètre en marche</string>
+    <string name="stopwatch_pausing">Chronomètre en pause</string>
     <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
-    <string name="stop">Stop</string>
+    <string name="resume">Reprendre</string>
+    <string name="stop">Arrêter</string>
     <string name="add_lap">Ajouter un tour</string>
 
     <string name="additional_action">Actions supplémentaires</string>
-    <string name="tap_on_clock">Tap on Clock</string>
-    <string name="turn_off_notif">Activer/désactiver la notification</string>
-    <string name="theme">Theme</string>
-    <string name="multi_stopwatch">Multi-stopwatch</string>
+    <string name="tap_on_clock">Appuyer sur l\'horloge</string>
+    <string name="turn_off_notif">Activer/désactiver les notifications</string>
+    <string name="theme">Thème</string>
+    <string name="lock_awake">Maintenir l\'écran allumé</string>
 
-    <string name="change_tap_on_clock">Modifier le tap sur l\'horloge</string>
-    <string name="change_tap_on_clock_desc">Sélectionnez une action lorsque vous tapez sur l\'horloge qui affiche l\'heure</string>
+    <string name="change_tap_on_clock">Modifier l\'action au toucher de l\'horloge</string>
+    <string name="change_tap_on_clock_desc">Sélectionnez une action lorsque vous appuyez sur l\'horloge qui affiche le temps</string>
     <string-array name="tap_on_clock">
-        <item name="none">None</item>
-        <item name="resume_or_pause">Reprendre ou pause</item>
+        <item name="none">Aucune</item>
+        <item name="resume_or_pause">Reprendre ou mettre en pause</item>
         <item name="resume_or_add_lap">Reprendre ou ajouter un tour</item>
-        <item name="resume_or_stop">Reprendre ou Arrêter</item>
+        <item name="resume_or_stop">Reprendre ou arrêter</item>
     </string-array>
 
-    <string name="reset_stopwatch">Réinitialiser le chronomètre?</string>
+    <string name="reset_stopwatch">Réinitialiser le chronomètre ?</string>
     <string name="reset_stopwatch_desc_enable">Pour activer les notifications, vous devez réinitialiser le chronomètre</string>
     <string name="reset_stopwatch_desc_disable">Pour désactiver les notifications, vous devez réinitialiser le chronomètre</string>
 
     <string name="change_theme">Changer de thème</string>
-    <string name="change_theme_desc">Le thème dynamique n\'est disponible qu\'avec Android 12+\nLe thème Extra Dark permet d\'économiser de l\'énergie pour l\'écran Amoled</string>
+    <string name="change_theme_desc">Le thème dynamique n\'est disponible qu\'à partir d\'Android 12+\nLe thème Extra Sombre économise la batterie pour les écrans AMOLED</string>
     <string-array name="theme">
         <item name="system">Système</item>
-        <item name="light">Light</item>
+        <item name="light">Clair</item>
         <item name="dark">Sombre</item>
-        <item name="extra_dark">Extra Dark</item>
+        <item name="extra_dark">Extra Sombre</item>
     </string-array>
     <string-array name="theme12">
-        <item name="system">Système (thème dynamique)</item>
-        <item name="light">Light</item>
+        <item name="system">Système (Thème dynamique)</item>
+        <item name="light">Clair</item>
         <item name="dark">Sombre</item>
-        <item name='extra_dark'>Extra Dark</item>
+        <item name='extra_dark'>Extra Sombre</item>
     </string-array>
 
-     <string name="multi_stopwatch_not_available">Multi-stopwatch non disponible</string>
-    <string name="multi_stopwatch_not_available_desc">La fonction n\'est pas disponible et peut ne pas être disponible</string>
+    <string name="lock_awake_mode">Mode écran toujours actif</string>
+    <string name="lock_awake_mode_desc_enable">Le mode écran toujours actif est activé</string>
+    <string name="lock_awake_mode_desc_disable">Le mode écran toujours actif est désactivé</string>
 
-    <string name="about_app">A propos de Compose Stopwatch</string>
-    <string name="about_app_desc">"Il s'agit d'une application de chronomètre open source dans le thème Material You, conçu pour la facilité d'utilisation et les meilleures fonctionnalités
+    <string name="about_app">À propos de Compose Stopwatch</string>
+    <string name="about_app_desc">"Ceci est une application open source de chronomètre avec le thème Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
 
 ► Changez de thème, de nouveaux thèmes sont disponibles
-    • Le thème dynamique n'est disponible qu'avec Android 12+
-    • Le thème Extra Dark permet d'économiser de l'énergie pour l'écran Amoled
+    • Le thème dynamique n\'est disponible qu\'à partir d\'Android 12+
+    • Le thème Extra Sombre économise la batterie pour les écrans AMOLED
 
-► Changer d'orientation
-    • Le mode portrait offre plus d'espace pour les tours
-    • En mode paysage, le texte de l'heure est plus grand
+► Changez l\'orientation
+    • Le mode portrait offre plus d\'espace pour les tours
+    • En mode paysage, le texte de l\'heure est plus grand
 
-► Sélectionnez une action lorsque vous appuyez sur l'horloge qui affiche l'heure
+► Sélectionnez une action lorsque vous appuyez sur l\'horloge qui affiche le temps
     • Reprendre ou mettre en pause
     • Reprendre ou ajouter un tour
-    • Reprendre ou mettre en pause
-    • Si vous ne souhaitez pas effectuer cette action, vous pouvez la supprimer
+    • Reprendre ou arrêter
+    • Si vous ne voulez pas faire cela, vous pouvez supprimer l\'action
 
 ► Activation/désactivation des notifications
-    • Lorsqu'il est désactivé, le chronomètre fonctionne sur le ViewModel et le DataStore
-    • Lorsqu'il est activé, le chronomètre fonctionne sur LifecycleService et ForegroundService
+    • Contrôle du chronomètre dans les notifications
+    • Lorsqu\'elles sont désactivées, le chronomètre fonctionne sur ViewModel et DataStore
+    • Lorsqu\'elles sont activées, le chronomètre fonctionne sur LifecycleService et ForegroundService
 
-► Chronomètre multiple (non disponible)
-    • Ne peut être ajouté
+► Mode écran toujours actif
+    • Possibilité de regarder le chronomètre sans que l\'écran ne s\'éteigne
 "</string>
-    <string name="about_app_desc_a">Auteur:</string>
-    <string name="about_app_desc_v">\nVersion:</string>
+    <string name="about_app_desc_a">Auteur :</string>
+    <string name="about_app_desc_v">\nVersion :</string>
 
 </resources>

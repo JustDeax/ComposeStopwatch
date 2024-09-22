@@ -1,0 +1,23 @@
+Ceci est une application open source de chronomètre avec le thème Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
+
+► Changez de thème, de nouveaux thèmes sont disponibles
+    • Le thème dynamique n'est disponible qu'à partir d'Android 12+
+    • Le thème Extra Sombre économise la batterie pour les écrans AMOLED
+
+► Changez l'orientation
+    • Le mode portrait offre plus d'espace pour les tours
+    • En mode paysage, le texte de l'heure est plus grand
+
+► Sélectionnez une action lorsque vous appuyez sur l'horloge qui affiche le temps
+    • Reprendre ou mettre en pause
+    • Reprendre ou ajouter un tour
+    • Reprendre ou arrêter
+    • Si vous ne voulez pas faire cela, vous pouvez supprimer l'action
+
+► Activation/désactivation des notifications
+    • Contrôle du chronomètre dans les notifications
+    • Lorsqu'elles sont désactivées, le chronomètre fonctionne sur ViewModel et DataStore
+    • Lorsqu'elles sont activées, le chronomètre fonctionne sur LifecycleService et ForegroundService
+
+► Mode écran toujours actif
+    • Possibilité de regarder le chronomètre sans que l'écran ne s'éteigne
