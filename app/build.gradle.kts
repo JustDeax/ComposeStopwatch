@@ -12,8 +12,8 @@ android {
         applicationId = "com.justdeax.composeStopwatch"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1007000
-        versionName = "1.7.0"
+        versionCode = 1007010
+        versionName = "1.7.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 
@@ -40,6 +40,10 @@ android {
                 "${System.getenv("SOURCE_DATE_EPOCH") ?: "0"}L"
             )
         }
+    }
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

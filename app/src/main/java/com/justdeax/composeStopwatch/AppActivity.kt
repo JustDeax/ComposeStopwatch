@@ -223,6 +223,9 @@ class AppActivity : ComponentActivity() {
                             lockAwakeEnabled
                         )
                         DisplayButton(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp, bottom = 50.dp),
                             this@AppActivity,
                             isStarted,
                             isRunning,
@@ -234,6 +237,9 @@ class AppActivity : ComponentActivity() {
                 } else {
                     Row(Modifier.padding(innerPadding)) {
                         DisplayButtonInLandscape(
+                            Modifier
+                                .fillMaxHeight()
+                                .padding(start = 50.dp, end = 20.dp),
                             this@AppActivity,
                             isStarted,
                             isRunning,

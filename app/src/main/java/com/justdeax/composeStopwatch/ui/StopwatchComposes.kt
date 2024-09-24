@@ -473,6 +473,7 @@ fun DisplayActions(
 
 @Composable
 fun DisplayButton(
+    modifier: Modifier,
     activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
@@ -492,10 +493,7 @@ fun DisplayButton(
     )
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .padding(top = 20.dp, bottom = 50.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -558,6 +556,7 @@ fun DisplayButton(
 
 @Composable
 fun DisplayButtonInLandscape(
+    modifier: Modifier,
     activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
@@ -577,10 +576,7 @@ fun DisplayButtonInLandscape(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .height(IntrinsicSize.Min)
-            .padding(start = 50.dp, end = 20.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Box(contentAlignment = Alignment.Center) {
