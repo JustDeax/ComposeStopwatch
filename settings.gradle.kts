@@ -22,4 +22,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Compose Stopwatch"
 include(":app")
- 

@@ -48,6 +48,13 @@ class StopwatchService: LifecycleService() {
                 StopwatchAction.START_RESUME.name -> startResume()
                 StopwatchAction.PAUSE.name -> pause()
                 StopwatchAction.RESET.name -> reset()
+                StopwatchAction.HARD_RESET.name -> {
+                    lifecycleScope.launch {
+                        delay(10)
+                        reset()
+                    }
+                    pause()
+                }
                 StopwatchAction.ADD_LAP.name -> addLap()
             }
         }
@@ -112,8 +119,7 @@ class StopwatchService: LifecycleService() {
             NOTIFICATION_ID,
             getNotification(
                 getString(R.string.stopwatch_running),
-                formatSeconds(elapsedSec.value!!) + "." +
-                        displayMs(elapsedMs.value!!)
+                formatSeconds(elapsedSec.value!!) + "." + displayMs(elapsedMs.value!!)
             )
         )
     }

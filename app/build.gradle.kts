@@ -12,8 +12,8 @@ android {
         applicationId = "com.justdeax.composeStopwatch"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1007010
-        versionName = "1.7.1"
+        versionCode = 1007020
+        versionName = "1.7.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 

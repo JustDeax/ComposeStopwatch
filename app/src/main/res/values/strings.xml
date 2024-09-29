@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Compose Stopwatch</string>
-    <string name="app_version" translatable="false">1.7.1</string>
+    <string name="app_version" translatable="false">1.7.2</string>
     <string name="app_author" translatable="false">JustDeax (https://github.com/JustDeax)</string>
 
     <string name="cancel">Cancel</string>

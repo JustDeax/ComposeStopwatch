@@ -124,6 +124,14 @@ class StopwatchViewModel(
         }
     }
 
+    fun hardReset() {
+        viewModelScope.launch {
+            delay(10)
+            reset()
+        }
+        pause()
+    }
+
     fun addLap() {
         viewModelScope.launch(Dispatchers.Main) {
             val deltaLap = if (laps.value!!.isEmpty())

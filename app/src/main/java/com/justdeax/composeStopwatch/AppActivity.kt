@@ -1,5 +1,4 @@
 package com.justdeax.composeStopwatch
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -58,6 +57,7 @@ import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
+import com.justdeax.composeStopwatch.util.commandService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
@@ -177,7 +177,6 @@ class AppActivity : ComponentActivity() {
                         ) {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
-                                this@AppActivity,
                                 !isStarted
                             )
                             Column(
@@ -216,11 +215,19 @@ class AppActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .wrapContentHeight()
                                 .padding(8.dp, 8.dp, 8.dp, 14.dp),
-                            this@AppActivity,
                             true,
+                            isStarted,
                             !isStarted || additionalActionsShow,
+                            { viewModel.saveStopwatch() },
+                            tapOnClock,
+                            { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
-                            lockAwakeEnabled
+                            { viewModel.changeNotificationEnabled(!notificationEnabled) },
+                            { viewModel.hardReset() },
+                            theme,
+                            { newState -> viewModel.changeTheme(newState) },
+                            lockAwakeEnabled,
+                            { newState -> viewModel.changeLockAwakeEnabled(newState) }
                         )
                         DisplayButton(
                             Modifier
@@ -252,11 +259,19 @@ class AppActivity : ComponentActivity() {
                                 .fillMaxHeight()
                                 .wrapContentWidth()
                                 .padding(14.dp, 8.dp, 8.dp, 8.dp),
-                            this@AppActivity,
                             false,
+                            isStarted,
                             !isStarted || additionalActionsShow,
+                            { viewModel.saveStopwatch() },
+                            tapOnClock,
+                            { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
-                            lockAwakeEnabled
+                            { viewModel.changeNotificationEnabled(!notificationEnabled) },
+                            { viewModel.hardReset() },
+                            theme,
+                            { newState -> viewModel.changeTheme(newState) },
+                            lockAwakeEnabled,
+                            { newState -> viewModel.changeLockAwakeEnabled(newState) }
                         )
                         Box(
                             modifier = Modifier
@@ -266,7 +281,6 @@ class AppActivity : ComponentActivity() {
                         ) {
                             DisplayAppName(
                                 Modifier.padding(21.dp, 16.dp),
-                                this@AppActivity,
                                 !isStarted
                             )
                             Column(
@@ -304,13 +318,6 @@ class AppActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    fun commandService(serviceState: StopwatchAction) {
-        val context = this
-        val intent = Intent(context, StopwatchService::class.java)
-        intent.action = serviceState.name
-        context.startService(intent)
     }
 
     private fun clickOnClock(tapType: Int, isRunning: Boolean, notificationEnabled: Boolean) {

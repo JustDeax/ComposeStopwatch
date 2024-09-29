@@ -1,5 +1,8 @@
 package com.justdeax.composeStopwatch.util
+import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Immutable
+import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -27,8 +30,14 @@ data class Lap(
     val deltaLap: String
 )
 
+fun Context.commandService(serviceState: StopwatchAction) {
+    val intent = Intent(this, StopwatchService::class.java)
+    intent.action = serviceState.name
+    this.startService(intent)
+}
+
 enum class StopwatchAction {
-    START_RESUME, PAUSE, RESET, ADD_LAP
+    START_RESUME, PAUSE, RESET, HARD_RESET, ADD_LAP
 }
 
 data class StopwatchState(

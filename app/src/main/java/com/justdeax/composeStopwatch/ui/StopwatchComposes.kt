@@ -22,7 +22,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,6 +45,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -65,16 +66,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
 import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
-import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.ui.theme.Copper
 import com.justdeax.composeStopwatch.ui.theme.Gold
 import com.justdeax.composeStopwatch.ui.theme.Iron
 import com.justdeax.composeStopwatch.ui.theme.Silver
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
+import com.justdeax.composeStopwatch.util.commandService
 import com.justdeax.composeStopwatch.util.displayMs
 import com.justdeax.composeStopwatch.util.formatSeconds
 import com.justdeax.composeStopwatch.util.toFormatString
@@ -204,9 +204,9 @@ fun LapItem(indexText: String, indexColor: Color, elapsedTime: Long, deltaLap: S
 @Composable
 fun DisplayAppName(
     modifier: Modifier,
-    activity: AppActivity,
     show: Boolean
 ) {
+    val context = LocalContext.current
     val helpDraw = painterResource(R.drawable.round_help_outline_24)
     var showAboutApp by remember { mutableStateOf(false) }
 
@@ -222,14 +222,14 @@ fun DisplayAppName(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = activity.getString(R.string.app_name),
+                text = context.getString(R.string.app_name),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.width(6.dp))
             Icon(
                 modifier = Modifier.size(24.dp),
                 painter = helpDraw,
-                contentDescription = activity.getString(R.string.about_app),
+                contentDescription = context.getString(R.string.about_app),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -253,33 +253,33 @@ fun DisplayAppName(
                         .verticalScroll(scrollState)
                 ) {
                     Text(
-                        text = activity.getString(R.string.about_app),
+                        text = context.getString(R.string.about_app),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = activity.getString(R.string.about_app_desc),
+                        text = context.getString(R.string.about_app_desc),
                         style = MaterialTheme.typography.titleMedium
                     )
                     val annotatedString = buildAnnotatedString {
-                        append(activity.getString(R.string.about_app_desc_a))
+                        append(context.getString(R.string.about_app_desc_a))
                         withStyle(
                             style = SpanStyle(
                                 color = Color.Blue,
                                 textDecoration = TextDecoration.Underline
                             )
                         ) {
-                            append(" " + activity.getString(R.string.app_author))
+                            append(" " + context.getString(R.string.app_author))
                         }
-                        append(activity.getString(R.string.about_app_desc_v))
-                        append(" " + activity.getString(R.string.app_version))
+                        append(context.getString(R.string.about_app_desc_v))
+                        append(" " + context.getString(R.string.app_version))
                     }
                     Text(
                         text = annotatedString,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.clickable {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JustDeax"))
-                            activity.startActivity(intent)
+                            context.startActivity(intent)
                         }
                     )
                 }
@@ -295,7 +295,7 @@ fun DisplayAppName(
                             }
                     }
                 ) {
-                    Text(activity.getString(R.string.ok))
+                    Text(context.getString(R.string.ok))
                 }
             }
         }
@@ -305,12 +305,21 @@ fun DisplayAppName(
 @Composable
 fun DisplayActions(
     modifier: Modifier,
-    activity: AppActivity,
     isPortrait: Boolean,
+    isStarted: Boolean,
     show: Boolean,
+    saveStopwatch: () -> Unit,
+    tapOnClock: Int,
+    changeTapOnClock: (Int) -> Unit,
     notificationEnabled: Boolean,
-    lockAwakeEnabled: Boolean
+    changeNotificationEnabled: () -> Unit,
+    hardReset: () -> Unit,
+    theme: Int,
+    changeTheme: (Int) -> Unit,
+    lockAwakeEnabled: Boolean,
+    changeLockAwakeEnabled: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
@@ -328,121 +337,112 @@ fun DisplayActions(
         OutlineIconButton(
             modifier = modifier,
             onClick = {
-                activity.viewModel.saveStopwatch()
+                saveStopwatch()
                 showTapOnClockDialog = true
             },
             painter = tapOnClockDraw,
-            contentDesc = activity.getString(R.string.tap_on_clock)
+            contentDesc = context.getString(R.string.tap_on_clock)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = {
-                activity.viewModel.saveStopwatch()
+                saveStopwatch()
                 showResetStopwatchDialog = true
             },
             painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
-            contentDesc = activity.getString(R.string.turn_off_notif)
+            contentDesc = context.getString(R.string.turn_off_notif)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = {
-                activity.viewModel.saveStopwatch()
+                saveStopwatch()
                 showThemeDialog = true
             },
             painter = themeDraw,
-            contentDesc = activity.getString(R.string.theme)
+            contentDesc = context.getString(R.string.theme)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = {
-                activity.viewModel.saveStopwatch()
-                activity.viewModel.changeLockAwakeEnabled(!lockAwakeEnabled)
+                saveStopwatch()
+                changeLockAwakeEnabled(!lockAwakeEnabled)
                 showLockAwakeDialog = true
             },
             painter = if (lockAwakeEnabled) lockAwake else unlockAwake,
-            contentDesc = activity.getString(R.string.lock_awake)
+            contentDesc = context.getString(R.string.lock_awake)
         )
     }
 
     if (showTapOnClockDialog) {
         RadioDialog(
-            title = activity.getString(R.string.change_tap_on_clock),
-            desc = activity.getString(R.string.change_tap_on_clock_desc),
+            title = context.getString(R.string.change_tap_on_clock),
+            desc = context.getString(R.string.change_tap_on_clock_desc),
             isPortrait = isPortrait,
-            defaultIndex = activity.viewModel.tapOnClock.value!!,
-            options = activity.resources.getStringArray(R.array.tap_on_clock),
-            setSelectedIndex = { newState -> activity.viewModel.changeTapOnClock(newState)},
+            defaultIndex = tapOnClock,
+            options = context.resources.getStringArray(R.array.tap_on_clock),
+            setSelectedIndex = { newState -> changeTapOnClock(newState) },
             onDismiss = { showTapOnClockDialog = false },
             onConfirm = { showTapOnClockDialog = false },
-            confirmText = activity.getString(R.string.apply)
+            confirmText = context.getString(R.string.apply)
         )
     }
     if (showResetStopwatchDialog) {
-        if (notificationEnabled && StopwatchService.elapsedMsI.value!! == 0L) {
-            activity.viewModel.changeNotificationEnabled(false)
-        } else if (!notificationEnabled && activity.viewModel.elapsedMsI.value!! == 0L) {
-            activity.viewModel.changeNotificationEnabled(true)
-        } else {
+        if (isStarted)
             SimpleDialog(
-                title = activity.getString(R.string.reset_stopwatch),
+                title = context.getString(R.string.reset_stopwatch),
                 desc = if (notificationEnabled)
-                    activity.getString(R.string.reset_stopwatch_desc_disable)
+                    context.getString(R.string.reset_stopwatch_desc_disable)
                 else
-                    activity.getString(R.string.reset_stopwatch_desc_enable),
+                    context.getString(R.string.reset_stopwatch_desc_enable),
                 isPortrait = isPortrait,
-                confirmText = activity.getString(R.string.ok),
+                confirmText = context.getString(R.string.ok),
                 onConfirm = {
-                    if (notificationEnabled)
-                        activity.lifecycleScope.launch {
-                            activity.commandService(StopwatchAction.PAUSE)
-                            delay(10)
-                            activity.commandService(StopwatchAction.RESET)
-                            activity.viewModel.changeNotificationEnabled(false)
-                            showResetStopwatchDialog = false
-                        }
-                    else
-                        activity.lifecycleScope.launch {
-                            activity.viewModel.pause()
-                            delay(10)
-                            activity.viewModel.changeNotificationEnabled(true)
-                            showResetStopwatchDialog = false
-                        }
+                    if (notificationEnabled) context.commandService(StopwatchAction.HARD_RESET)
+                    else hardReset()
+                    changeNotificationEnabled()
+                    showResetStopwatchDialog = false
                 },
-                dismissText = activity.getString(R.string.cancel),
+                dismissText = context.getString(R.string.cancel),
                 onDismiss = { showResetStopwatchDialog = false }
             )
-        }
+        else
+            changeNotificationEnabled()
     }
     if (showThemeDialog) {
         RadioDialog(
-            title = activity.getString(R.string.change_theme),
+            title = context.getString(R.string.change_theme),
             isPortrait = isPortrait,
-            desc = activity.getString(R.string.change_theme_desc),
-            defaultIndex = activity.viewModel.theme.value!!,
+            desc = context.getString(R.string.change_theme_desc),
+            defaultIndex = theme,
             options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                activity.resources.getStringArray(R.array.theme12)
+                context.resources.getStringArray(R.array.theme12)
             else
-                activity.resources.getStringArray(R.array.theme),
-            setSelectedIndex = { newState -> activity.viewModel.changeTheme(newState)},
+                context.resources.getStringArray(R.array.theme),
+            setSelectedIndex = { newState -> changeTheme(newState)},
             onDismiss = { showThemeDialog = false },
             onConfirm = { showThemeDialog = false },
-            confirmText = activity.getString(R.string.apply)
+            confirmText = context.getString(R.string.apply)
         )
     }
     if (showLockAwakeDialog) {
+        LaunchedEffect(Unit) {
+            delay(2000)
+            showLockAwakeDialog = false
+        }
+
         OkayDialog(
-            title = activity.getString(R.string.lock_awake_mode),
+            title = context.getString(R.string.lock_awake_mode),
             content = {
                 Text(
                     text = if (lockAwakeEnabled)
-                        activity.getString(R.string.lock_awake_mode_desc_enable)
+                        context.getString(R.string.lock_awake_mode_desc_enable)
                     else
-                        activity.getString(R.string.lock_awake_mode_desc_disable),
+                        context.getString(R.string.lock_awake_mode_desc_disable),
                     style = MaterialTheme.typography.titleMedium
                 )
             },
             isPortrait = isPortrait,
-            confirmText = activity.getString(R.string.ok),
+            confirmText = context.getString(R.string.ok),
             onConfirm = { showLockAwakeDialog = false }
         )
     }
