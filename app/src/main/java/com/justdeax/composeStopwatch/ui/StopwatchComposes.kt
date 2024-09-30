@@ -66,7 +66,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.theme.Copper
 import com.justdeax.composeStopwatch.ui.theme.Gold
@@ -474,13 +473,17 @@ fun DisplayActions(
 @Composable
 fun DisplayButton(
     modifier: Modifier,
-    activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
     notificationEnabled: Boolean,
     isAdditionalsShow: Boolean,
-    showHideAdditionals: () -> Unit
+    showHideAdditionals: () -> Unit,
+    addLap: () -> Unit,
+    reset: () -> Unit,
+    startResume: () -> Unit,
+    pause: () -> Unit
 ) {
+    val context = LocalContext.current
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
     val stopDrawable = painterResource(R.drawable.round_stop_24)
@@ -506,31 +509,31 @@ fun DisplayButton(
                     IconButton(
                         onClick = { showHideAdditionals() },
                         painter = additionalsDrawable,
-                        contentDesc = activity.getString(R.string.additional_action)
+                        contentDesc = context.getString(R.string.additional_action)
                     )
                     Spacer(Modifier.width(170.dp))
                     if (isRunning)
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchAction.ADD_LAP)
+                                    context.commandService(StopwatchAction.ADD_LAP)
                                 else
-                                    activity.viewModel.addLap()
+                                    addLap()
                             },
                             painter = addLapsDrawable,
-                            contentDesc = activity.getString(R.string.add_lap)
+                            contentDesc = context.getString(R.string.add_lap)
                         )
                     else
                         IconButton(
                             onClick = {
                                 if (isAdditionalsShow) showHideAdditionals()
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchAction.RESET)
+                                    context.commandService(StopwatchAction.RESET)
                                 else
-                                    activity.viewModel.reset()
+                                    reset()
                             },
                             painter = stopDrawable,
-                            contentDesc = activity.getString(R.string.stop)
+                            contentDesc = context.getString(R.string.stop)
                         )
                 }
             }
@@ -538,17 +541,17 @@ fun DisplayButton(
                 width = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopwatchAction.PAUSE)
-                        else activity.viewModel.pause()
+                        if (notificationEnabled) context.commandService(StopwatchAction.PAUSE)
+                        else pause()
                     } else {
-                        if (notificationEnabled) activity.commandService(StopwatchAction.START_RESUME)
-                        else activity.viewModel.startResume()
+                        if (notificationEnabled) context.commandService(StopwatchAction.START_RESUME)
+                        else startResume()
                     }
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
-                    if (isRunning) activity.getString(R.string.pause)
-                    else activity.getString(R.string.resume)
+                    if (isRunning) context.getString(R.string.pause)
+                    else context.getString(R.string.resume)
             )
         }
     }
@@ -557,13 +560,17 @@ fun DisplayButton(
 @Composable
 fun DisplayButtonInLandscape(
     modifier: Modifier,
-    activity: AppActivity,
     isStarted: Boolean,
     isRunning: Boolean,
     notificationEnabled: Boolean,
     isAdditionalsShow: Boolean,
     showHideAdditionals: () -> Unit,
+    addLap: () -> Unit,
+    reset: () -> Unit,
+    startResume: () -> Unit,
+    pause: () -> Unit
 ) {
+    val context = LocalContext.current
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
     val stopDrawable = painterResource(R.drawable.round_stop_24)
@@ -589,31 +596,31 @@ fun DisplayButtonInLandscape(
                     IconButton(
                         onClick = { showHideAdditionals() },
                         painter = additionalsDrawable,
-                        contentDesc = activity.getString(R.string.additional_action)
+                        contentDesc = context.getString(R.string.additional_action)
                     )
                     Spacer(Modifier.height(170.dp))
                     if (isRunning)
                         IconButton(
                             onClick = {
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchAction.ADD_LAP)
+                                    context.commandService(StopwatchAction.ADD_LAP)
                                 else
-                                    activity.viewModel.addLap()
+                                    addLap()
                             },
                             painter = addLapsDrawable,
-                            contentDesc = activity.getString(R.string.add_lap)
+                            contentDesc = context.getString(R.string.add_lap)
                         )
                     else
                         IconButton(
                             onClick = {
                                 if (isAdditionalsShow) showHideAdditionals()
                                 if (notificationEnabled)
-                                    activity.commandService(StopwatchAction.RESET)
+                                    context.commandService(StopwatchAction.RESET)
                                 else
-                                    activity.viewModel.reset()
+                                    reset()
                             },
                             painter = stopDrawable,
-                            contentDesc = activity.getString(R.string.stop)
+                            contentDesc = context.getString(R.string.stop)
                         )
                 }
             }
@@ -621,17 +628,17 @@ fun DisplayButtonInLandscape(
                 height = startButtonSizeAnimation,
                 onClick = {
                     if (isRunning) {
-                        if (notificationEnabled) activity.commandService(StopwatchAction.PAUSE)
-                        else activity.viewModel.pause()
+                        if (notificationEnabled) context.commandService(StopwatchAction.PAUSE)
+                        else pause()
                     } else {
-                        if (notificationEnabled) activity.commandService(StopwatchAction.START_RESUME)
-                        else activity.viewModel.startResume()
+                        if (notificationEnabled) context.commandService(StopwatchAction.START_RESUME)
+                        else startResume()
                     }
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
-                if (isRunning) activity.getString(R.string.pause)
-                else activity.getString(R.string.resume)
+                if (isRunning) context.getString(R.string.pause)
+                else context.getString(R.string.resume)
             )
         }
     }

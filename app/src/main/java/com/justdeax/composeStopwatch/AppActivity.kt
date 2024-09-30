@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 import java.util.LinkedList
 
 class AppActivity : ComponentActivity() {
-    val viewModel: StopwatchViewModel by viewModels {
+    private val viewModel: StopwatchViewModel by viewModels {
         StopwatchViewModelFactory(DataStoreManager(this))
     }
 
@@ -233,12 +233,15 @@ class AppActivity : ComponentActivity() {
                             Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp, bottom = 50.dp),
-                            this@AppActivity,
                             isStarted,
                             isRunning,
                             notificationEnabled,
                             additionalActionsShow,
-                            showHideAdditionals = { additionalActionsShow = !additionalActionsShow }
+                            { additionalActionsShow = !additionalActionsShow },
+                            { viewModel.addLap() },
+                            { viewModel.reset() },
+                            { viewModel.startResume() },
+                            { viewModel.pause() }
                         )
                     }
                 } else {
@@ -247,12 +250,15 @@ class AppActivity : ComponentActivity() {
                             Modifier
                                 .fillMaxHeight()
                                 .padding(start = 50.dp, end = 20.dp),
-                            this@AppActivity,
                             isStarted,
                             isRunning,
                             notificationEnabled,
                             additionalActionsShow,
-                            showHideAdditionals = { additionalActionsShow = !additionalActionsShow }
+                            { additionalActionsShow = !additionalActionsShow },
+                            { viewModel.addLap() },
+                            { viewModel.reset() },
+                            { viewModel.startResume() },
+                            { viewModel.pause() }
                         )
                         DisplayActions(
                             Modifier
