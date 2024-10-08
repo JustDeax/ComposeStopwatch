@@ -22,3 +22,6 @@ val Gold =   Color(0xFFFFB300)
 val Silver = Color(0xFFB0B0B0)
 val Copper = Color(0xFFFF9100)
 val Iron =   Color(0xFF444444)
+
+//HYPERTEXT
+val Hypertext = Color(0xFF974FDA)

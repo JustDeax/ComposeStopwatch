@@ -1,19 +1,19 @@
 <resources>
     <string name="app_name" translatable="false">Compose Stopwatch</string>
-    <string name="app_version" translatable="false">1.7.3</string>
-    <string name="app_author" translatable="false">JustDeax (https://github.com/JustDeax)</string>
+    <string name="app_version" translatable="false">1.7.4</string>
+    <string name="app_author" translatable="false">JustDeax (github.com/JustDeax)</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="apply">Apply</string>
 
     <string name="stopwatch_channel">Stopwatch notifications</string>
-    <string name="stopwatch_running">Stopwatch running</string>
-    <string name="stopwatch_pausing">Stopwatch paused</string>
+    <string name="stopwatch_paused">Paused</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="stop">Stop</string>
     <string name="add_lap">Add Lap</string>
+    <string name="last_lap">Last Lap</string>
 
     <string name="additional_action">Additional Actions</string>
     <string name="tap_on_clock">Tap on Clock</string>

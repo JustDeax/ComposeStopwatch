@@ -4,12 +4,12 @@
     <string name="apply">Anwenden</string>
 
     <string name="stopwatch_channel">Stoppuhr-Benachrichtigungen</string>
-    <string name="stopwatch_running">Stoppuhr läuft</string>
-    <string name="stopwatch_pausing">Stoppuhr pausiert</string>
+    <string name="stopwatch_paused">Pausiert</string>
     <string name="pause">Pause</string>
     <string name="resume">Fortsetzen</string>
     <string name="stop">Stopp</string>
     <string name="add_lap">Runde hinzufügen</string>
+    <string name="last_lap">Letzte Runde</string>
 
     <string name="additional_action">Zusätzliche Aktionen</string>
     <string name="tap_on_clock">Auf die Uhr tippen</string>

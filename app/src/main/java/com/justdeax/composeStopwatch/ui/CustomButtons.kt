@@ -48,7 +48,7 @@ fun IconButton(width: Int = 70, painter: Painter, contentDesc: String, onClick: 
 }
 
 @Composable
-fun IconButton2(height: Int, onClick: () -> Unit, painter: Painter, contentDesc: String) {
+fun IconButtonInLandscape(height: Int, onClick: () -> Unit, painter: Painter, contentDesc: String) {
     Button(
         modifier = Modifier
             .height(height.dp)

@@ -36,12 +36,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.DisplayAppName
 import com.justdeax.composeStopwatch.ui.DisplayButton
 import com.justdeax.composeStopwatch.ui.DisplayButtonInLandscape
@@ -50,6 +48,7 @@ import com.justdeax.composeStopwatch.ui.DisplayTime
 import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
+import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.ExtraDarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
@@ -75,23 +74,21 @@ class AppActivity : ComponentActivity() {
     }
 
     private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED) {
+                ) != PackageManager.PERMISSION_GRANTED)
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                     101
                 )
-            }
-        }
     }
 
     override fun onStop() {
         super.onStop()
-        if (!viewModel.notificationEnabled.value!!) viewModel.saveStopwatch()
+        viewModel.saveStopwatch()
     }
 
     @Composable
@@ -103,7 +100,10 @@ class AppActivity : ComponentActivity() {
             val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
             val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
             val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(true, isStarted, isRunning, elapsedMs, elapsedSec, laps)
+            val previosLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
+            StopwatchScreen(
+                true, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
+            )
         } else {
             LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
             val isStarted by viewModel.isStartedI.observeAsState(false)
@@ -111,21 +111,11 @@ class AppActivity : ComponentActivity() {
             val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
             val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
             val laps by viewModel.lapsI.observeAsState(LinkedList())
-            StopwatchScreen(false, isStarted, isRunning, elapsedMs, elapsedSec, laps)
+            val previosLapDelta by viewModel.previousLapDelta.observeAsState(0L)
+            StopwatchScreen(
+                false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
+            )
         }
-    }
-
-    @Preview
-    @Composable
-    fun PreviewStopwatchScreen() {
-        StopwatchScreen(
-            notificationEnabled = true,
-            isStarted = false,
-            isRunning = false,
-            elapsedMs = 0,
-            elapsedSec = 0,
-            laps = listOf()
-        )
     }
 
     @Composable
@@ -135,7 +125,8 @@ class AppActivity : ComponentActivity() {
         isRunning: Boolean,
         elapsedMs: Long,
         elapsedSec: Long,
-        laps: List<Lap>
+        laps: List<Lap>,
+        previosLapDelta: Long
     ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
@@ -199,11 +190,13 @@ class AppActivity : ComponentActivity() {
                                     true,
                                     isStarted && !isRunning,
                                     elapsedSec,
-                                    elapsedMs
+                                    elapsedMs,
+                                    laps,
+                                    previosLapDelta
                                 )
                                 DisplayLaps(
                                     Modifier
-                                        .padding(4.dp, 0.dp)
+                                        .padding(8.dp, 0.dp)
                                         .fillMaxWidth(),
                                     laps,
                                     elapsedMs
@@ -227,7 +220,7 @@ class AppActivity : ComponentActivity() {
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
-                            { newState -> viewModel.changeLockAwakeEnabled(newState) }
+                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) }
                         )
                         DisplayButton(
                             Modifier
@@ -238,10 +231,10 @@ class AppActivity : ComponentActivity() {
                             notificationEnabled,
                             additionalActionsShow,
                             { additionalActionsShow = !additionalActionsShow },
-                            { viewModel.addLap() },
                             { viewModel.reset() },
                             { viewModel.startResume() },
-                            { viewModel.pause() }
+                            { viewModel.pause() },
+                            { viewModel.addLap() }
                         )
                     }
                 } else {
@@ -255,10 +248,10 @@ class AppActivity : ComponentActivity() {
                             notificationEnabled,
                             additionalActionsShow,
                             { additionalActionsShow = !additionalActionsShow },
-                            { viewModel.addLap() },
                             { viewModel.reset() },
                             { viewModel.startResume() },
-                            { viewModel.pause() }
+                            { viewModel.pause() },
+                            { viewModel.addLap() }
                         )
                         DisplayActions(
                             Modifier
@@ -277,7 +270,7 @@ class AppActivity : ComponentActivity() {
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
-                            { newState -> viewModel.changeLockAwakeEnabled(newState) }
+                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) }
                         )
                         Box(
                             modifier = Modifier
@@ -306,15 +299,17 @@ class AppActivity : ComponentActivity() {
                                                 tapOnClock, isRunning, notificationEnabled
                                             )
                                         },
-                                    laps.isNotEmpty(),
+                                    false,
                                     isStarted && !isRunning,
                                     elapsedSec,
-                                    elapsedMs
+                                    elapsedMs,
+                                    laps,
+                                    previosLapDelta
                                 )
                                 DisplayLaps(
                                     Modifier
                                         .fillMaxWidth()
-                                        .padding(26.dp, 0.dp),
+                                        .padding(32.dp, 0.dp),
                                     laps,
                                     elapsedMs
                                 )

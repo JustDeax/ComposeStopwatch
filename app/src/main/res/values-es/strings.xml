@@ -4,12 +4,12 @@
     <string name="apply">Aplicar</string>
 
     <string name="stopwatch_channel">Notificaciones del cronómetro</string>
-    <string name="stopwatch_running">Cronómetro en marcha</string>
-    <string name="stopwatch_pausing">Cronómetro en pausa</string>
+    <string name="stopwatch_paused">En pausa</string>
     <string name="pause">Pausar</string>
     <string name="resume">Reanudar</string>
     <string name="stop">Detener</string>
     <string name="add_lap">Añadir vuelta</string>
+    <string name="last_lap">Última Vuelta</string>
 
     <string name="additional_action">Acciones adicionales</string>
     <string name="tap_on_clock">Tocar el reloj</string>

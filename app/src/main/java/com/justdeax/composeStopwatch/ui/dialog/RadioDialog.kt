@@ -1,15 +1,12 @@
-package com.justdeax.composeStopwatch.ui
-import androidx.compose.foundation.layout.Column
+package com.justdeax.composeStopwatch.ui.dialog
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -38,8 +35,8 @@ fun RadioDialog(
     setSelectedIndex: (Int) -> Unit,
     options: Array<String>,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    confirmText: String
+    confirmText: String,
+    onConfirm: () -> Unit
 ) {
     var selectedIndex by remember { mutableIntStateOf(-1) }
 
@@ -108,82 +105,5 @@ fun RadioDialog(
             }
         },
         onDismissRequest = onDismiss
-    )
-}
-
-@Composable
-fun SimpleDialog(
-    title: String,
-    desc: String,
-    isPortrait: Boolean,
-    confirmText: String,
-    onConfirm: () -> Unit,
-    dismissText: String,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        modifier = if (isPortrait)
-            Modifier
-        else
-            Modifier.fillMaxWidth(0.6f),
-        properties = if (isPortrait)
-            DialogProperties()
-        else
-            DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(title) },
-        text = {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-            ) { Text(desc) }
-        },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(confirmText)
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text(dismissText)
-            }
-        },
-        onDismissRequest = onDismiss
-    )
-}
-
-@Composable
-fun OkayDialog(
-    title: String,
-    content: @Composable () -> Unit,
-    isPortrait: Boolean,
-    confirmText: String,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        modifier = if (isPortrait)
-            Modifier
-        else
-            Modifier.fillMaxWidth(0.6f),
-        properties = if (isPortrait)
-            DialogProperties()
-        else
-            DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(title) },
-        text = {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-            ) { content() }
-        },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(confirmText)
-            }
-        },
-        onDismissRequest = onConfirm
     )
 }

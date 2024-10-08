@@ -4,12 +4,12 @@
     <string name="apply">Применить</string>
 
     <string name="stopwatch_channel">Уведомления секундомера</string>
-    <string name="stopwatch_running">Секундомер запущен</string>
-    <string name="stopwatch_pausing">Секундомер на паузе</string>
+    <string name="stopwatch_paused">Приостановлено</string>
     <string name="pause">Пауза</string>
     <string name="resume">Возобновить</string>
     <string name="stop">Стоп</string>
     <string name="add_lap">Добавить круг</string>
+    <string name="last_lap">Последний круг</string>
 
     <string name="additional_action">Дополнительные действия</string>
     <string name="tap_on_clock">Нажатие на часы</string>
@@ -17,7 +17,7 @@
     <string name="theme">Тема</string>
     <string name="lock_awake">Не выключать экран</string>
 
-    <string name="change_tap_on_clock">Изменить действие при нажВозобновитьатии на часы</string>
+    <string name="change_tap_on_clock">Изменить действие при нажатии на часы</string>
     <string name="change_tap_on_clock_desc">Выберите действие при нажатии на часы, показывающие время</string>
     <string-array name="tap_on_clock">
         <item name="none">Ничего</item>

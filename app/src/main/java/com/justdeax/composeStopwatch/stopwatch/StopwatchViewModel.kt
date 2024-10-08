@@ -17,9 +17,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
-class StopwatchViewModel(
-    private val dataStoreManager: DataStoreManager
-) : ViewModel() {
+class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
     private var elapsedMsBeforePause = 0L
     private var startTime = 0L
     val theme = dataStoreManager.getTheme().asLiveData()
@@ -27,44 +25,36 @@ class StopwatchViewModel(
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
     val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
 
-    fun changeTheme(themeCode: Int) {
-        viewModelScope.launch {
-            dataStoreManager.changeTheme(themeCode)
-        }
+    fun changeTheme(themeCode: Int) = viewModelScope.launch {
+        dataStoreManager.changeTheme(themeCode)
     }
 
-    fun changeTapOnClock(tapType: Int) {
-        viewModelScope.launch {
-            dataStoreManager.changeTapOnClock(tapType)
-        }
+    fun changeTapOnClock(tapType: Int) = viewModelScope.launch {
+        dataStoreManager.changeTapOnClock(tapType)
     }
 
-    fun changeNotificationEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            dataStoreManager.changeNotificationEnabled(enabled)
-            if (enabled) reset()
-        }
+    fun changeNotificationEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeNotificationEnabled(enabled)
     }
 
-    fun changeLockAwakeEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            dataStoreManager.changeLockAwakeEnabled(enabled)
-        }
+    fun changeLockAwakeEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeLockAwakeEnabled(enabled)
     }
 
     fun saveStopwatch() {
-        viewModelScope.launch {
-            dataStoreManager.saveStopwatch(
-                StopwatchState(
-                    elapsedMsBeforePause,
-                    startTime,
-                    isRunning.value!!,
+        if (!notificationEnabled.value!!)
+            viewModelScope.launch {
+                dataStoreManager.saveStopwatch(
+                    StopwatchState(
+                        elapsedMsBeforePause,
+                        startTime,
+                        isRunning.value!!,
                     laps.value?.let {
-                        if (it.isNotEmpty()) Json.encodeToString(it.toList()) else ""
-                    } ?: ""
+                            if (it.isNotEmpty()) Json.encodeToString(it.toList()) else ""
+                        } ?: ""
+                    )
                 )
-            )
-        }
+            }
     }
 
     fun restoreStopwatch() {
@@ -112,24 +102,25 @@ class StopwatchViewModel(
     }
 
     fun reset() {
+        isStarted.value = false
+        isRunning.value = false
+        elapsedMs.value = 0L
+        elapsedSec.value = 0L
+        elapsedMsBeforePause = 0L
+        laps.value!!.clear()
+        previousLapDelta.value = 1L
         viewModelScope.launch {
-            isStarted.value = false
-            isRunning.value = false
-            elapsedMs.value = 0L
-            elapsedSec.value = 0L
-            elapsedMsBeforePause = 0L
-            laps.value!!.clear()
-            dataStoreManager.resetStopwatch()
             viewModelScope.coroutineContext.cancelChildren()
+            dataStoreManager.resetStopwatch()
         }
     }
 
     fun hardReset() {
+        pause()
         viewModelScope.launch {
             delay(10)
             reset()
         }
-        pause()
     }
 
     fun addLap() {
@@ -142,6 +133,7 @@ class StopwatchViewModel(
             val newLaps = LinkedList(laps.value!!)
             newLaps.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
             laps.value = newLaps
+            previousLapDelta.value = deltaLap
         }
     }
 
@@ -156,4 +148,6 @@ class StopwatchViewModel(
     val elapsedMsI: LiveData<Long> get() = elapsedMs
     val elapsedSecI: LiveData<Long> get() = elapsedSec
     val lapsI: LiveData<LinkedList<Lap>> get() = laps
+
+    val previousLapDelta = MutableLiveData(1L)
 }

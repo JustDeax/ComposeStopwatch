@@ -12,8 +12,8 @@ android {
         applicationId = "com.justdeax.composeStopwatch"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1007021
-        versionName = "1.7.3"
+        versionCode = 1007040
+        versionName = "1.7.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 
@@ -91,10 +91,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-tasks.register("printKotlinVersion") {
-    doLast {
-        println("Kotlin version: ${KotlinVersion.CURRENT}")
-    }
 }

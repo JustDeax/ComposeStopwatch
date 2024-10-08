@@ -9,7 +9,7 @@
 <div align="center">
     <div style="display: flex; flex-direction: row;">
         <a href='https://apt.izzysoft.de/fdroid/index/apk/com.justdeax.composeStopwatch'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' style="width:200px"></a>
-        <a href='https://github.com/JustDeax/ComposeStopwatch/releases/download/1.7.3/compose-stopwatch.apk'><img alt='Get it on Github' src='https://i.ibb.co.com/16WW8Rm/get-it-on-github.png' style="width:200px"></a>
+        <a href='https://github.com/JustDeax/ComposeStopwatch/releases/download/1.7.4/compose-stopwatch.apk'><img alt='Get it on Github' src='https://i.ibb.co.com/16WW8Rm/get-it-on-github.png' style="width:200px"></a>
     </div>
 </div>
 
@@ -46,10 +46,10 @@ This is an open source stopwatch app in the Material You theme, designed for eas
     - When enabled, the stopwatch works on LifecycleService and ForegroundService
 
 - Screen Awake mode
-     - Ability to watch the stopwatch without the screen falling asleep
+    - Ability to watch the stopwatch without the screen falling asleep
 
 Author: JustDeax (https://github.com/JustDeax)
 
-Version: 1.7.3
+Version: 1.7.4
 
 Minimal android: 7 (SDK 24)

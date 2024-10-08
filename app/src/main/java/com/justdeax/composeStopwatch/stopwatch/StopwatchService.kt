@@ -15,8 +15,7 @@ import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
-import com.justdeax.composeStopwatch.util.displayMs
-import com.justdeax.composeStopwatch.util.formatSeconds
+import com.justdeax.composeStopwatch.util.fullFormatSeconds
 import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
@@ -32,97 +31,11 @@ class StopwatchService: LifecycleService() {
     private lateinit var intentStop: PendingIntent
     private lateinit var intentAddLap: PendingIntent
     private var elapsedMsBeforePause = 0L
+    private var startTime = 0L
     private val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     else
         PendingIntent.FLAG_UPDATE_CURRENT
-
-    override fun onCreate() {
-        super.onCreate()
-        setupNotification()
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.action?.let { action ->
-            when (action) {
-                StopwatchAction.START_RESUME.name -> startResume()
-                StopwatchAction.PAUSE.name -> pause()
-                StopwatchAction.RESET.name -> reset()
-                StopwatchAction.HARD_RESET.name -> {
-                    lifecycleScope.launch {
-                        delay(10)
-                        reset()
-                    }
-                    pause()
-                }
-                StopwatchAction.ADD_LAP.name -> addLap()
-            }
-        }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    private fun startResume() {
-        isStarted.value = true
-        isRunning.value = true
-        lifecycleScope.launch(Dispatchers.IO) {
-            val startTimeMillis = System.currentTimeMillis()
-            while (isRunning.value!!) {
-                elapsedMs.postValue((System.currentTimeMillis() - startTimeMillis) + elapsedMsBeforePause)
-                val seconds = elapsedMs.value!! / 1000
-                if (elapsedSec.value != seconds) elapsedSec.postValue(seconds)
-                delay(10)
-            }
-        }
-        startForeground(
-            NOTIFICATION_ID,
-            getNotification(
-                getString(R.string.stopwatch_running),
-                formatSeconds(elapsedMsBeforePause / 1000)
-            )
-        )
-    }
-
-    private fun pause() {
-        isRunning.value = false
-        elapsedMsBeforePause = elapsedMs.value!!
-        notificationManager.notify(
-            NOTIFICATION_ID,
-            getNotification(
-                getString(R.string.stopwatch_pausing),
-                elapsedMsBeforePause.toFormatString()
-            )
-        )
-    }
-
-    private fun reset() {
-        isStarted.value = false
-        isRunning.value = false
-        elapsedMs.value = 0L
-        elapsedSec.value = 0L
-        elapsedMsBeforePause = 0L
-        laps.value!!.clear()
-        lifecycleScope.coroutineContext.cancelChildren()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
-    }
-
-    private fun addLap() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            val deltaLap = if (laps.value!!.isEmpty())
-                elapsedMs.value!!
-            else
-                elapsedMs.value!! - laps.value!!.first.elapsedTime
-            val deltaLapString = "+ ${deltaLap.toFormatString()}"
-            laps.value?.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
-        }
-        notificationManager.notify(
-            NOTIFICATION_ID,
-            getNotification(
-                getString(R.string.stopwatch_running),
-                formatSeconds(elapsedSec.value!!) + "." + displayMs(elapsedMs.value!!)
-            )
-        )
-    }
 
     private fun setupNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -138,69 +51,42 @@ class StopwatchService: LifecycleService() {
             if (isRunning.value!!)
                 notificationManager.notify(
                     NOTIFICATION_ID,
-                    getNotification(
-                        getString(R.string.stopwatch_running),
-                        formatSeconds(elapsedSeconds)
-                    )
+                    getNotification(elapsedSeconds.fullFormatSeconds())
                 )
         }
         pendingIntent = PendingIntent.getActivity(
-            this,
-            1,
-            Intent(this, AppActivity::class.java),
-            flag
+            this, 1, Intent(this, AppActivity::class.java), flag
         )
-        intentStartResume = PendingIntent.getService(
-            this,
-            2,
-            Intent(this, StopwatchService::class.java).also {
-                it.action = StopwatchAction.START_RESUME.name
-            },
-            flag
-        )
-        intentPause = PendingIntent.getService(
-            this,
-            3,
-            Intent(this, StopwatchService::class.java).also {
-                it.action = StopwatchAction.PAUSE.name
-            },
-            flag
-        )
-        intentStop = PendingIntent.getService(
-            this,
-            4,
-            Intent(this, StopwatchService::class.java).also {
-                it.action = StopwatchAction.RESET.name
-            },
-            flag
-        )
-        intentAddLap = PendingIntent.getService(
-            this,
-            5,
-            Intent(this, StopwatchService::class.java).also {
-                it.action = StopwatchAction.ADD_LAP.name
-            },
-            flag
-        )
+        intentStartResume = createPendingIntent(2, StopwatchAction.START_RESUME)
+        intentPause = createPendingIntent(3, StopwatchAction.PAUSE)
+        intentStop = createPendingIntent(4, StopwatchAction.RESET)
+        intentAddLap = createPendingIntent(5, StopwatchAction.ADD_LAP)
     }
 
-    private fun getNotification(title: String, text: String): Notification {
-        val finalText: String
-        if (laps.value!!.isEmpty()) {
-            finalText = text
-        } else {
+    private fun createPendingIntent(code: Int, action: StopwatchAction) = PendingIntent.getService(
+        this,
+        code,
+        Intent(this, StopwatchService::class.java).also {
+            it.action = action.name
+        },
+        flag
+    )
+
+    private fun getNotification(time: String): Notification {
+        val lapItem = if (laps.value!!.isEmpty()) "" else {
             val lastLap = laps.value!!.first
             val elapsedTime = lastLap.elapsedTime.toFormatString()
-            finalText = "$text \nLast lap: ${lastLap.index} $elapsedTime ${lastLap.deltaLap}"
+            val lastLapText = getString(R.string.last_lap)
+            "$lastLapText: ${lastLap.index} $elapsedTime | ${lastLap.deltaLap}"
         }
 
-        if (isRunning.value!!) {
+        if (isRunning.value!!)
             return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(title)
-                .setContentText(finalText)
+                .setContentTitle(time)
+                .setContentText(lapItem)
                 .setContentIntent(pendingIntent)
                 .addAction(
                     R.drawable.round_pause_24,
@@ -213,13 +99,13 @@ class StopwatchService: LifecycleService() {
                     intentAddLap
                 )
                 .build()
-        } else {
+        else
             return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(title)
-                .setContentText(finalText)
+                .setContentTitle(time + " " + getString(R.string.stopwatch_paused))
+                .setContentText(lapItem)
                 .setContentIntent(pendingIntent)
                 .addAction(
                     R.drawable.round_play_arrow_24,
@@ -232,7 +118,89 @@ class StopwatchService: LifecycleService() {
                     intentStop
                 )
                 .build()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        setupNotification()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.action?.let { action ->
+            when (action) {
+                StopwatchAction.START_RESUME.name -> startResume()
+                StopwatchAction.PAUSE.name -> pause()
+                StopwatchAction.RESET.name -> reset()
+                StopwatchAction.HARD_RESET.name -> { hardReset() }
+                StopwatchAction.ADD_LAP.name -> addLap()
+            }
         }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun startResume() {
+        isStarted.value = true
+        isRunning.value = true
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (startTime == 0L) startTime = System.currentTimeMillis()
+            while (isRunning.value!!) {
+                elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)
+                val seconds = elapsedMs.value!! / 1000
+                if (elapsedSec.value != seconds) elapsedSec.postValue(seconds)
+                delay(10)
+            }
+        }
+        startForeground(
+            NOTIFICATION_ID,
+            getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds())
+        )
+    }
+
+    private fun pause() {
+        isRunning.value = false
+        elapsedMsBeforePause = elapsedMs.value!!
+        startTime = 0L
+        notificationManager.notify(
+            NOTIFICATION_ID,
+            getNotification(elapsedMsBeforePause.toFormatString())
+        )
+    }
+
+    private fun reset() {
+        isStarted.value = false
+        isRunning.value = false
+        elapsedMs.value = 0L
+        elapsedSec.value = 0L
+        elapsedMsBeforePause = 0L
+        laps.value!!.clear()
+        previousLapDelta.value = 1L
+        lifecycleScope.coroutineContext.cancelChildren()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private fun hardReset() {
+        pause()
+        lifecycleScope.launch {
+            delay(10)
+            reset()
+        }
+    }
+
+    private fun addLap() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            val deltaLap = if (laps.value!!.isEmpty())
+                elapsedMs.value!!
+            else
+                elapsedMs.value!! - laps.value!!.first.elapsedTime
+            val deltaLapString = "+ ${deltaLap.toFormatString()}"
+            laps.value?.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
+            previousLapDelta.value = deltaLap
+        }
+        notificationManager.notify(
+            NOTIFICATION_ID,
+            getNotification(elapsedMs.value!!.toFormatString())
+        )
     }
 
     companion object {
@@ -250,5 +218,7 @@ class StopwatchService: LifecycleService() {
         val elapsedMsI: LiveData<Long> get() = elapsedMs
         val elapsedSecI: LiveData<Long> get() = elapsedSec
         val lapsI: LiveData<LinkedList<Lap>> get() = laps
+
+        val previousLapDelta = MutableLiveData(1L)
     }
 }

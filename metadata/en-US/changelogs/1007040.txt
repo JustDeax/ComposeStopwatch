@@ -1,0 +1,5 @@
+- Improved code
+- Reduced text display time
+- Improved notification text
+- Added lap progress for lap analyses
+- Optimized text size
