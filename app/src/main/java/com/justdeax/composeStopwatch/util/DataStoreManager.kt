@@ -61,7 +61,6 @@ class DataStoreManager(private val context: Context) {
             set[SW_ELAPSED_MS_BEFORE_PAUSE] = stopwatchState.elapsedMsBeforePause
             set[SW_START_TIME] = stopwatchState.startTime
             set[SW_IS_RUNNING] = stopwatchState.isRunning
-            set[SW_LAPS] = stopwatchState.laps
         }
     }
 
@@ -70,7 +69,6 @@ class DataStoreManager(private val context: Context) {
             get[SW_ELAPSED_MS_BEFORE_PAUSE] ?: 0L,
             get[SW_START_TIME] ?: 0L,
             get[SW_IS_RUNNING] ?: false,
-            get[SW_LAPS] ?: ""
         )
     }
 
@@ -81,5 +79,13 @@ class DataStoreManager(private val context: Context) {
             set.remove(SW_IS_RUNNING)
             set.remove(SW_LAPS)
         }
+    }
+
+    suspend fun saveLaps(laps: String) {
+        context.dataStore.edit { set -> set[SW_LAPS] = laps }
+    }
+
+    fun restoreLaps() = context.dataStore.data.map { get ->
+        get[SW_LAPS] ?: ""
     }
 }

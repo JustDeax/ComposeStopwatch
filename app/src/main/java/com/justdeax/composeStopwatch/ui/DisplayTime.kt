@@ -75,7 +75,7 @@ fun DisplayTime(
             if (seconds >= 3600L)
                 Text(
                     text = seconds.getHours() + "h",
-                    fontSize = 32.sp,
+                    fontSize = 36.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier

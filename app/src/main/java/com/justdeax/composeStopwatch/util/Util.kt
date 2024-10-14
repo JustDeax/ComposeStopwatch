@@ -6,6 +6,8 @@ import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
+const val TAG = "DEAX_TAG"
+
 //GENERAL ------------------------------------
 
 fun Long.cutToMs()
@@ -80,6 +82,5 @@ enum class StopwatchAction {
 data class StopwatchState(
     val elapsedMsBeforePause: Long,
     val startTime: Long,
-    val isRunning: Boolean,
-    val laps: String
+    val isRunning: Boolean
 )

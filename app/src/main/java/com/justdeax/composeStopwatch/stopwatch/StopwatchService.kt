@@ -139,9 +139,10 @@ class StopwatchService: LifecycleService() {
     }
 
     private fun startResume() {
+        if (isStarted.value == true && isRunning.value == true) return
         isStarted.value = true
         isRunning.value = true
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             if (startTime == 0L) startTime = System.currentTimeMillis()
             while (isRunning.value!!) {
                 elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)

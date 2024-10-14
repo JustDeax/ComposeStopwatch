@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.stopwatch
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchState
+import com.justdeax.composeStopwatch.util.TAG
 import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -48,10 +51,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                     StopwatchState(
                         elapsedMsBeforePause,
                         startTime,
-                        isRunning.value!!,
-                    laps.value?.let {
-                            if (it.isNotEmpty()) Json.encodeToString(it.toList()) else ""
-                        } ?: ""
+                        isRunning.value!!
                     )
                 )
             }
@@ -59,14 +59,20 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun restoreStopwatch() {
         viewModelScope.launch {
+            Log.d(TAG, "restoreStopwatch: -1")
+
+            Log.d(TAG, laps.toString() + "restoreStopwatch ++")
+
+            val laps = dataStoreManager.restoreLaps().first()
+            this@StopwatchViewModel.laps.value = if (laps.isNotEmpty())
+                LinkedList(Json.decodeFromString<List<Lap>>(laps))
+            else LinkedList()
+
+            Log.d(TAG, laps + "restoreStopwatch --")
+
             dataStoreManager.restoreStopwatch().collect { restoredState ->
                 elapsedMsBeforePause = restoredState.elapsedMsBeforePause
-                isStarted.value = elapsedMsBeforePause != 0L
                 startTime = restoredState.startTime
-                laps.value =
-                    if (restoredState.laps.isNotEmpty())
-                        LinkedList(Json.decodeFromString<List<Lap>>(restoredState.laps))
-                    else LinkedList()
                 isRunning.value = restoredState.isRunning
                 if (isRunning.value == true) {
                     val currentTime = System.currentTimeMillis()
@@ -77,15 +83,20 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                     elapsedMs.value = elapsedMsBeforePause
                     elapsedSec.value = elapsedMsBeforePause / 1000
                 }
+                isStarted.value = elapsedMsBeforePause != 0L
             }
         }
+        Log.d(TAG, "restoreStopwatch: --")
+
     }
 
     fun startResume() {
+        if (isStarted.value == true && isRunning.value == true) return
         isStarted.value = true
         isRunning.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             if (startTime == 0L) startTime = System.currentTimeMillis()
+            saveStopwatch()
             while (isRunning.value!!) {
                 elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)
                 val seconds = elapsedMs.value!! / 1000
@@ -110,8 +121,8 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         laps.value!!.clear()
         previousLapDelta.value = 1L
         viewModelScope.launch {
-            viewModelScope.coroutineContext.cancelChildren()
             dataStoreManager.resetStopwatch()
+            viewModelScope.coroutineContext.cancelChildren()
         }
     }
 
@@ -134,6 +145,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
             newLaps.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
             laps.value = newLaps
             previousLapDelta.value = deltaLap
+            dataStoreManager.saveLaps(Json.encodeToString(newLaps.toList()))
         }
     }
 
