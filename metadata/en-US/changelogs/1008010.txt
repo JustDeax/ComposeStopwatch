@@ -1,0 +1,5 @@
+- Bug fixes
+- Improved and faster stopwatch saving
+- Add themed icon
+- Delete unused icons
+- Update metadata

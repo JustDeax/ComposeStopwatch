@@ -1,4 +1,8 @@
-Esta es una aplicación de cronómetro de código abierto con el tema Material You, diseñada para facilidad de uso y las mejores características
+Aplicación de cronómetro para Android con el tema Material You, diseñada para facilidad de uso y las mejores características
+
+► Progreso circular
+    • Muestra el progreso de la vuelta actual basado en la primera vuelta
+    • Un guión en el progreso de la vuelta muestra la vuelta anterior
 
 ► Cambiar tema, nuevos temas disponibles
     • El tema dinámico solo está disponible en Android 12+

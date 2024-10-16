@@ -1,4 +1,8 @@
-Ceci est une application open source de chronomètre avec le thème Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
+Application chronomètre Android au design Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
+
+► Progression circulaire
+    • Affiche la progression du tour actuel par rapport au tout premier
+    • Un tiret sur la progression du tour indique le tour précédent
 
 ► Changez de thème, de nouveaux thèmes sont disponibles
     • Le thème dynamique n'est disponible qu'à partir d'Android 12+

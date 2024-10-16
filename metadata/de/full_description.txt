@@ -1,4 +1,8 @@
-Dies ist eine Open-Source-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
+Android-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
+
+► Kreisförtiger Fortschritt
+    • Zeigt den Fortschritt der aktuellen Runde basierend auf der allerersten an
+    • Ein Strich auf dem Rundenfortschritt zeigt die vorherige Runde an
 
 ► Thema ändern, neue Themen verfügbar
     • Dynamisches Thema ist nur ab Android 12+ verfügbar

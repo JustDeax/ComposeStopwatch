@@ -50,7 +50,11 @@
     <string name="lock_awake_mode_desc_disable">El modo de pantalla siempre activa está desactivado</string>
 
     <string name="about_app">Acerca de Compose Stopwatch</string>
-    <string name="about_app_desc">"Esta es una aplicación de cronómetro de código abierto con el tema Material You, diseñada para facilidad de uso y las mejores características
+    <string name="about_app_desc">"Aplicación de cronómetro para Android con el tema Material You, diseñada para facilidad de uso y las mejores características
+
+► Progreso circular
+    • Muestra el progreso de la vuelta actual basado en la primera vuelta
+    • Un guion en el progreso de la vuelta muestra la vuelta anterior
 
 ► Cambiar tema, nuevos temas disponibles
     • El tema dinámico solo está disponible en Android 12+

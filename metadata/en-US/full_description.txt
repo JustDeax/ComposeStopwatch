@@ -1,4 +1,8 @@
-This is an open source stopwatch app in the Material You theme, designed for ease of use and best features
+Android stopwatch app in the Material You theme, designed for ease of use and best features
+
+► Circular progress
+    • Displays the progress of the current lap based on the very first one
+    • A dash on the lap progress shows the previous lap
 
 ► Change theme, new themes are available
     • Dynamic theme is only available with android 12+
