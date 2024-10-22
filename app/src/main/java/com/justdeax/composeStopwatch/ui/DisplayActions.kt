@@ -7,12 +7,14 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.dialog.OkayDialog
 import com.justdeax.composeStopwatch.ui.dialog.RadioDialog
@@ -54,13 +57,14 @@ fun DisplayActions(
 ) {
     val context = LocalContext.current
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
+    val settingsDraw = painterResource(R.drawable.round_settings_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
     val themeDraw = painterResource(R.drawable.round_invert_colors_24)
     val unlockAwake = painterResource(R.drawable.round_lock_outline_24)
     val lockAwake = painterResource(R.drawable.round_lock_24)
 
-    var showTapOnClockDialog by remember { mutableStateOf(false) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
     var showResetStopwatchDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLockAwakeDialog by remember { mutableStateOf(false) }
@@ -71,9 +75,9 @@ fun DisplayActions(
             modifier = modifier,
             onClick = {
                 saveStopwatch()
-                showTapOnClockDialog = true
+                showSettingsDialog = true
             },
-            painter = tapOnClockDraw,
+            painter = settingsDraw,
             contentDesc = context.getString(R.string.tap_on_clock)
         )
         OutlineIconButton(
@@ -105,18 +109,31 @@ fun DisplayActions(
         )
     }
 
-    if (showTapOnClockDialog) {
-        RadioDialog(
-            title = context.getString(R.string.change_tap_on_clock),
-            desc = context.getString(R.string.change_tap_on_clock_desc),
+    if (showSettingsDialog) {
+        var showTapOnClockDialog by remember { mutableStateOf(false) }
+        OkayDialog(
+            title = context.getString(R.string.stopwatch_settings),
+            content = {
+                SettingsRow("Change Tap On Clock") { showTapOnClockDialog = true }
+                SettingsRow("Autostart Stopwatch") { }
+                SettingsRow("Turn on Vibration") { }
+            },
             isPortrait = isPortrait,
-            defaultIndex = tapOnClock,
-            options = context.resources.getStringArray(R.array.tap_on_clock),
-            setSelectedIndex = { newState -> changeTapOnClock(newState) },
-            onDismiss = { showTapOnClockDialog = false },
-            confirmText = context.getString(R.string.apply),
-            onConfirm = { showTapOnClockDialog = false }
+            confirmText = context.getString(R.string.ok),
+            onConfirm = { showSettingsDialog = false }
         )
+        if (showTapOnClockDialog)
+            RadioDialog(
+                title = context.getString(R.string.change_tap_on_clock),
+                desc = context.getString(R.string.change_tap_on_clock_desc),
+                isPortrait = isPortrait,
+                defaultIndex = tapOnClock,
+                options = context.resources.getStringArray(R.array.tap_on_clock),
+                setSelectedIndex = { newState -> changeTapOnClock(newState) },
+                onDismiss = { showTapOnClockDialog = false },
+                confirmText = context.getString(R.string.apply),
+                onConfirm = { showTapOnClockDialog = false }
+            )
     }
     if (showResetStopwatchDialog) {
         if (isStarted)
@@ -206,6 +223,28 @@ fun DisplayActions(
                 actionDialogs(Modifier.weight(1f))
             }
         }
+}
+
+@Composable
+fun SettingsRow(text: String, onClick: () -> Unit) {
+    val arrowDraw = painterResource(R.drawable.round_keyboard_arrow_right_24)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(10.dp, 12.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = text,
+            fontSize = 20.sp
+        )
+        Icon(
+            arrowDraw,
+            "",
+            tint = MaterialTheme.colorScheme.outline
+        )
+    }
 }
 
 @Preview(showBackground = true)

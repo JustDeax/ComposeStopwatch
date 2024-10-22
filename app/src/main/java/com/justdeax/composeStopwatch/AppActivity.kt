@@ -1,8 +1,12 @@
 package com.justdeax.composeStopwatch
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -86,11 +90,6 @@ class AppActivity : ComponentActivity() {
                 )
     }
 
-    override fun onStop() {
-        super.onStop()
-        viewModel.saveStopwatch()
-    }
-
     @Composable
     fun AppScreen() {
         val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
@@ -132,6 +131,7 @@ class AppActivity : ComponentActivity() {
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
+        val vibrationEnabled by viewModel.vibrationEnabled.observeAsState(false)
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val colorScheme = when (theme) {
@@ -148,6 +148,13 @@ class AppActivity : ComponentActivity() {
                     if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
                 }
             }
+        }
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = getSystemService(VibratorManager::class.java)
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
@@ -211,7 +218,7 @@ class AppActivity : ComponentActivity() {
                             true,
                             isStarted,
                             !isStarted || additionalActionsShow,
-                            { viewModel.saveStopwatch() },
+                            { /*TODO REMOVE IT PARAMETER*/ },
                             tapOnClock,
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
@@ -228,13 +235,59 @@ class AppActivity : ComponentActivity() {
                                 .padding(top = 20.dp, bottom = 50.dp),
                             isStarted,
                             isRunning,
-                            notificationEnabled,
-                            additionalActionsShow,
                             { additionalActionsShow = !additionalActionsShow },
-                            { viewModel.reset() },
-                            { viewModel.startResume() },
-                            { viewModel.pause() },
-                            { viewModel.addLap() }
+                            {
+                                if (additionalActionsShow) additionalActionsShow = false
+                                if (notificationEnabled) commandService(StopwatchAction.RESET)
+                                else viewModel.reset()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val resetVibration = VibrationEffect.createOneShot(
+                                        500,
+                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                    )
+                                    vibrator.vibrate(resetVibration)
+                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
+                                else viewModel.startResume()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val startAndResumeVibration = VibrationEffect.createOneShot(
+                                        175,
+                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                    )
+                                    vibrator.vibrate(startAndResumeVibration)
+                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.PAUSE)
+                                else viewModel.pause()
+
+//                                if (vibrationEnabled) {
+//                                    vibrator.cancel()
+//                                    val pauseVibration = VibrationEffect.createOneShot(
+//                                        300,
+//                                        VibrationEffect.DEFAULT_AMPLITUDE
+//                                    )
+//                                    vibrator.vibrate(pauseVibration)
+//                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
+                                else viewModel.addLap()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val lapVibrationPattern = longArrayOf(0, 100, 50, 100)
+                                    val lapVibration =
+                                        VibrationEffect.createWaveform(lapVibrationPattern, -1)
+                                    vibrator.vibrate(lapVibration)
+                                }
+                            }
                         )
                     }
                 } else {
@@ -245,13 +298,59 @@ class AppActivity : ComponentActivity() {
                                 .padding(start = 50.dp, end = 20.dp),
                             isStarted,
                             isRunning,
-                            notificationEnabled,
-                            additionalActionsShow,
                             { additionalActionsShow = !additionalActionsShow },
-                            { viewModel.reset() },
-                            { viewModel.startResume() },
-                            { viewModel.pause() },
-                            { viewModel.addLap() }
+                            {
+                                if (additionalActionsShow) additionalActionsShow = false
+                                if (notificationEnabled) commandService(StopwatchAction.RESET)
+                                else viewModel.reset()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val resetVibration = VibrationEffect.createOneShot(
+                                        500,
+                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                    )
+                                    vibrator.vibrate(resetVibration)
+                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
+                                else viewModel.startResume()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val startAndResumeVibration = VibrationEffect.createOneShot(
+                                        175,
+                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                    )
+                                    vibrator.vibrate(startAndResumeVibration)
+                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.PAUSE)
+                                else viewModel.pause()
+
+//                                if (vibrationEnabled) {
+//                                    vibrator.cancel()
+//                                    val pauseVibration = VibrationEffect.createOneShot(
+//                                        300,
+//                                        VibrationEffect.DEFAULT_AMPLITUDE
+//                                    )
+//                                    vibrator.vibrate(pauseVibration)
+//                                }
+                            },
+                            {
+                                if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
+                                else viewModel.addLap()
+
+                                if (vibrationEnabled) {
+                                    vibrator.cancel()
+                                    val lapVibrationPattern = longArrayOf(0, 100, 50, 100)
+                                    val lapVibration =
+                                        VibrationEffect.createWaveform(lapVibrationPattern, -1)
+                                    vibrator.vibrate(lapVibration)
+                                }
+                            }
                         )
                         DisplayActions(
                             Modifier

@@ -1,5 +1,4 @@
 package com.justdeax.composeStopwatch.stopwatch
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchState
-import com.justdeax.composeStopwatch.util.TAG
 import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
@@ -27,6 +25,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     val tapOnClock = dataStoreManager.getTapOnClock().asLiveData()
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
     val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
+    val vibrationEnabled = dataStoreManager.vibrationEnabled().asLiveData()
 
     fun changeTheme(themeCode: Int) = viewModelScope.launch {
         dataStoreManager.changeTheme(themeCode)
@@ -44,6 +43,10 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         dataStoreManager.changeLockAwakeEnabled(enabled)
     }
 
+    fun changeVibrationEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeVibrationEnabled(enabled)
+    }
+
     fun saveStopwatch() {
         if (!notificationEnabled.value!!)
             viewModelScope.launch {
@@ -59,17 +62,10 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun restoreStopwatch() {
         viewModelScope.launch {
-            Log.d(TAG, "restoreStopwatch: -1")
-
-            Log.d(TAG, laps.toString() + "restoreStopwatch ++")
-
             val laps = dataStoreManager.restoreLaps().first()
             this@StopwatchViewModel.laps.value = if (laps.isNotEmpty())
                 LinkedList(Json.decodeFromString<List<Lap>>(laps))
             else LinkedList()
-
-            Log.d(TAG, laps + "restoreStopwatch --")
-
             dataStoreManager.restoreStopwatch().collect { restoredState ->
                 elapsedMsBeforePause = restoredState.elapsedMsBeforePause
                 startTime = restoredState.startTime
@@ -86,8 +82,6 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                 isStarted.value = elapsedMsBeforePause != 0L
             }
         }
-        Log.d(TAG, "restoreStopwatch: --")
-
     }
 
     fun startResume() {
@@ -110,6 +104,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         isRunning.value = false
         elapsedMsBeforePause = elapsedMs.value!!
         startTime = 0L
+        saveStopwatch()
     }
 
     fun reset() {

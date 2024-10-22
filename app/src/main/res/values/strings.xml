@@ -15,6 +15,7 @@
     <string name="add_lap">Add Lap</string>
     <string name="last_lap">Last Lap</string>
 
+    <string name="stopwatch_settings">Stopwatch Settings</string>
     <string name="additional_action">Additional Actions</string>
     <string name="tap_on_clock">Tap on Clock</string>
     <string name="turn_off_notif">Turn on/off notification</string>

@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.justdeax.composeStopwatch"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1008010
         versionName = "1.8.1"

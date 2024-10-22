@@ -22,16 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
-import com.justdeax.composeStopwatch.util.StopwatchAction
-import com.justdeax.composeStopwatch.util.commandService
 
 @Composable
 fun DisplayButtonInLandscape(
     modifier: Modifier,
     isStarted: Boolean,
     isRunning: Boolean,
-    notificationEnabled: Boolean,
-    isAdditionalShow: Boolean,
     showHideAdditional: () -> Unit,
     reset: () -> Unit,
     startResume: () -> Unit,
@@ -43,7 +39,7 @@ fun DisplayButtonInLandscape(
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
     val stopDrawable = painterResource(R.drawable.round_stop_24)
     val addLapsDrawable = painterResource(R.drawable.round_add_circle_24)
-    val additionalsDrawable = painterResource(R.drawable.round_grid_view_24)
+    val additionalDrawable = painterResource(R.drawable.round_grid_view_24)
     val startButtonSizeAnimation by animateIntAsState(
         targetValue = if (isStarted) 120 else 300,
         animationSpec = keyframes { durationMillis = 250 },
@@ -63,30 +59,19 @@ fun DisplayButtonInLandscape(
                 Column {
                     IconButton(
                         onClick = { showHideAdditional() },
-                        painter = additionalsDrawable,
+                        painter = additionalDrawable,
                         contentDesc = context.getString(R.string.additional_action)
                     )
                     Spacer(Modifier.height(170.dp))
                     if (isRunning)
                         IconButton(
-                            onClick = {
-                                if (notificationEnabled)
-                                    context.commandService(StopwatchAction.ADD_LAP)
-                                else
-                                    addLap()
-                            },
+                            onClick = { addLap() },
                             painter = addLapsDrawable,
                             contentDesc = context.getString(R.string.add_lap)
                         )
                     else
                         IconButton(
-                            onClick = {
-                                if (isAdditionalShow) showHideAdditional()
-                                if (notificationEnabled)
-                                    context.commandService(StopwatchAction.RESET)
-                                else
-                                    reset()
-                            },
+                            onClick = { reset() },
                             painter = stopDrawable,
                             contentDesc = context.getString(R.string.stop)
                         )
@@ -95,13 +80,8 @@ fun DisplayButtonInLandscape(
             IconButtonInLandscape(
                 height = startButtonSizeAnimation,
                 onClick = {
-                    if (isRunning) {
-                        if (notificationEnabled) context.commandService(StopwatchAction.PAUSE)
-                        else pause()
-                    } else {
-                        if (notificationEnabled) context.commandService(StopwatchAction.START_RESUME)
-                        else startResume()
-                    }
+                    if (isRunning) pause()
+                    else startResume()
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
@@ -122,8 +102,6 @@ fun DisplayButtonInLandscapePreview() {
                 .padding(start = 50.dp, end = 20.dp),
             isStarted = true,
             isRunning = false,
-            notificationEnabled = false,
-            isAdditionalShow = true,
             showHideAdditional = { },
             reset = { },
             startResume = { },

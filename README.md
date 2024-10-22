@@ -1,7 +1,7 @@
 <!--suppress ALL -->
 ![licence](https://badgen.net/static/license/Apache%202/gray)
 ![release](https://img.shields.io/github/v/release/JustDeax/ComposeStopwatch.svg)
-![minSdk](https://badgen.net/static/minSdk/24/yellow)
+![minSdk](https://badgen.net/static/minSdk/26/yellow)
 
 <div align="center">
     <img src="./app/src/main/ic_launcher-playstore.png" width="128" height="128" style="display: block; margin: 0 auto"/>

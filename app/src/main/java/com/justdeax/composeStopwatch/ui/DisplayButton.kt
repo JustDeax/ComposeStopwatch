@@ -22,21 +22,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
-import com.justdeax.composeStopwatch.util.StopwatchAction
-import com.justdeax.composeStopwatch.util.commandService
 
 @Composable
 fun DisplayButton(
     modifier: Modifier,
     isStarted: Boolean,
     isRunning: Boolean,
-    notificationEnabled: Boolean,
-    isAdditionalShow: Boolean,
     showHideAdditional: () -> Unit,
     reset: () -> Unit,
     startResume: () -> Unit,
     pause: () -> Unit,
-    addLap: () -> Unit
+    addLap: () -> Unit,
 ) {
     val context = LocalContext.current
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
@@ -69,24 +65,13 @@ fun DisplayButton(
                     Spacer(Modifier.width(170.dp))
                     if (isRunning)
                         IconButton(
-                            onClick = {
-                                if (notificationEnabled)
-                                    context.commandService(StopwatchAction.ADD_LAP)
-                                else
-                                    addLap()
-                            },
+                            onClick = { addLap() },
                             painter = addLapsDrawable,
                             contentDesc = context.getString(R.string.add_lap)
                         )
                     else
                         IconButton(
-                            onClick = {
-                                if (isAdditionalShow) showHideAdditional()
-                                if (notificationEnabled)
-                                    context.commandService(StopwatchAction.RESET)
-                                else
-                                    reset()
-                            },
+                            onClick = { reset() },
                             painter = stopDrawable,
                             contentDesc = context.getString(R.string.stop)
                         )
@@ -95,13 +80,8 @@ fun DisplayButton(
             IconButton(
                 width = startButtonSizeAnimation,
                 onClick = {
-                    if (isRunning) {
-                        if (notificationEnabled) context.commandService(StopwatchAction.PAUSE)
-                        else pause()
-                    } else {
-                        if (notificationEnabled) context.commandService(StopwatchAction.START_RESUME)
-                        else startResume()
-                    }
+                    if (isRunning) pause()
+                    else startResume()
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
@@ -122,8 +102,6 @@ fun DisplayButtonPreview() {
                 .padding(top = 20.dp, bottom = 50.dp),
             isStarted = true,
             isRunning = false,
-            notificationEnabled = false,
-            isAdditionalShow = true,
             showHideAdditional = { },
             reset = { },
             startResume = { },
