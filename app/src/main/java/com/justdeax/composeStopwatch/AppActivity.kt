@@ -218,7 +218,6 @@ class AppActivity : ComponentActivity() {
                             true,
                             isStarted,
                             !isStarted || additionalActionsShow,
-                            { /*TODO REMOVE IT PARAMETER*/ },
                             tapOnClock,
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
@@ -227,7 +226,9 @@ class AppActivity : ComponentActivity() {
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
-                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) }
+                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
+                            vibrationEnabled,
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled)}
                         )
                         DisplayButton(
                             Modifier
@@ -360,7 +361,6 @@ class AppActivity : ComponentActivity() {
                             false,
                             isStarted,
                             !isStarted || additionalActionsShow,
-                            { viewModel.saveStopwatch() },
                             tapOnClock,
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
@@ -369,7 +369,9 @@ class AppActivity : ComponentActivity() {
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
-                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) }
+                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
+                            vibrationEnabled,
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled)}
                         )
                         Box(
                             modifier = Modifier

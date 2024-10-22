@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +43,6 @@ fun DisplayActions(
     isPortrait: Boolean,
     isStarted: Boolean,
     show: Boolean,
-    saveStopwatch: () -> Unit,
     tapOnClock: Int,
     changeTapOnClock: (Int) -> Unit,
     notificationEnabled: Boolean,
@@ -53,7 +51,9 @@ fun DisplayActions(
     theme: Int,
     changeTheme: (Int) -> Unit,
     lockAwakeEnabled: Boolean,
-    changeLockAwakeEnabled: () -> Unit
+    changeLockAwakeEnabled: () -> Unit,
+    vibrationEnabled: Boolean,
+    changeVibrationEnabled: () -> Unit
 ) {
     val context = LocalContext.current
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
@@ -73,37 +73,25 @@ fun DisplayActions(
     fun actionDialogs(modifier: Modifier) {
         OutlineIconButton(
             modifier = modifier,
-            onClick = {
-                saveStopwatch()
-                showSettingsDialog = true
-            },
+            onClick = { showSettingsDialog = true },
             painter = settingsDraw,
             contentDesc = context.getString(R.string.tap_on_clock)
         )
         OutlineIconButton(
             modifier = modifier,
-            onClick = {
-                saveStopwatch()
-                showResetStopwatchDialog = true
-            },
+            onClick = { showResetStopwatchDialog = true },
             painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
             contentDesc = context.getString(R.string.turn_off_notif)
         )
         OutlineIconButton(
             modifier = modifier,
-            onClick = {
-                saveStopwatch()
-                showThemeDialog = true
-            },
+            onClick = { showThemeDialog = true },
             painter = themeDraw,
             contentDesc = context.getString(R.string.theme)
         )
         OutlineIconButton(
             modifier = modifier,
-            onClick = {
-                saveStopwatch()
-                showLockAwakeDialog = true
-            },
+            onClick = { showLockAwakeDialog = true },
             painter = if (lockAwakeEnabled) lockAwake else unlockAwake,
             contentDesc = context.getString(R.string.lock_awake)
         )
@@ -113,10 +101,16 @@ fun DisplayActions(
         var showTapOnClockDialog by remember { mutableStateOf(false) }
         OkayDialog(
             title = context.getString(R.string.stopwatch_settings),
-            content = {
-                SettingsRow("Change Tap On Clock") { showTapOnClockDialog = true }
-                SettingsRow("Autostart Stopwatch") { }
-                SettingsRow("Turn on Vibration") { }
+            content = { //TODO
+                SettingsRow("Change Tap On Clock", tapOnClock.toString()) {
+                    showTapOnClockDialog = true
+                }
+                SettingsRow("Autostart Stopwatch", "OFF") {
+
+                }
+                SettingsRow("Turn on Vibration", if (vibrationEnabled) "ON" else "OFF") {
+                    changeVibrationEnabled()
+                }
             },
             isPortrait = isPortrait,
             confirmText = context.getString(R.string.ok),
@@ -226,24 +220,29 @@ fun DisplayActions(
 }
 
 @Composable
-fun SettingsRow(text: String, onClick: () -> Unit) {
+fun SettingsRow(text: String, value: String, onClick: () -> Unit) {
     val arrowDraw = painterResource(R.drawable.round_keyboard_arrow_right_24)
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(10.dp, 12.dp)
             .clickable(onClick = onClick)
+            .padding(10.dp, 12.dp)
     ) {
         Text(
             modifier = Modifier.weight(1f),
             text = text,
             fontSize = 20.sp
         )
-        Icon(
-            arrowDraw,
-            "",
-            tint = MaterialTheme.colorScheme.outline
+        Text(
+            text = value,
+            fontSize = 21.sp,
+            color = MaterialTheme.colorScheme.outline
         )
+//        Icon(
+//            arrowDraw,
+//            "",
+//            tint = MaterialTheme.colorScheme.outline
+//        )
     }
 }
 
@@ -259,7 +258,6 @@ fun DisplayActionsPreview() {
             isPortrait = true,
             isStarted = true,
             show = true,
-            saveStopwatch = { },
             tapOnClock = 0,
             changeTapOnClock = { },
             notificationEnabled = false,
@@ -268,7 +266,9 @@ fun DisplayActionsPreview() {
             theme = 0,
             changeTheme = { },
             lockAwakeEnabled = false,
-            changeLockAwakeEnabled = { }
+            changeLockAwakeEnabled = { },
+            vibrationEnabled = false,
+            changeVibrationEnabled = { }
         )
     }
 }
