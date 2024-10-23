@@ -54,6 +54,10 @@
     <string name="lock_awake_mode_desc_enable">The screen wake-up mode is switched on</string>
     <string name="lock_awake_mode_desc_disable">The screen wake-up mode is switched off</string>
 
+    <string name="auto_start_sw">Auto Start</string>
+    <string name="auto_start_sw_desc_1">Automatic start of the stopwatch will begin after</string>
+    <string name="auto_start_sw_desc_2">You can disable auto start completely in the stopwatch settings</string>
+
     <string name="about_app">About Compose Stopwatch</string>
     <string name="about_app_desc">"Android stopwatch app in the Material You theme, designed for ease of use and best features
 

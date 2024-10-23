@@ -26,6 +26,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
     val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
     val vibrationEnabled = dataStoreManager.vibrationEnabled().asLiveData()
+    val autoStartEnabled = dataStoreManager.autoStartEnabled().asLiveData()
 
     fun changeTheme(themeCode: Int) = viewModelScope.launch {
         dataStoreManager.changeTheme(themeCode)
@@ -47,7 +48,11 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         dataStoreManager.changeVibrationEnabled(enabled)
     }
 
-    fun saveStopwatch() {
+    fun changeAutoStartEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeAutoStartEnabled(enabled)
+    }
+
+    private fun saveStopwatch() {
         if (!notificationEnabled.value!!)
             viewModelScope.launch {
                 dataStoreManager.saveStopwatch(

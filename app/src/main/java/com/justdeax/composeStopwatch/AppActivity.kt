@@ -53,6 +53,7 @@ import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
 import com.justdeax.composeStopwatch.ui.DisplayActions
+import com.justdeax.composeStopwatch.ui.dialog.DisplayAutoStartDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.ExtraDarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
@@ -128,6 +129,7 @@ class AppActivity : ComponentActivity() {
         previosLapDelta: Long
     ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
+        var autoStartBoolean by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
@@ -164,7 +166,16 @@ class AppActivity : ComponentActivity() {
                         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     else
                         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    autoStartBoolean = viewModel.autoStartEnabled.value ?: false
                 }
+
+                if (autoStartBoolean)
+                    DisplayAutoStartDialog(
+                        isPortrait,
+                        { }
+                    ) { }
+                //TODO Dialog
+
                 if (isPortrait) {
                     Column(Modifier.padding(innerPadding)) {
                         Box(
@@ -267,15 +278,6 @@ class AppActivity : ComponentActivity() {
                             {
                                 if (notificationEnabled) commandService(StopwatchAction.PAUSE)
                                 else viewModel.pause()
-
-//                                if (vibrationEnabled) {
-//                                    vibrator.cancel()
-//                                    val pauseVibration = VibrationEffect.createOneShot(
-//                                        300,
-//                                        VibrationEffect.DEFAULT_AMPLITUDE
-//                                    )
-//                                    vibrator.vibrate(pauseVibration)
-//                                }
                             },
                             {
                                 if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
@@ -330,15 +332,6 @@ class AppActivity : ComponentActivity() {
                             {
                                 if (notificationEnabled) commandService(StopwatchAction.PAUSE)
                                 else viewModel.pause()
-
-//                                if (vibrationEnabled) {
-//                                    vibrator.cancel()
-//                                    val pauseVibration = VibrationEffect.createOneShot(
-//                                        300,
-//                                        VibrationEffect.DEFAULT_AMPLITUDE
-//                                    )
-//                                    vibrator.vibrate(pauseVibration)
-//                                }
                             },
                             {
                                 if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)

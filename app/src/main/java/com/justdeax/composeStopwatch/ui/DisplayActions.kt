@@ -101,12 +101,12 @@ fun DisplayActions(
         var showTapOnClockDialog by remember { mutableStateOf(false) }
         OkayDialog(
             title = context.getString(R.string.stopwatch_settings),
-            content = { //TODO
+            content = { //TODO STRINGS
                 SettingsRow("Change Tap On Clock", tapOnClock.toString()) {
                     showTapOnClockDialog = true
                 }
-                SettingsRow("Autostart Stopwatch", "OFF") {
-
+                SettingsRow("Autostart Stopwatch when launch app", "OFF") {
+                    //TODO IT
                 }
                 SettingsRow("Turn on Vibration", if (vibrationEnabled) "ON" else "OFF") {
                     changeVibrationEnabled()
