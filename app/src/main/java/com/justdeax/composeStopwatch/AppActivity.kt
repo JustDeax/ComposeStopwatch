@@ -43,16 +43,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
+import com.justdeax.composeStopwatch.stopwatch.StopwatchService
+import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
+import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
+import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.DisplayAppName
 import com.justdeax.composeStopwatch.ui.DisplayButton
 import com.justdeax.composeStopwatch.ui.DisplayButtonInLandscape
 import com.justdeax.composeStopwatch.ui.DisplayLaps
 import com.justdeax.composeStopwatch.ui.DisplayTime
-import com.justdeax.composeStopwatch.stopwatch.StopwatchService
-import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
-import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
-import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.dialog.DisplayAutoStartDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.ExtraDarkColorScheme
@@ -62,8 +61,6 @@ import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
 import com.justdeax.composeStopwatch.util.commandService
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.LinkedList
 
 class AppActivity : ComponentActivity() {
@@ -93,7 +90,7 @@ class AppActivity : ComponentActivity() {
 
     @Composable
     fun AppScreen() {
-        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
+        val notificationEnabled: Boolean by viewModel.notificationEnabled.observeAsState(true)
         if (notificationEnabled) {
             val isStarted by StopwatchService.isStartedI.observeAsState(false)
             val isRunning by StopwatchService.isRunningI.observeAsState(false)
@@ -116,6 +113,39 @@ class AppActivity : ComponentActivity() {
                 false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
             )
         }
+
+//        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
+//
+//        // Collecting stopwatch data depending on the notification state
+//        var (isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta) = if (notificationEnabled) {
+//            val isStarted: Boolean by StopwatchService.isStartedI.observeAsState(false)
+//            val isRunning by StopwatchService.isRunningI.observeAsState(false)
+//            val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
+//            val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
+//            val laps by StopwatchService.lapsI.observeAsState(LinkedList())
+//            val previosLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
+//            listOf(isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta)
+//        } else {
+//            LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
+//            val isStarted: Boolean by viewModel.isStartedI.observeAsState(false)
+//            val isRunning by viewModel.isRunningI.observeAsState(false)
+//            val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
+//            val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
+//            val laps by viewModel.lapsI.observeAsState(LinkedList())
+//            val previosLapDelta by viewModel.previousLapDelta.observeAsState(0L)
+//            listOf(isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta)
+//        }
+//
+//        // Single call to StopwatchScreen
+//        StopwatchScreen(
+//            notificationEnabled,
+//            isStarted,
+//            isRunning,
+//            elapsedMs,
+//            elapsedSec,
+//            laps,
+//            previosLapDelta as Long
+//        )
     }
 
     @Composable
@@ -129,52 +159,68 @@ class AppActivity : ComponentActivity() {
         previosLapDelta: Long
     ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
-        var autoStartBoolean by remember { mutableStateOf(false) }
+        var autoStartEnabledNow by remember { mutableStateOf(false) }
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
         val vibrationEnabled by viewModel.vibrationEnabled.observeAsState(false)
+        val autoStartEnabled by viewModel.autoStartEnabled.observeAsState(false)
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        val colorScheme = when (theme) {
-            1 -> LightColorScheme
-            2 -> DarkColorScheme
-            3 -> ExtraDarkColorScheme
-            else -> { // == 0
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (isSystemInDarkTheme())
-                        dynamicDarkColorScheme(this)
-                    else
-                        dynamicLightColorScheme(this)
-                } else {
-                    if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+        val isDarkTheme = isSystemInDarkTheme()
+        val colorScheme = remember(theme, isDarkTheme) {
+            when (theme) {
+                1 -> LightColorScheme
+                2 -> DarkColorScheme
+                3 -> ExtraDarkColorScheme
+                else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        if (isDarkTheme) dynamicDarkColorScheme(this)
+                        else dynamicLightColorScheme(this)
+                    } else {
+                        if (isDarkTheme) DarkColorScheme else LightColorScheme
+                    }
                 }
             }
         }
-        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(VibratorManager::class.java)
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vibrator = remember {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = this.getSystemService(VibratorManager::class.java)
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+        }
+        LaunchedEffect(lockAwakeEnabled) {
+            if (lockAwakeEnabled)
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            else
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+        LaunchedEffect(autoStartEnabled) {
+            if (elapsedMs == 0L) autoStartEnabledNow = autoStartEnabled
         }
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
             Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                LaunchedEffect(lockAwakeEnabled) {
-                    if (lockAwakeEnabled)
-                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    else
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    autoStartBoolean = viewModel.autoStartEnabled.value ?: false
-                }
-
-                if (autoStartBoolean)
+                if (autoStartEnabled && autoStartEnabledNow)
                     DisplayAutoStartDialog(
-                        isPortrait,
-                        { }
-                    ) { }
-                //TODO Dialog
+                        isPortrait = isPortrait,
+                        onDismiss = { autoStartEnabledNow = false },
+                        startStopwatch = {
+                            notificationEnabled.startResume()
+
+                            if (vibrationEnabled) {
+                                vibrator.cancel()
+                                val startAndResumeVibration = VibrationEffect.createOneShot(
+                                    175,
+                                    VibrationEffect.DEFAULT_AMPLITUDE
+                                )
+                                vibrator.vibrate(startAndResumeVibration)
+                            }
+                        }
+                    )
 
                 if (isPortrait) {
                     Column(Modifier.padding(innerPadding)) {
@@ -239,7 +285,9 @@ class AppActivity : ComponentActivity() {
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
                             vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled)}
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled)},
+                            autoStartEnabled,
+                            { viewModel.changeAutoStartEnabled(!autoStartEnabled)}
                         )
                         DisplayButton(
                             Modifier
@@ -250,9 +298,7 @@ class AppActivity : ComponentActivity() {
                             { additionalActionsShow = !additionalActionsShow },
                             {
                                 if (additionalActionsShow) additionalActionsShow = false
-                                if (notificationEnabled) commandService(StopwatchAction.RESET)
-                                else viewModel.reset()
-
+                                notificationEnabled.reset()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
                                     val resetVibration = VibrationEffect.createOneShot(
@@ -263,32 +309,28 @@ class AppActivity : ComponentActivity() {
                                 }
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
-                                else viewModel.startResume()
-
+                                notificationEnabled.startResume()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
-                                    val startAndResumeVibration = VibrationEffect.createOneShot(
+                                    val startResumeVibration = VibrationEffect.createOneShot(
                                         175,
                                         VibrationEffect.DEFAULT_AMPLITUDE
                                     )
-                                    vibrator.vibrate(startAndResumeVibration)
+                                    vibrator.vibrate(startResumeVibration)
                                 }
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.PAUSE)
-                                else viewModel.pause()
+                                notificationEnabled.pause()
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
-                                else viewModel.addLap()
-
+                                notificationEnabled.addLap()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
-                                    val lapVibrationPattern = longArrayOf(0, 100, 50, 100)
-                                    val lapVibration =
-                                        VibrationEffect.createWaveform(lapVibrationPattern, -1)
-                                    vibrator.vibrate(lapVibration)
+                                    val addLapVibrationPattern = longArrayOf(0, 100, 50, 100)
+                                    val addLapVibration = VibrationEffect.createWaveform(
+                                        addLapVibrationPattern, -1
+                                    )
+                                    vibrator.vibrate(addLapVibration)
                                 }
                             }
                         )
@@ -304,9 +346,7 @@ class AppActivity : ComponentActivity() {
                             { additionalActionsShow = !additionalActionsShow },
                             {
                                 if (additionalActionsShow) additionalActionsShow = false
-                                if (notificationEnabled) commandService(StopwatchAction.RESET)
-                                else viewModel.reset()
-
+                                notificationEnabled.reset()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
                                     val resetVibration = VibrationEffect.createOneShot(
@@ -317,32 +357,28 @@ class AppActivity : ComponentActivity() {
                                 }
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
-                                else viewModel.startResume()
-
+                                notificationEnabled.startResume()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
-                                    val startAndResumeVibration = VibrationEffect.createOneShot(
+                                    val startResumeVibration = VibrationEffect.createOneShot(
                                         175,
                                         VibrationEffect.DEFAULT_AMPLITUDE
                                     )
-                                    vibrator.vibrate(startAndResumeVibration)
+                                    vibrator.vibrate(startResumeVibration)
                                 }
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.PAUSE)
-                                else viewModel.pause()
+                                notificationEnabled.pause()
                             },
                             {
-                                if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
-                                else viewModel.addLap()
-
+                                notificationEnabled.addLap()
                                 if (vibrationEnabled) {
                                     vibrator.cancel()
-                                    val lapVibrationPattern = longArrayOf(0, 100, 50, 100)
-                                    val lapVibration =
-                                        VibrationEffect.createWaveform(lapVibrationPattern, -1)
-                                    vibrator.vibrate(lapVibration)
+                                    val addLapVibrationPattern = longArrayOf(0, 100, 50, 100)
+                                    val addLapVibration = VibrationEffect.createWaveform(
+                                        addLapVibrationPattern, -1
+                                    )
+                                    vibrator.vibrate(addLapVibration)
                                 }
                             }
                         )
@@ -358,13 +394,15 @@ class AppActivity : ComponentActivity() {
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
                             { viewModel.changeNotificationEnabled(!notificationEnabled) },
-                            { viewModel.hardReset() },
+                            { notificationEnabled.hardReset() },
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
                             vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled)}
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled)},
+                            autoStartEnabled,
+                            { viewModel.changeAutoStartEnabled(!autoStartEnabled)}
                         )
                         Box(
                             modifier = Modifier
@@ -418,42 +456,42 @@ class AppActivity : ComponentActivity() {
     private fun clickOnClock(tapType: Int, isRunning: Boolean, notificationEnabled: Boolean) {
         when (tapType) {
             1 -> {
-                if (isRunning) {
-                    if (notificationEnabled) commandService(StopwatchAction.PAUSE)
-                    else viewModel.pause()
-                } else {
-                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
-                    else viewModel.startResume()
-                }
+                if (isRunning) notificationEnabled.pause()
+                else notificationEnabled.startResume()
             }
             2 -> {
-                if (isRunning) {
-                    if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
-                    else viewModel.addLap()
-                } else {
-                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
-                    else viewModel.startResume()
-                }
+                if (isRunning) notificationEnabled.addLap()
+                else notificationEnabled.startResume()
             }
             3 -> {
-                if (isRunning) {
-                    if (notificationEnabled)
-                        lifecycleScope.launch {
-                            commandService(StopwatchAction.PAUSE)
-                            delay(10)
-                            commandService(StopwatchAction.RESET)
-                        }
-                    else
-                        lifecycleScope.launch {
-                            viewModel.pause()
-                            delay(10)
-                            viewModel.reset()
-                        }
-                } else {
-                    if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
-                    else viewModel.startResume()
-                }
+                if (isRunning) notificationEnabled.hardReset()
+                else notificationEnabled.startResume()
             }
         }
+    }
+
+    private fun Boolean.startResume() {
+        if (this) commandService(StopwatchAction.START_RESUME)
+        else viewModel.startResume()
+    }
+
+    fun Boolean.pause() {
+        if (this) commandService(StopwatchAction.PAUSE)
+        else viewModel.pause()
+    }
+
+    private fun Boolean.addLap() {
+        if (this) commandService(StopwatchAction.ADD_LAP)
+        else viewModel.addLap()
+    }
+
+    private fun Boolean.reset() {
+        if (this) commandService(StopwatchAction.RESET)
+        else viewModel.reset()
+    }
+
+    private fun Boolean.hardReset() {
+        if (this) commandService(StopwatchAction.HARD_RESET)
+        else viewModel.hardReset()
     }
 }

@@ -33,8 +33,6 @@ import com.justdeax.composeStopwatch.ui.dialog.OkayDialog
 import com.justdeax.composeStopwatch.ui.dialog.RadioDialog
 import com.justdeax.composeStopwatch.ui.dialog.SimpleDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
-import com.justdeax.composeStopwatch.util.StopwatchAction
-import com.justdeax.composeStopwatch.util.commandService
 import kotlinx.coroutines.delay
 
 @Composable
@@ -53,7 +51,9 @@ fun DisplayActions(
     lockAwakeEnabled: Boolean,
     changeLockAwakeEnabled: () -> Unit,
     vibrationEnabled: Boolean,
-    changeVibrationEnabled: () -> Unit
+    changeVibrationEnabled: () -> Unit,
+    autoStartEnabled: Boolean,
+    changeAutoStartEnabled: () -> Unit
 ) {
     val context = LocalContext.current
     val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
@@ -75,7 +75,7 @@ fun DisplayActions(
             modifier = modifier,
             onClick = { showSettingsDialog = true },
             painter = settingsDraw,
-            contentDesc = context.getString(R.string.tap_on_clock)
+            contentDesc = context.getString(R.string.stopwatch_settings)
         )
         OutlineIconButton(
             modifier = modifier,
@@ -102,13 +102,22 @@ fun DisplayActions(
         OkayDialog(
             title = context.getString(R.string.stopwatch_settings),
             content = { //TODO STRINGS
-                SettingsRow("Change Tap On Clock", tapOnClock.toString()) {
+                SettingsRow(
+                    context.getString(R.string.change_tap_on_clock),
+                    tapOnClock.toString()
+                ) {
                     showTapOnClockDialog = true
                 }
-                SettingsRow("Autostart Stopwatch when launch app", "OFF") {
-                    //TODO IT
+                SettingsRow(
+                    context.getString(R.string.auto_start_sw),
+                    if (autoStartEnabled) "ON" else "OFF"
+                ) {
+                    changeAutoStartEnabled()
                 }
-                SettingsRow("Turn on Vibration", if (vibrationEnabled) "ON" else "OFF") {
+                SettingsRow(
+                    context.getString(R.string.turn_on_vibration),
+                    if (vibrationEnabled) "ON" else "OFF"
+                ) {
                     changeVibrationEnabled()
                 }
             },
@@ -140,8 +149,7 @@ fun DisplayActions(
                 isPortrait = isPortrait,
                 confirmText = context.getString(R.string.ok),
                 onConfirm = {
-                    if (notificationEnabled) context.commandService(StopwatchAction.HARD_RESET)
-                    else hardReset()
+                    hardReset()
                     changeNotificationEnabled()
                     showResetStopwatchDialog = false
                 },
@@ -238,11 +246,6 @@ fun SettingsRow(text: String, value: String, onClick: () -> Unit) {
             fontSize = 21.sp,
             color = MaterialTheme.colorScheme.outline
         )
-//        Icon(
-//            arrowDraw,
-//            "",
-//            tint = MaterialTheme.colorScheme.outline
-//        )
     }
 }
 
@@ -268,7 +271,9 @@ fun DisplayActionsPreview() {
             lockAwakeEnabled = false,
             changeLockAwakeEnabled = { },
             vibrationEnabled = false,
-            changeVibrationEnabled = { }
+            changeVibrationEnabled = { },
+            autoStartEnabled = false,
+            changeAutoStartEnabled = { }
         )
     }
 }

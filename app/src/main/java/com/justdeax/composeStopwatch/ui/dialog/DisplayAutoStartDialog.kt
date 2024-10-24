@@ -41,6 +41,7 @@ fun DisplayAutoStartDialog(
         } else if (!isFinished) {
             isFinished = true
             startStopwatch()
+            onDismiss()
         }
     }
 
@@ -53,7 +54,7 @@ fun DisplayAutoStartDialog(
             DialogProperties()
         else
             DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(context.getString(R.string.auto_start_sw)) },
+        title = { Text(context.getString(R.string.auto_start_sw_title)) },
         text = {
             val scrollState = rememberScrollState()
             Column(

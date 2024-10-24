@@ -17,7 +17,8 @@
 
     <string name="stopwatch_settings">Stopwatch Settings</string>
     <string name="additional_action">Additional Actions</string>
-    <string name="tap_on_clock">Tap on Clock</string>
+    <string name="auto_start_sw">Autostart Stopwatch when launch app</string>
+    <string name="turn_on_vibration">Turn on vibration</string>
     <string name="turn_off_notif">Turn on/off notification</string>
     <string name="theme">Theme</string>
     <string name="lock_awake">Lock Awake</string>
@@ -54,7 +55,7 @@
     <string name="lock_awake_mode_desc_enable">The screen wake-up mode is switched on</string>
     <string name="lock_awake_mode_desc_disable">The screen wake-up mode is switched off</string>
 
-    <string name="auto_start_sw">Auto Start</string>
+    <string name="auto_start_sw_title">Auto Start</string>
     <string name="auto_start_sw_desc_1">Automatic start of the stopwatch will begin after</string>
     <string name="auto_start_sw_desc_2">You can disable auto start completely in the stopwatch settings</string>
 
