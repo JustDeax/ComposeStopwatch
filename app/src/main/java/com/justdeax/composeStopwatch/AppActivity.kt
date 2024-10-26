@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -113,39 +114,6 @@ class AppActivity : ComponentActivity() {
                 false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
             )
         }
-
-//        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
-//
-//        // Collecting stopwatch data depending on the notification state
-//        var (isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta) = if (notificationEnabled) {
-//            val isStarted: Boolean by StopwatchService.isStartedI.observeAsState(false)
-//            val isRunning by StopwatchService.isRunningI.observeAsState(false)
-//            val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
-//            val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
-//            val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-//            val previosLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
-//            listOf(isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta)
-//        } else {
-//            LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
-//            val isStarted: Boolean by viewModel.isStartedI.observeAsState(false)
-//            val isRunning by viewModel.isRunningI.observeAsState(false)
-//            val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
-//            val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
-//            val laps by viewModel.lapsI.observeAsState(LinkedList())
-//            val previosLapDelta by viewModel.previousLapDelta.observeAsState(0L)
-//            listOf(isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta)
-//        }
-//
-//        // Single call to StopwatchScreen
-//        StopwatchScreen(
-//            notificationEnabled,
-//            isStarted,
-//            isRunning,
-//            elapsedMs,
-//            elapsedSec,
-//            laps,
-//            previosLapDelta as Long
-//        )
     }
 
     @Composable
@@ -160,14 +128,17 @@ class AppActivity : ComponentActivity() {
     ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
         var autoStartEnabledNow by remember { mutableStateOf(false) }
+
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
         val vibrationEnabled by viewModel.vibrationEnabled.observeAsState(false)
         val autoStartEnabled by viewModel.autoStartEnabled.observeAsState(false)
+
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val isDarkTheme = isSystemInDarkTheme()
+
         val colorScheme = remember(theme, isDarkTheme) {
             when (theme) {
                 1 -> LightColorScheme
@@ -183,15 +154,21 @@ class AppActivity : ComponentActivity() {
                 }
             }
         }
+
         val vibrator = remember {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = this.getSystemService(VibratorManager::class.java)
-                vibratorManager.defaultVibrator
+                val vibratorManager = getSystemService(VibratorManager::class.java)
+                vibratorManager?.defaultVibrator
             } else {
                 @Suppress("DEPRECATION")
                 getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
         }
+        val startResumeVibration = VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
+        val pauseVibration = VibrationEffect.createOneShot(200, 80)
+        val resetVibration = VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE)
+        val addLapVibration = VibrationEffect.createWaveform(longArrayOf(0, 100, 50, 100), -1)
+
         LaunchedEffect(lockAwakeEnabled) {
             if (lockAwakeEnabled)
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -199,25 +176,21 @@ class AppActivity : ComponentActivity() {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         LaunchedEffect(autoStartEnabled) {
-            if (elapsedMs == 0L) autoStartEnabledNow = autoStartEnabled
+            Log.d("TAG000", "$autoStartEnabledNow $autoStartEnabled $isStarted")
+            if (!isStarted) autoStartEnabledNow = autoStartEnabled
         }
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
             Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                if (autoStartEnabled && autoStartEnabledNow)
+                if (autoStartEnabledNow)
                     DisplayAutoStartDialog(
                         isPortrait = isPortrait,
                         onDismiss = { autoStartEnabledNow = false },
                         startStopwatch = {
                             notificationEnabled.startResume()
-
-                            if (vibrationEnabled) {
+                            if (vibrationEnabled && vibrator != null) {
                                 vibrator.cancel()
-                                val startAndResumeVibration = VibrationEffect.createOneShot(
-                                    175,
-                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                )
-                                vibrator.vibrate(startAndResumeVibration)
+                                vibrator.vibrate(startResumeVibration)
                             }
                         }
                     )
@@ -247,9 +220,18 @@ class AppActivity : ComponentActivity() {
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            clickOnClock(
-                                                tapOnClock, isRunning, notificationEnabled
-                                            )
+                                            clickOnClock(tapOnClock, isRunning, notificationEnabled)
+                                            if (vibrationEnabled && vibrator != null) {
+                                                vibrator.cancel()
+                                                if (!isRunning)
+                                                    vibrator.vibrate(startResumeVibration)
+                                                else
+                                                    when (tapOnClock) {
+                                                        1 -> vibrator.vibrate(pauseVibration)
+                                                        2 -> vibrator.vibrate(addLapVibration)
+                                                        3 -> vibrator.vibrate(resetVibration)
+                                                    }
+                                            }
                                         },
                                     true,
                                     isStarted && !isRunning,
@@ -299,37 +281,29 @@ class AppActivity : ComponentActivity() {
                             {
                                 if (additionalActionsShow) additionalActionsShow = false
                                 notificationEnabled.reset()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val resetVibration = VibrationEffect.createOneShot(
-                                        500,
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                    )
                                     vibrator.vibrate(resetVibration)
                                 }
                             },
                             {
                                 notificationEnabled.startResume()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val startResumeVibration = VibrationEffect.createOneShot(
-                                        175,
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                    )
                                     vibrator.vibrate(startResumeVibration)
                                 }
                             },
                             {
                                 notificationEnabled.pause()
+                                if (vibrationEnabled && vibrator != null) {
+                                    vibrator.cancel()
+                                    vibrator.vibrate(pauseVibration)
+                                }
                             },
                             {
                                 notificationEnabled.addLap()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val addLapVibrationPattern = longArrayOf(0, 100, 50, 100)
-                                    val addLapVibration = VibrationEffect.createWaveform(
-                                        addLapVibrationPattern, -1
-                                    )
                                     vibrator.vibrate(addLapVibration)
                                 }
                             }
@@ -347,37 +321,29 @@ class AppActivity : ComponentActivity() {
                             {
                                 if (additionalActionsShow) additionalActionsShow = false
                                 notificationEnabled.reset()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val resetVibration = VibrationEffect.createOneShot(
-                                        500,
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                    )
                                     vibrator.vibrate(resetVibration)
                                 }
                             },
                             {
                                 notificationEnabled.startResume()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val startResumeVibration = VibrationEffect.createOneShot(
-                                        175,
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                    )
                                     vibrator.vibrate(startResumeVibration)
                                 }
                             },
                             {
                                 notificationEnabled.pause()
+                                if (vibrationEnabled && vibrator != null) {
+                                    vibrator.cancel()
+                                    vibrator.vibrate(pauseVibration)
+                                }
                             },
                             {
                                 notificationEnabled.addLap()
-                                if (vibrationEnabled) {
+                                if (vibrationEnabled && vibrator != null) {
                                     vibrator.cancel()
-                                    val addLapVibrationPattern = longArrayOf(0, 100, 50, 100)
-                                    val addLapVibration = VibrationEffect.createWaveform(
-                                        addLapVibrationPattern, -1
-                                    )
                                     vibrator.vibrate(addLapVibration)
                                 }
                             }
@@ -427,9 +393,18 @@ class AppActivity : ComponentActivity() {
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            clickOnClock(
-                                                tapOnClock, isRunning, notificationEnabled
-                                            )
+                                            clickOnClock(tapOnClock, isRunning, notificationEnabled)
+                                            if (vibrationEnabled && vibrator != null) {
+                                                vibrator.cancel()
+                                                if (!isRunning)
+                                                    vibrator.vibrate(startResumeVibration)
+                                                else
+                                                    when (tapOnClock) {
+                                                        1 -> vibrator.vibrate(pauseVibration)
+                                                        2 -> vibrator.vibrate(addLapVibration)
+                                                        3 -> vibrator.vibrate(resetVibration)
+                                                    }
+                                            }
                                         },
                                     false,
                                     isStarted && !isRunning,
@@ -475,7 +450,7 @@ class AppActivity : ComponentActivity() {
         else viewModel.startResume()
     }
 
-    fun Boolean.pause() {
+    private fun Boolean.pause() {
         if (this) commandService(StopwatchAction.PAUSE)
         else viewModel.pause()
     }
