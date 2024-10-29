@@ -11,8 +11,10 @@
     <string name="add_lap">Добавить круг</string>
     <string name="last_lap">Последний круг</string>
 
+    <string name="stopwatch_settings">Настройки секундомера</string>
     <string name="additional_action">Дополнительные действия</string>
-    <string name="tap_on_clock">Нажатие на часы</string>
+    <string name="auto_start_sw">Автозапуск секундомера при запуске приложения</string>
+    <string name="turn_on_vibration">Включить вибрацию</string>
     <string name="turn_off_notif">Включить/выключить уведомления</string>
     <string name="theme">Тема</string>
     <string name="lock_awake">Не выключать экран</string>
@@ -49,8 +51,17 @@
     <string name="lock_awake_mode_desc_enable">Режим активного экрана включен</string>
     <string name="lock_awake_mode_desc_disable">Режим активного экрана выключен</string>
 
+    <string name="auto_start_sw_title">Автозапуск</string>
+    <string name="auto_start_sw_desc_1">Автоматический запуск секундомера начнется через</string>
+    <string name="auto_start_sw_desc_2">Вы можете полностью отключить автозапуск в настройках секундомера</string>
+
     <string name="about_app">О приложении Compose Stopwatch</string>
     <string name="about_app_desc">"Приложение-секундомер для Android в стиле Material You, разработанное для удобства использования и лучших функций
+
+► Новые настройки секундомера
+    • Включить автозапуск через 3 секунды после запуска приложения с возможностью отмены
+    • Включить вибрацию для лучшей тактильной отдачи
+    • Выбрать действие при нажатии на часы
 
 ► Круговой прогресс
     • Отображает прогресс текущего круга относительно самого первого

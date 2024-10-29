@@ -1,0 +1,4 @@
+- Added settings dialog, more settings!
+- Added vibration enable
+- Added autostart enable
+- Changed minimum android

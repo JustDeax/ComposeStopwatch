@@ -1,5 +1,10 @@
 Aplicación de cronómetro para Android con el tema Material You, diseñada para facilidad de uso y las mejores características
 
+► Nuevos ajustes del cronómetro
+    • Habilitar inicio automático 3 segundos después de iniciar la app con opción de anular
+    • Activar vibración para mejor sensación táctil
+    • Seleccionar acción al tocar el reloj
+
 ► Progreso circular
     • Muestra el progreso de la vuelta actual basado en la primera vuelta
     • Un guión en el progreso de la vuelta muestra la vuelta anterior

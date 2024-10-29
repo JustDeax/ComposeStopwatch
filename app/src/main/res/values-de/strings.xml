@@ -11,8 +11,10 @@
     <string name="add_lap">Runde hinzufügen</string>
     <string name="last_lap">Letzte Runde</string>
 
+    <string name="stopwatch_settings">Stoppuhr-Einstellungen</string>
     <string name="additional_action">Zusätzliche Aktionen</string>
-    <string name="tap_on_clock">Auf die Uhr tippen</string>
+    <string name="auto_start_sw">Stoppuhr automatisch starten, wenn App gestartet wird</string>
+    <string name="turn_on_vibration">Vibration einschalten</string>
     <string name="turn_off_notif">Benachrichtigungen ein-/ausschalten</string>
     <string name="theme">Thema</string>
     <string name="lock_awake">Bildschirm wach halten</string>
@@ -49,8 +51,17 @@
     <string name="lock_awake_mode_desc_enable">Der Bildschirm-Wachmodus ist eingeschaltet</string>
     <string name="lock_awake_mode_desc_disable">Der Bildschirm-Wachmodus ist ausgeschaltet</string>
 
+    <string name="auto_start_sw_title">Automatischer Start</string>
+    <string name="auto_start_sw_desc_1">Der automatische Start der Stoppuhr beginnt nach</string>
+    <string name="auto_start_sw_desc_2">Sie können den automatischen Start vollständig in den Stoppuhr-Einstellungen deaktivieren</string>
+
     <string name="about_app">Über Compose Stopwatch</string>
     <string name="about_app_desc">"Android-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
+
+► Neue Stoppuhr-Einstellungen
+    • Automatischen Start 3 Sekunden nach App-Start mit Übersteuerungsoption aktivieren
+    • Vibration für besseres taktiles Feedback aktivieren
+    • Aktion bei Tippen auf die Uhr auswählen
 
 ► Kreisförtiger Fortschritt
     • Zeigt den Fortschritt der aktuellen Runde basierend auf der allerersten an

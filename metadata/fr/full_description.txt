@@ -1,5 +1,10 @@
 Application chronomètre Android au design Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
 
+► Nouveaux paramètres du chronomètre
+    • Activer le démarrage automatique 3 secondes après le lancement avec option de modification
+    • Activer la vibration pour une meilleure sensation tactile
+    • Sélectionner l'action lors d'un appui sur l'horloge
+
 ► Progression circulaire
     • Affiche la progression du tour actuel par rapport au tout premier
     • Un tiret sur la progression du tour indique le tour précédent

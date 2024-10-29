@@ -11,8 +11,10 @@
     <string name="add_lap">Ajouter un tour</string>
     <string name="last_lap">Dernier Tour</string>
 
+    <string name="stopwatch_settings">Paramètres du chronomètre</string>
     <string name="additional_action">Actions supplémentaires</string>
-    <string name="tap_on_clock">Appuyer sur l\'horloge</string>
+    <string name="auto_start_sw">Démarrage automatique du chronomètre au lancement de l\'application</string>
+    <string name="turn_on_vibration">Activer la vibration</string>
     <string name="turn_off_notif">Activer/désactiver les notifications</string>
     <string name="theme">Thème</string>
     <string name="lock_awake">Maintenir l\'écran allumé</string>
@@ -49,8 +51,17 @@
     <string name="lock_awake_mode_desc_enable">Le mode écran toujours actif est activé</string>
     <string name="lock_awake_mode_desc_disable">Le mode écran toujours actif est désactivé</string>
 
+    <string name="auto_start_sw_title">Démarrage automatique</string>
+    <string name="auto_start_sw_desc_1">Le démarrage automatique du chronomètre commencera après</string>
+    <string name="auto_start_sw_desc_2">Vous pouvez désactiver le démarrage automatique complètement dans les paramètres du chronomètre</string>
+
     <string name="about_app">À propos de Compose Stopwatch</string>
     <string name="about_app_desc">"Application chronomètre Android au design Material You, conçue pour une utilisation facile et les meilleures fonctionnalités
+
+► Nouveaux paramètres du chronomètre
+    • Activer le démarrage automatique 3 secondes après le lancement avec option de modification
+    • Activer la vibration pour une meilleure sensation tactile
+    • Sélectionner l'action lors d'un appui sur l'horloge
 
 ► Progression circulaire
     • Affiche la progression du tour actuel par rapport au tout premier

@@ -1,5 +1,10 @@
 Android-Stoppuhr-App im Material You-Design, entwickelt für einfache Bedienung und beste Funktionen
 
+► Neue Stoppuhr-Einstellungen
+    • Automatischen Start 3 Sekunden nach App-Start mit Übersteuerungsoption aktivieren
+    • Vibration für besseres taktiles Feedback aktivieren
+    • Aktion bei Tippen auf die Uhr auswählen
+
 ► Kreisförtiger Fortschritt
     • Zeigt den Fortschritt der aktuellen Runde basierend auf der allerersten an
     • Ein Strich auf dem Rundenfortschritt zeigt die vorherige Runde an

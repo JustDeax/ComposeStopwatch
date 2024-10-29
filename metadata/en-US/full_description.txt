@@ -1,5 +1,10 @@
 Android stopwatch app in the Material You theme, designed for ease of use and best features
 
+► New Stopwatch Settings
+    • Enable Auto Start 3 seconds after app launch with override option
+    • Enable vibration for better tactile sensation
+    • Select action when you tap on the clock
+
 ► Circular progress
     • Displays the progress of the current lap based on the very first one
     • A dash on the lap progress shows the previous lap

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -138,7 +137,6 @@ class AppActivity : ComponentActivity() {
         val configuration = LocalConfiguration.current
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val isDarkTheme = isSystemInDarkTheme()
-
         val colorScheme = remember(theme, isDarkTheme) {
             when (theme) {
                 1 -> LightColorScheme
@@ -176,13 +174,12 @@ class AppActivity : ComponentActivity() {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         LaunchedEffect(autoStartEnabled) {
-            Log.d("TAG000", "$autoStartEnabledNow $autoStartEnabled $isStarted")
-            if (!isStarted) autoStartEnabledNow = autoStartEnabled
+            autoStartEnabledNow = autoStartEnabled
         }
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
             Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                if (autoStartEnabledNow)
+                if (!isStarted && autoStartEnabledNow)
                     DisplayAutoStartDialog(
                         isPortrait = isPortrait,
                         onDismiss = { autoStartEnabledNow = false },
@@ -223,14 +220,13 @@ class AppActivity : ComponentActivity() {
                                             clickOnClock(tapOnClock, isRunning, notificationEnabled)
                                             if (vibrationEnabled && vibrator != null) {
                                                 vibrator.cancel()
-                                                if (!isRunning)
+                                                if (!isRunning) {
                                                     vibrator.vibrate(startResumeVibration)
-                                                else
-                                                    when (tapOnClock) {
-                                                        1 -> vibrator.vibrate(pauseVibration)
-                                                        2 -> vibrator.vibrate(addLapVibration)
-                                                        3 -> vibrator.vibrate(resetVibration)
-                                                    }
+                                                } else when (tapOnClock) {
+                                                    1 -> vibrator.vibrate(pauseVibration)
+                                                    2 -> vibrator.vibrate(addLapVibration)
+                                                    3 -> vibrator.vibrate(resetVibration)
+                                                }
                                             }
                                         },
                                     true,
@@ -396,14 +392,13 @@ class AppActivity : ComponentActivity() {
                                             clickOnClock(tapOnClock, isRunning, notificationEnabled)
                                             if (vibrationEnabled && vibrator != null) {
                                                 vibrator.cancel()
-                                                if (!isRunning)
+                                                if (!isRunning) {
                                                     vibrator.vibrate(startResumeVibration)
-                                                else
-                                                    when (tapOnClock) {
-                                                        1 -> vibrator.vibrate(pauseVibration)
-                                                        2 -> vibrator.vibrate(addLapVibration)
-                                                        3 -> vibrator.vibrate(resetVibration)
-                                                    }
+                                                } else when (tapOnClock) {
+                                                    1 -> vibrator.vibrate(pauseVibration)
+                                                    2 -> vibrator.vibrate(addLapVibration)
+                                                    3 -> vibrator.vibrate(resetVibration)
+                                                }
                                             }
                                         },
                                     false,
@@ -429,20 +424,11 @@ class AppActivity : ComponentActivity() {
     }
 
     private fun clickOnClock(tapType: Int, isRunning: Boolean, notificationEnabled: Boolean) {
-        when (tapType) {
-            1 -> {
-                if (isRunning) notificationEnabled.pause()
-                else notificationEnabled.startResume()
-            }
-            2 -> {
-                if (isRunning) notificationEnabled.addLap()
-                else notificationEnabled.startResume()
-            }
-            3 -> {
-                if (isRunning) notificationEnabled.hardReset()
-                else notificationEnabled.startResume()
-            }
-        }
+        if (isRunning) when (tapType) {
+            1 -> notificationEnabled.pause()
+            2 -> notificationEnabled.addLap()
+            3 -> notificationEnabled.hardReset()
+        }  else  notificationEnabled.startResume()
     }
 
     private fun Boolean.startResume() {

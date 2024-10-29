@@ -56,7 +56,6 @@ fun DisplayActions(
     changeAutoStartEnabled: () -> Unit
 ) {
     val context = LocalContext.current
-    val tapOnClockDraw = painterResource(R.drawable.round_adjust_24)
     val settingsDraw = painterResource(R.drawable.round_settings_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
@@ -101,7 +100,7 @@ fun DisplayActions(
         var showTapOnClockDialog by remember { mutableStateOf(false) }
         OkayDialog(
             title = context.getString(R.string.stopwatch_settings),
-            content = { //TODO STRINGS
+            content = {
                 SettingsRow(
                     context.getString(R.string.change_tap_on_clock),
                     tapOnClock.toString()
@@ -229,7 +228,6 @@ fun DisplayActions(
 
 @Composable
 fun SettingsRow(text: String, value: String, onClick: () -> Unit) {
-    val arrowDraw = painterResource(R.drawable.round_keyboard_arrow_right_24)
     Row(
         Modifier
             .fillMaxWidth()

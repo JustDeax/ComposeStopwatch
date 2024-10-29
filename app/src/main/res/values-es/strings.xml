@@ -11,8 +11,10 @@
     <string name="add_lap">Añadir vuelta</string>
     <string name="last_lap">Última Vuelta</string>
 
+    <string name="stopwatch_settings">Ajustes del cronómetro</string>
     <string name="additional_action">Acciones adicionales</string>
-    <string name="tap_on_clock">Tocar el reloj</string>
+    <string name="auto_start_sw">Inicio automático del cronómetro al iniciar la aplicación</string>
+    <string name="turn_on_vibration">Activar vibración</string>
     <string name="turn_off_notif">Activar/desactivar notificaciones</string>
     <string name="theme">Tema</string>
     <string name="lock_awake">Mantener pantalla activa</string>
@@ -49,8 +51,17 @@
     <string name="lock_awake_mode_desc_enable">El modo de pantalla siempre activa está activado</string>
     <string name="lock_awake_mode_desc_disable">El modo de pantalla siempre activa está desactivado</string>
 
+    <string name="auto_start_sw_title">Inicio automático</string>
+    <string name="auto_start_sw_desc_1">El inicio automático del cronómetro comenzará después de</string>
+    <string name="auto_start_sw_desc_2">Puedes desactivar el inicio automático por completo en la configuración del cronómetro</string>
+
     <string name="about_app">Acerca de Compose Stopwatch</string>
     <string name="about_app_desc">"Aplicación de cronómetro para Android con el tema Material You, diseñada para facilidad de uso y las mejores características
+
+► Nuevos ajustes del cronómetro
+    • Habilitar inicio automático 3 segundos después de iniciar la app con opción de anular
+    • Activar vibración para mejor sensación táctil
+    • Seleccionar acción al tocar el reloj
 
 ► Progreso circular
     • Muestra el progreso de la vuelta actual basado en la primera vuelta
