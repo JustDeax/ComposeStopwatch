@@ -11,14 +11,12 @@ val ExtraDarkColorScheme = darkColorScheme(
     background = Black0,
     surface = Black0
 )
-
 val DarkColorScheme = darkColorScheme(
     primary = Purple10,
     secondary = PurpleGrey10,
     tertiary = Pink10,
     onSecondaryContainer = GrayLight
 )
-
 val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,

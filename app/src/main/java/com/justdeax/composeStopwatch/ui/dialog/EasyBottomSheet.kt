@@ -50,7 +50,9 @@ fun EasyBottomSheet(
                         .padding(12.dp),
                     onClick = {
                         scope
-                            .launch { sheetState.hide() }
+                            .launch {
+                                sheetState.hide()
+                            }
                             .invokeOnCompletion {
                                 if (!sheetState.isVisible) onButtonClick()
                             }

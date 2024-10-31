@@ -39,21 +39,20 @@ class StopwatchService: LifecycleService() {
 
     private fun setupNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                getString(R.string.stopwatch_channel),
-                NotificationManager.IMPORTANCE_LOW
-            )
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
+        val notificationChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            getString(R.string.stopwatch_channel),
+            NotificationManager.IMPORTANCE_LOW
+        )
+        notificationManager.createNotificationChannel(notificationChannel)
+
         elapsedSec.observe(this) { elapsedSeconds ->
             if (isRunning.value!!)
                 notificationManager.notify(
-                    NOTIFICATION_ID,
-                    getNotification(elapsedSeconds.fullFormatSeconds())
+                    NOTIFICATION_ID, getNotification(elapsedSeconds.fullFormatSeconds())
                 )
         }
+
         pendingIntent = PendingIntent.getActivity(
             this, 1, Intent(this, AppActivity::class.java), flag
         )
@@ -152,8 +151,7 @@ class StopwatchService: LifecycleService() {
             }
         }
         startForeground(
-            NOTIFICATION_ID,
-            getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds())
+            NOTIFICATION_ID, getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds())
         )
     }
 
@@ -162,8 +160,7 @@ class StopwatchService: LifecycleService() {
         elapsedMsBeforePause = elapsedMs.value!!
         startTime = 0L
         notificationManager.notify(
-            NOTIFICATION_ID,
-            getNotification(elapsedMsBeforePause.toFormatString())
+            NOTIFICATION_ID, getNotification(elapsedMsBeforePause.toFormatString())
         )
     }
 
@@ -199,8 +196,7 @@ class StopwatchService: LifecycleService() {
             previousLapDelta.value = deltaLap
         }
         notificationManager.notify(
-            NOTIFICATION_ID,
-            getNotification(elapsedMs.value!!.toFormatString())
+            NOTIFICATION_ID, getNotification(elapsedMs.value!!.toFormatString())
         )
     }
 

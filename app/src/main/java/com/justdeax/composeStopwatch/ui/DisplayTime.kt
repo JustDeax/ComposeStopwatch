@@ -182,7 +182,7 @@ fun TimeRow(isPausing: Boolean, content: @Composable () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun StopwatchCircularProgressPreview() {
+fun DisplayTimePreview() {
     MaterialTheme(colorScheme = DarkColorScheme) {
         DisplayTime(
             Modifier

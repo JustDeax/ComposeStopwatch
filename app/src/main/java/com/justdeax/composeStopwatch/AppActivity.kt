@@ -220,13 +220,11 @@ class AppActivity : ComponentActivity() {
                                             clickOnClock(tapOnClock, isRunning, notificationEnabled)
                                             if (vibrationEnabled && vibrator != null) {
                                                 vibrator.cancel()
-                                                if (!isRunning) {
-                                                    vibrator.vibrate(startResumeVibration)
-                                                } else when (tapOnClock) {
+                                                if (isRunning) when (tapOnClock) {
                                                     1 -> vibrator.vibrate(pauseVibration)
                                                     2 -> vibrator.vibrate(addLapVibration)
                                                     3 -> vibrator.vibrate(resetVibration)
-                                                }
+                                                }  else  vibrator.vibrate(startResumeVibration)
                                             }
                                         },
                                     true,
@@ -392,13 +390,11 @@ class AppActivity : ComponentActivity() {
                                             clickOnClock(tapOnClock, isRunning, notificationEnabled)
                                             if (vibrationEnabled && vibrator != null) {
                                                 vibrator.cancel()
-                                                if (!isRunning) {
-                                                    vibrator.vibrate(startResumeVibration)
-                                                } else when (tapOnClock) {
+                                                if (isRunning) when (tapOnClock) {
                                                     1 -> vibrator.vibrate(pauseVibration)
                                                     2 -> vibrator.vibrate(addLapVibration)
                                                     3 -> vibrator.vibrate(resetVibration)
-                                                }
+                                                }  else  vibrator.vibrate(startResumeVibration)
                                             }
                                         },
                                     false,

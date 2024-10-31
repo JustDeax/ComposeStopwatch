@@ -33,7 +33,6 @@ android {
             isDebuggable = false
             isJniDebuggable = false
             isPseudoLocalesEnabled = false
-
             buildConfigField(
                 "long",
                 "BUILD_TIME",

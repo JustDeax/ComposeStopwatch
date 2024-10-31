@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import kotlinx.serialization.Serializable
 
-const val TAG = "DEAX_TAG"
+//const val TAG = "DEAX_TAG"
 
 //STOPWATCH DATA AND ACTION ------------------
 
