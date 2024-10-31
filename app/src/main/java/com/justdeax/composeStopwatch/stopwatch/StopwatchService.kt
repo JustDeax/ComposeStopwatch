@@ -130,7 +130,7 @@ class StopwatchService: LifecycleService() {
                 StopwatchAction.START_RESUME.name -> startResume()
                 StopwatchAction.PAUSE.name -> pause()
                 StopwatchAction.RESET.name -> reset()
-                StopwatchAction.HARD_RESET.name -> { hardReset() }
+                StopwatchAction.HARD_RESET.name -> hardReset()
                 StopwatchAction.ADD_LAP.name -> addLap()
             }
         }
@@ -160,7 +160,7 @@ class StopwatchService: LifecycleService() {
         elapsedMsBeforePause = elapsedMs.value!!
         startTime = 0L
         notificationManager.notify(
-            NOTIFICATION_ID, getNotification(elapsedMsBeforePause.toFormatString())
+            NOTIFICATION_ID, getNotification(elapsedMs.value!!.toFormatString())
         )
     }
 
