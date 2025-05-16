@@ -11,7 +11,7 @@ fun Long.cutToMs()
 fun Long.formatSeconds(): String {
     val seconds = this % 60
     val minutes = this / 60 % 60
-    val result = if (this >= 3600)
+    val result = if (this == 3600L)
         String.format(Locale.US, "%02d:%02d", minutes, seconds)
     else if (minutes != 0L)
         String.format(Locale.US, "%01d:%02d", minutes, seconds)

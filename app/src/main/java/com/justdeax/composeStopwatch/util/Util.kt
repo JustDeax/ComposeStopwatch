@@ -5,10 +5,6 @@ import androidx.compose.runtime.Immutable
 import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import kotlinx.serialization.Serializable
 
-//const val TAG = "DEAX_TAG"
-
-//STOPWATCH DATA AND ACTION ------------------
-
 @Immutable
 @Serializable
 data class Lap(

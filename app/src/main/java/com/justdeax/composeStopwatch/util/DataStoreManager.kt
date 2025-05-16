@@ -18,7 +18,7 @@ class DataStoreManager(private val context: Context) {
         private val SW_START_TIME = longPreferencesKey("SW_START_TIME")
         private val SW_IS_RUNNING = booleanPreferencesKey("SW_IS_RUNNING")
         private val SW_LAPS = stringPreferencesKey("SW_LAPS")
-        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIF_ENABLED")
+        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIFICATION_ENABLED")
         private val SW_TAP_ON_CLOCK = intPreferencesKey("SW_TAP_ON_CLOCK")
         private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SW_VIBRATION_ENABLED")
         private val SW_AUTOSTART_ENABLED = booleanPreferencesKey("SW_AUTOSTART_ENABLES")

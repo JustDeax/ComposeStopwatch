@@ -1,6 +1,5 @@
 package com.justdeax.composeStopwatch.ui
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.dialog.EasyBottomSheet
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
@@ -107,7 +107,7 @@ fun DisplayAppName(
             text = annotatedString,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.clickable {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JustDeax"))
+                val intent = Intent(Intent.ACTION_VIEW, "https://github.com/JustDeax".toUri())
                 context.startActivity(intent)
             }
         )

@@ -1,5 +1,4 @@
 package com.justdeax.composeStopwatch
-import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -97,9 +96,9 @@ class AppActivity : ComponentActivity() {
             val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
             val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
             val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-            val previosLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
+            val previousLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
             StopwatchScreen(
-                true, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
+                true, isStarted, isRunning, elapsedMs, elapsedSec, laps, previousLapDelta
             )
         } else {
             LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
@@ -108,9 +107,9 @@ class AppActivity : ComponentActivity() {
             val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
             val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
             val laps by viewModel.lapsI.observeAsState(LinkedList())
-            val previosLapDelta by viewModel.previousLapDelta.observeAsState(0L)
+            val previousLapDelta by viewModel.previousLapDelta.observeAsState(0L)
             StopwatchScreen(
-                false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previosLapDelta
+                false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previousLapDelta
             )
         }
     }
@@ -123,7 +122,7 @@ class AppActivity : ComponentActivity() {
         elapsedMs: Long,
         elapsedSec: Long,
         laps: List<Lap>,
-        previosLapDelta: Long
+        previousLapDelta: Long
     ) {
         var additionalActionsShow by remember { mutableStateOf(false) }
         var autoStartEnabledNow by remember { mutableStateOf(false) }
@@ -159,7 +158,7 @@ class AppActivity : ComponentActivity() {
                 vibratorManager?.defaultVibrator
             } else {
                 @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                getSystemService(VIBRATOR_SERVICE) as Vibrator
             }
         }
         val startResumeVibration = VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
@@ -232,7 +231,7 @@ class AppActivity : ComponentActivity() {
                                     elapsedSec,
                                     elapsedMs,
                                     laps,
-                                    previosLapDelta
+                                    previousLapDelta
                                 )
                                 DisplayLaps(
                                     Modifier
@@ -402,7 +401,7 @@ class AppActivity : ComponentActivity() {
                                     elapsedSec,
                                     elapsedMs,
                                     laps,
-                                    previosLapDelta
+                                    previousLapDelta
                                 )
                                 DisplayLaps(
                                     Modifier

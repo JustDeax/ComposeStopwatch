@@ -13,8 +13,6 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
@@ -139,7 +137,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
             val deltaLap = if (laps.value!!.isEmpty())
                 elapsedMs.value!!
             else
-                elapsedMs.value!! - laps.value!!.first.elapsedTime
+                elapsedMs.value!! - laps.value!!.first().elapsedTime
             val deltaLapString = "+ ${deltaLap.toFormatString()}"
             val newLaps = LinkedList(laps.value!!)
             newLaps.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))

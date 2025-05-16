@@ -3,7 +3,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -38,7 +37,7 @@ class StopwatchService: LifecycleService() {
         PendingIntent.FLAG_UPDATE_CURRENT
 
     private fun setupNotification() {
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             getString(R.string.stopwatch_channel),
@@ -73,7 +72,7 @@ class StopwatchService: LifecycleService() {
 
     private fun getNotification(time: String): Notification {
         val lapItem = if (laps.value!!.isEmpty()) "" else {
-            val lastLap = laps.value!!.first
+            val lastLap = laps.value!!.first()
             val elapsedTime = lastLap.elapsedTime.toFormatString()
             val lastLapText = getString(R.string.last_lap)
             "$lastLapText: ${lastLap.index} $elapsedTime | ${lastLap.deltaLap}"
@@ -190,7 +189,7 @@ class StopwatchService: LifecycleService() {
             val deltaLap = if (laps.value!!.isEmpty())
                 elapsedMs.value!!
             else
-                elapsedMs.value!! - laps.value!!.first.elapsedTime
+                elapsedMs.value!! - laps.value!!.first().elapsedTime
             val deltaLapString = "+ ${deltaLap.toFormatString()}"
             laps.value?.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
             previousLapDelta.value = deltaLap

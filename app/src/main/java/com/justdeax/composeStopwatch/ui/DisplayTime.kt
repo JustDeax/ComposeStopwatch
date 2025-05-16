@@ -51,7 +51,7 @@ fun DisplayTime(
     seconds: Long,
     milliseconds: Long,
     laps: List<Lap>,
-    previosLapDelta: Long
+    previousLapDelta: Long
 ) {
     val firstLapDelta = if (laps.isNotEmpty()) laps.last().elapsedTime else 1
     val lastLapDelta = if (laps.isNotEmpty()) milliseconds - laps.first().elapsedTime else 0
@@ -68,7 +68,7 @@ fun DisplayTime(
             StopwatchCircularProgress(
                 progress = lastLapDelta / firstLapDelta.toFloat(),
                 modifier = Modifier.size(300.dp),
-                markerPosition = previosLapDelta / firstLapDelta.toFloat(),
+                markerPosition = previousLapDelta / firstLapDelta.toFloat(),
                 strokeWidth = 8.dp,
                 markerColor = MaterialTheme.colorScheme.primary
             )
@@ -191,10 +191,10 @@ fun DisplayTimePreview() {
                 .heightIn(min = 100.dp),
             isPortrait = true,
             isPausing = false,
-            seconds = 102L,
+            seconds = 3700L,
             milliseconds = 102000L,
             laps = listOf(),
-            previosLapDelta = 1000L
+            previousLapDelta = 1000L
         )
     }
 }
