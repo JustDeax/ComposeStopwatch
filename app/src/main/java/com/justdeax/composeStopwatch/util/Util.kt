@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.util
+
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Immutable

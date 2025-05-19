@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.ui
+
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.keyframes
@@ -85,8 +86,8 @@ fun DisplayButtonInLandscape(
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
-                if (isRunning) context.getString(R.string.pause)
-                else context.getString(R.string.resume)
+                    if (isRunning) context.getString(R.string.pause)
+                    else context.getString(R.string.resume)
             )
         }
     }

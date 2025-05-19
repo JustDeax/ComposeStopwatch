@@ -1,10 +1,10 @@
 package com.justdeax.composeStopwatch.util
+
 import java.util.Locale
 
 //GENERAL ------------------------------------
 
-fun Long.cutToMs()
-        = String.format(Locale.US, "%02d", (this % 1000)).substring(0, 2)
+fun Long.cutToMs() = String.format(Locale.US, "%02d", (this % 1000)).substring(0, 2)
 
 //PORTRAIT -----------------------------------
 
@@ -20,7 +20,7 @@ fun Long.formatSeconds(): String {
     return "$result."
 }
 
-fun Long.getHours() = "${this/60/60}"
+fun Long.getHours() = "${this / 60 / 60}"
 
 //LANDSCAPE ----------------------------------
 
@@ -49,5 +49,4 @@ fun Long.fullFormatSeconds(): String {
         String.format(Locale.US, "%02d:%02d", minutes, seconds)
 }
 
-fun Long.toFormatString()
-        = (this / 1000).fullFormatSeconds() + "." + this.cutToMs()
+fun Long.toFormatString() = (this / 1000).fullFormatSeconds() + "." + this.cutToMs()

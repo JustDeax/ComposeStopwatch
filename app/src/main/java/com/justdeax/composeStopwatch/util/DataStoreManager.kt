@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.util
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -59,7 +60,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     suspend fun changeVibrationEnabled(enabled: Boolean) {
-        context.dataStore.edit { set -> set[SW_VIBRATION_ENABLED] = enabled}
+        context.dataStore.edit { set -> set[SW_VIBRATION_ENABLED] = enabled }
     }
 
     fun vibrationEnabled() = context.dataStore.data.map { get ->
@@ -67,7 +68,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     suspend fun changeAutoStartEnabled(enabled: Boolean) {
-        context.dataStore.edit { set -> set[SW_AUTOSTART_ENABLED] = enabled}
+        context.dataStore.edit { set -> set[SW_AUTOSTART_ENABLED] = enabled }
     }
 
     fun autoStartEnabled() = context.dataStore.data.map { get ->

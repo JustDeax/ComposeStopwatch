@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.ui
+
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -139,10 +140,14 @@ fun StopwatchCircularProgress(
                 val radius = canvasSize / 2 - strokeWidth.toPx() / 2
                 val angleInRadians = (360 * markerPosition - 90) * (Math.PI / 180)
 
-                val xStart = (size.width / 2) + (radius - strokeWidth.toPx()) * cos(angleInRadians).toFloat()
-                val yStart = (size.height / 2) + (radius - strokeWidth.toPx()) * sin(angleInRadians).toFloat()
-                val xEnd = (size.width / 2) + (radius + strokeWidth.toPx()) * cos(angleInRadians).toFloat()
-                val yEnd = (size.height / 2) + (radius + strokeWidth.toPx()) * sin(angleInRadians).toFloat()
+                val xStart =
+                    (size.width / 2) + (radius - strokeWidth.toPx()) * cos(angleInRadians).toFloat()
+                val yStart =
+                    (size.height / 2) + (radius - strokeWidth.toPx()) * sin(angleInRadians).toFloat()
+                val xEnd =
+                    (size.width / 2) + (radius + strokeWidth.toPx()) * cos(angleInRadians).toFloat()
+                val yEnd =
+                    (size.height / 2) + (radius + strokeWidth.toPx()) * sin(angleInRadians).toFloat()
 
                 drawLine(
                     color = markerColor,

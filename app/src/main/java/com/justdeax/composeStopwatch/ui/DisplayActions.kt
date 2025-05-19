@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.ui
+
 import android.os.Build
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -168,7 +169,7 @@ fun DisplayActions(
                 context.resources.getStringArray(R.array.theme12)
             else
                 context.resources.getStringArray(R.array.theme),
-            setSelectedIndex = { newState -> changeTheme(newState)},
+            setSelectedIndex = { newState -> changeTheme(newState) },
             onDismiss = { showThemeDialog = false },
             confirmText = context.getString(R.string.apply),
             onConfirm = { showThemeDialog = false }

@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch
+
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -79,7 +80,8 @@ class AppActivity : ComponentActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED)
+                ) != PackageManager.PERMISSION_GRANTED
+            )
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
@@ -223,7 +225,7 @@ class AppActivity : ComponentActivity() {
                                                     1 -> vibrator.vibrate(pauseVibration)
                                                     2 -> vibrator.vibrate(addLapVibration)
                                                     3 -> vibrator.vibrate(resetVibration)
-                                                }  else  vibrator.vibrate(startResumeVibration)
+                                                } else vibrator.vibrate(startResumeVibration)
                                             }
                                         },
                                     true,
@@ -260,9 +262,9 @@ class AppActivity : ComponentActivity() {
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
                             vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled)},
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled) },
                             autoStartEnabled,
-                            { viewModel.changeAutoStartEnabled(!autoStartEnabled)}
+                            { viewModel.changeAutoStartEnabled(!autoStartEnabled) }
                         )
                         DisplayButton(
                             Modifier
@@ -359,9 +361,9 @@ class AppActivity : ComponentActivity() {
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
                             vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled)},
+                            { viewModel.changeVibrationEnabled(!vibrationEnabled) },
                             autoStartEnabled,
-                            { viewModel.changeAutoStartEnabled(!autoStartEnabled)}
+                            { viewModel.changeAutoStartEnabled(!autoStartEnabled) }
                         )
                         Box(
                             modifier = Modifier
@@ -393,7 +395,7 @@ class AppActivity : ComponentActivity() {
                                                     1 -> vibrator.vibrate(pauseVibration)
                                                     2 -> vibrator.vibrate(addLapVibration)
                                                     3 -> vibrator.vibrate(resetVibration)
-                                                }  else  vibrator.vibrate(startResumeVibration)
+                                                } else vibrator.vibrate(startResumeVibration)
                                             }
                                         },
                                     false,
@@ -423,7 +425,7 @@ class AppActivity : ComponentActivity() {
             1 -> notificationEnabled.pause()
             2 -> notificationEnabled.addLap()
             3 -> notificationEnabled.hardReset()
-        }  else  notificationEnabled.startResume()
+        } else notificationEnabled.startResume()
     }
 
     private fun Boolean.startResume() {

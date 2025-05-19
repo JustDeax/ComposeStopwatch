@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.stopwatch
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -22,7 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 
-class StopwatchService: LifecycleService() {
+class StopwatchService : LifecycleService() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var intentStartResume: PendingIntent

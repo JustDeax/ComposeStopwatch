@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.ui
+
 import android.content.Intent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn

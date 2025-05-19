@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.stopwatch
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.justdeax.composeStopwatch.util.DataStoreManager

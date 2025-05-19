@@ -1,4 +1,5 @@
 package com.justdeax.composeStopwatch.ui
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Row
@@ -49,7 +50,7 @@ fun DisplayLaps(
                     val deltaLap = "+ ${(elapsedMs - laps.first().elapsedTime).toFormatString()}"
                     LapItem("+", MaterialTheme.colorScheme.onBackground, elapsedMs, deltaLap)
                 }
-            items(laps, key = { laps[it.index-1].index }) { (index, elapsedTime, deltaLap) ->
+            items(laps, key = { laps[it.index - 1].index }) { (index, elapsedTime, deltaLap) ->
                 val indexColor = when (index) {
                     1 -> Gold
                     2 -> Silver
