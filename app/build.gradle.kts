@@ -17,10 +17,6 @@ android {
         versionName = "1.8.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
-
-        resValue("string", "build_time", System.getenv("SOURCE_DATE_EPOCH") ?: "0")
-        renderscriptTargetApi = 0
-        renderscriptSupportModeEnabled = false
     }
 
     buildTypes {
@@ -34,11 +30,6 @@ android {
             isDebuggable = false
             isJniDebuggable = false
             isPseudoLocalesEnabled = false
-            buildConfigField(
-                "long",
-                "BUILD_TIME",
-                "${System.getenv("SOURCE_DATE_EPOCH") ?: "0"}L"
-            )
         }
     }
     dependenciesInfo {
