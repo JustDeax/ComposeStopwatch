@@ -32,7 +32,7 @@
 
 ---
 
-This notice is also available at: https://justdeax.github.io/key-rotation.md
+This notice is also available at: https://justdeax.github.io/ComposeStopwatch/key-rotation
 
 Hello, I am the developer of this application.
 
