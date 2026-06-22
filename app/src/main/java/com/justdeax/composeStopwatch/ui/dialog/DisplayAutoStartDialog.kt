@@ -17,13 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.justdeax.composeStopwatch.R
+import androidx.compose.ui.res.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun DisplayAutoStartDialog(
@@ -31,13 +32,12 @@ fun DisplayAutoStartDialog(
     onDismiss: () -> Unit,
     startStopwatch: () -> Unit
 ) {
-    val context = LocalContext.current
     var timeLeft by remember { mutableIntStateOf(3) }
     var isFinished by remember { mutableStateOf(false) }
 
     LaunchedEffect(timeLeft) {
         if (timeLeft > 0) {
-            kotlinx.coroutines.delay(1000L)
+            kotlinx.coroutines.delay(1000L.milliseconds)
             timeLeft--
         } else if (!isFinished) {
             isFinished = true
@@ -55,7 +55,7 @@ fun DisplayAutoStartDialog(
             DialogProperties()
         else
             DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(context.getString(R.string.auto_start_sw_title)) },
+        title = { Text(stringResource(R.string.auto_start_sw_title)) },
         text = {
             val scrollState = rememberScrollState()
             Column(
@@ -63,7 +63,7 @@ fun DisplayAutoStartDialog(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
             ) {
-                Text(context.getString(R.string.auto_start_sw_desc_1))
+                Text(stringResource(R.string.auto_start_sw_desc_1))
                 Text(
                     text = timeLeft.toString(),
                     fontSize = 58.sp,
@@ -71,7 +71,7 @@ fun DisplayAutoStartDialog(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Text(context.getString(R.string.auto_start_sw_desc_2))
+                Text(stringResource(R.string.auto_start_sw_desc_2))
             }
         },
         confirmButton = {
@@ -82,7 +82,7 @@ fun DisplayAutoStartDialog(
                     .padding(8.dp)
                     .height(60.dp)
             ) {
-                Text(text = context.getString(R.string.cancel), fontSize = 20.sp)
+                Text(text = stringResource(R.string.cancel), fontSize = 20.sp)
             }
         },
         onDismissRequest = onDismiss

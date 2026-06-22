@@ -39,6 +39,7 @@ import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.dialog.EasyBottomSheet
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Hypertext
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,14 +63,14 @@ fun DisplayAppName(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = context.getString(R.string.app_name),
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.width(6.dp))
             Icon(
                 modifier = Modifier.size(24.dp),
                 painter = helpDraw,
-                contentDescription = context.getString(R.string.about_app),
+                contentDescription = stringResource(R.string.about_app),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -83,26 +84,26 @@ fun DisplayAppName(
         onButtonClick = { showAboutApp = false }
     ) {
         Text(
-            text = context.getString(R.string.about_app),
+            text = stringResource(R.string.about_app),
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = context.getString(R.string.about_app_desc),
+            text = stringResource(R.string.about_app_desc),
             style = MaterialTheme.typography.titleMedium
         )
         val annotatedString = buildAnnotatedString {
-            append(context.getString(R.string.about_app_desc_a) + " ")
+            append(stringResource(R.string.about_app_desc_a) + " ")
             withStyle(
                 style = SpanStyle(
                     color = Hypertext,
                     textDecoration = TextDecoration.Underline
                 )
             ) {
-                append(context.getString(R.string.app_author))
+                append(stringResource(R.string.app_author))
             }
-            append(context.getString(R.string.about_app_desc_v))
-            append(" " + context.getString(R.string.app_version))
+            append(stringResource(R.string.about_app_desc_v))
+            append(" " + stringResource(R.string.app_version))
         }
         Text(
             text = annotatedString,

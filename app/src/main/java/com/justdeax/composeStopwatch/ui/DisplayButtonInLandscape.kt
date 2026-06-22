@@ -17,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.justdeax.composeStopwatch.R
@@ -35,7 +35,6 @@ fun DisplayButtonInLandscape(
     pause: () -> Unit,
     addLap: () -> Unit,
 ) {
-    val context = LocalContext.current
     val startDrawable = painterResource(R.drawable.round_play_arrow_24)
     val pauseDrawable = painterResource(R.drawable.round_pause_24)
     val stopDrawable = painterResource(R.drawable.round_stop_24)
@@ -61,20 +60,20 @@ fun DisplayButtonInLandscape(
                     IconButton(
                         onClick = { showHideAdditional() },
                         painter = additionalDrawable,
-                        contentDesc = context.getString(R.string.additional_action)
+                        contentDesc = stringResource(R.string.additional_action)
                     )
                     Spacer(Modifier.height(170.dp))
                     if (isRunning)
                         IconButton(
                             onClick = { addLap() },
                             painter = addLapsDrawable,
-                            contentDesc = context.getString(R.string.add_lap)
+                            contentDesc = stringResource(R.string.add_lap)
                         )
                     else
                         IconButton(
                             onClick = { reset() },
                             painter = stopDrawable,
-                            contentDesc = context.getString(R.string.stop)
+                            contentDesc = stringResource(R.string.stop)
                         )
                 }
             }
@@ -86,8 +85,8 @@ fun DisplayButtonInLandscape(
                 },
                 painter = if (isRunning) pauseDrawable else startDrawable,
                 contentDesc =
-                    if (isRunning) context.getString(R.string.pause)
-                    else context.getString(R.string.resume)
+                    if (isRunning) stringResource(R.string.pause)
+                    else stringResource(R.string.resume)
             )
         }
     }

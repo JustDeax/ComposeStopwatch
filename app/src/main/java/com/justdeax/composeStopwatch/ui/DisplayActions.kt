@@ -24,8 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +35,6 @@ import com.justdeax.composeStopwatch.ui.dialog.OkayDialog
 import com.justdeax.composeStopwatch.ui.dialog.RadioDialog
 import com.justdeax.composeStopwatch.ui.dialog.SimpleDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
-import kotlinx.coroutines.delay
 
 @Composable
 fun DisplayActions(
@@ -51,12 +51,13 @@ fun DisplayActions(
     changeTheme: (Int) -> Unit,
     lockAwakeEnabled: Boolean,
     changeLockAwakeEnabled: () -> Unit,
+    lockAwakeFirstTimeEnabled: Boolean,
+    changeLockAwakeFirstTimeEnabled: () -> Unit,
     vibrationEnabled: Boolean,
     changeVibrationEnabled: () -> Unit,
     autoStartEnabled: Boolean,
     changeAutoStartEnabled: () -> Unit
 ) {
-    val context = LocalContext.current
     val settingsDraw = painterResource(R.drawable.round_settings_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
     val turnOnNotifDraw = painterResource(R.drawable.round_notifications_none_24)
@@ -75,85 +76,85 @@ fun DisplayActions(
             modifier = modifier,
             onClick = { showSettingsDialog = true },
             painter = settingsDraw,
-            contentDesc = context.getString(R.string.stopwatch_settings)
+            contentDesc = stringResource(R.string.stopwatch_settings)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = { showResetStopwatchDialog = true },
             painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
-            contentDesc = context.getString(R.string.turn_off_notif)
+            contentDesc = stringResource(R.string.turn_off_notif)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = { showThemeDialog = true },
             painter = themeDraw,
-            contentDesc = context.getString(R.string.theme)
+            contentDesc = stringResource(R.string.theme)
         )
         OutlineIconButton(
             modifier = modifier,
             onClick = { showLockAwakeDialog = true },
             painter = if (lockAwakeEnabled) lockAwake else unlockAwake,
-            contentDesc = context.getString(R.string.lock_awake)
+            contentDesc = stringResource(R.string.lock_awake)
         )
     }
 
     if (showSettingsDialog) {
         var showTapOnClockDialog by remember { mutableStateOf(false) }
         OkayDialog(
-            title = context.getString(R.string.stopwatch_settings),
+            title = stringResource(R.string.stopwatch_settings),
             content = {
                 SettingsRow(
-                    context.getString(R.string.change_tap_on_clock),
+                    stringResource(R.string.change_tap_on_clock),
                     tapOnClock.toString()
                 ) {
                     showTapOnClockDialog = true
                 }
                 SettingsRow(
-                    context.getString(R.string.auto_start_sw),
+                    stringResource(R.string.auto_start_sw),
                     if (autoStartEnabled) "ON" else "OFF"
                 ) {
                     changeAutoStartEnabled()
                 }
                 SettingsRow(
-                    context.getString(R.string.turn_on_vibration),
+                    stringResource(R.string.turn_on_vibration),
                     if (vibrationEnabled) "ON" else "OFF"
                 ) {
                     changeVibrationEnabled()
                 }
             },
             isPortrait = isPortrait,
-            confirmText = context.getString(R.string.ok),
+            confirmText = stringResource(R.string.ok),
             onConfirm = { showSettingsDialog = false }
         )
         if (showTapOnClockDialog)
             RadioDialog(
-                title = context.getString(R.string.change_tap_on_clock),
-                desc = context.getString(R.string.change_tap_on_clock_desc),
+                title = stringResource(R.string.change_tap_on_clock),
+                desc = stringResource(R.string.change_tap_on_clock_desc),
                 isPortrait = isPortrait,
                 defaultIndex = tapOnClock,
-                options = context.resources.getStringArray(R.array.tap_on_clock),
+                options = stringArrayResource(R.array.tap_on_clock),
                 setSelectedIndex = { newState -> changeTapOnClock(newState) },
                 onDismiss = { showTapOnClockDialog = false },
-                confirmText = context.getString(R.string.apply),
+                confirmText = stringResource(R.string.apply),
                 onConfirm = { showTapOnClockDialog = false }
             )
     }
     if (showResetStopwatchDialog) {
         if (isStarted)
             SimpleDialog(
-                title = context.getString(R.string.reset_stopwatch),
+                title = stringResource(R.string.reset_stopwatch),
                 desc = if (notificationEnabled)
-                    context.getString(R.string.reset_stopwatch_desc_disable)
+                    stringResource(R.string.reset_stopwatch_desc_disable)
                 else
-                    context.getString(R.string.reset_stopwatch_desc_enable),
+                    stringResource(R.string.reset_stopwatch_desc_enable),
                 isPortrait = isPortrait,
-                confirmText = context.getString(R.string.ok),
+                confirmText = stringResource(R.string.ok),
                 onConfirm = {
                     hardReset()
                     changeNotificationEnabled()
                     showResetStopwatchDialog = false
                 },
-                dismissText = context.getString(R.string.cancel),
+                dismissText = stringResource(R.string.cancel),
                 onDismiss = { showResetStopwatchDialog = false }
             )
         else
@@ -161,42 +162,42 @@ fun DisplayActions(
     }
     if (showThemeDialog) {
         RadioDialog(
-            title = context.getString(R.string.change_theme),
+            title = stringResource(R.string.change_theme),
             isPortrait = isPortrait,
-            desc = context.getString(R.string.change_theme_desc),
+            desc = stringResource(R.string.change_theme_desc),
             defaultIndex = theme,
-            options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                context.resources.getStringArray(R.array.theme12)
-            else
-                context.resources.getStringArray(R.array.theme),
+            options = stringArrayResource(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) R.array.theme12
+                else R.array.theme),
             setSelectedIndex = { newState -> changeTheme(newState) },
             onDismiss = { showThemeDialog = false },
-            confirmText = context.getString(R.string.apply),
+            confirmText = stringResource(R.string.apply),
             onConfirm = { showThemeDialog = false }
         )
     }
     if (showLockAwakeDialog) {
         LaunchedEffect(Unit) {
             changeLockAwakeEnabled()
-            delay(1500)
-            showLockAwakeDialog = false
+            if (!lockAwakeFirstTimeEnabled)
+                showLockAwakeDialog = false
         }
-
-        OkayDialog(
-            title = context.getString(R.string.lock_awake_mode),
-            content = {
-                Text(
-                    text = if (lockAwakeEnabled)
-                        context.getString(R.string.lock_awake_mode_desc_enable)
-                    else
-                        context.getString(R.string.lock_awake_mode_desc_disable),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            isPortrait = isPortrait,
-            confirmText = context.getString(R.string.ok),
-            onConfirm = { showLockAwakeDialog = false }
-        )
+        if (lockAwakeFirstTimeEnabled) {
+            OkayDialog(
+                title = stringResource(R.string.lock_awake_mode),
+                content = {
+                    Text(
+                        text = stringResource(R.string.lock_awake_mode_desc_enable),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                isPortrait = isPortrait,
+                confirmText = stringResource(R.string.ok),
+                onConfirm = {
+                    changeLockAwakeFirstTimeEnabled()
+                    showLockAwakeDialog = false
+                }
+            )
+        }
     }
 
     if (isPortrait)
@@ -269,6 +270,8 @@ fun DisplayActionsPreview() {
             changeTheme = { },
             lockAwakeEnabled = false,
             changeLockAwakeEnabled = { },
+            lockAwakeFirstTimeEnabled = true,
+            changeLockAwakeFirstTimeEnabled = { },
             vibrationEnabled = false,
             changeVibrationEnabled = { },
             autoStartEnabled = false,

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -22,6 +23,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
+import kotlin.time.Duration.Companion.milliseconds
 
 class StopwatchService : LifecycleService() {
     private lateinit var notificationManager: NotificationManager
@@ -147,12 +149,19 @@ class StopwatchService : LifecycleService() {
                 elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)
                 val seconds = elapsedMs.value!! / 1000
                 if (elapsedSec.value != seconds) elapsedSec.postValue(seconds)
-                delay(10)
+                delay(10.milliseconds)
             }
         }
-        startForeground(
-            NOTIFICATION_ID, getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds())
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            startForeground(
+                NOTIFICATION_ID,
+                getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds()),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        else
+            startForeground(
+                NOTIFICATION_ID, getNotification((elapsedMsBeforePause / 1000).fullFormatSeconds())
+            )
     }
 
     private fun pause() {
@@ -180,7 +189,7 @@ class StopwatchService : LifecycleService() {
     private fun hardReset() {
         pause()
         lifecycleScope.launch {
-            delay(10)
+            delay(10.milliseconds)
             reset()
         }
     }

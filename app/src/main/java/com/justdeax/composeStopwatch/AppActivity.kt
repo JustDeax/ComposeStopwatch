@@ -132,6 +132,7 @@ class AppActivity : ComponentActivity() {
         val theme by viewModel.theme.observeAsState(0)
         val tapOnClock by viewModel.tapOnClock.observeAsState(0)
         val lockAwakeEnabled by viewModel.lockAwakeEnabled.observeAsState(false)
+        val lockAwakeFirstTimeEnabled by viewModel.lockAwakeFirstTimeEnabled.observeAsState(true)
         val vibrationEnabled by viewModel.vibrationEnabled.observeAsState(false)
         val autoStartEnabled by viewModel.autoStartEnabled.observeAsState(false)
 
@@ -169,10 +170,11 @@ class AppActivity : ComponentActivity() {
         val addLapVibration = VibrationEffect.createWaveform(longArrayOf(0, 100, 50, 100), -1)
 
         LaunchedEffect(lockAwakeEnabled) {
+            val keepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             if (lockAwakeEnabled)
-                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                window.addFlags(keepScreenOn)
             else
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                window.clearFlags(keepScreenOn)
         }
         LaunchedEffect(autoStartEnabled) {
             autoStartEnabledNow = autoStartEnabled
@@ -261,6 +263,8 @@ class AppActivity : ComponentActivity() {
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
+                            lockAwakeFirstTimeEnabled,
+                            { viewModel.changeLockAwakeFirstTimeEnabled(!lockAwakeFirstTimeEnabled)},
                             vibrationEnabled,
                             { viewModel.changeVibrationEnabled(!vibrationEnabled) },
                             autoStartEnabled,
@@ -360,6 +364,8 @@ class AppActivity : ComponentActivity() {
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
                             { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
+                            lockAwakeFirstTimeEnabled,
+                            { viewModel.changeLockAwakeFirstTimeEnabled(!lockAwakeFirstTimeEnabled)},
                             vibrationEnabled,
                             { viewModel.changeVibrationEnabled(!vibrationEnabled) },
                             autoStartEnabled,

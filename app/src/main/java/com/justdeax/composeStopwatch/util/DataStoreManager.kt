@@ -24,6 +24,7 @@ class DataStoreManager(private val context: Context) {
         private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SW_VIBRATION_ENABLED")
         private val SW_AUTOSTART_ENABLED = booleanPreferencesKey("SW_AUTOSTART_ENABLES")
         private val LOCK_AWAKE = booleanPreferencesKey("LOCK_AWAKE")
+        private val LOCK_AWAKE_FIRST_TIME = booleanPreferencesKey("LOCK_AWAKE_FIRST_TIME")
         private val APP_THEME = intPreferencesKey("APP_THEME_CODE")
     }
 
@@ -57,6 +58,14 @@ class DataStoreManager(private val context: Context) {
 
     fun lockAwakeEnabled() = context.dataStore.data.map { get ->
         get[LOCK_AWAKE] ?: false
+    }
+
+    suspend fun changeLockAwakeFirstTimeEnabled(enabled: Boolean) {
+        context.dataStore.edit { set -> set[LOCK_AWAKE_FIRST_TIME] = enabled }
+    }
+
+    fun lockAwakeEnabledFirstTime() = context.dataStore.data.map { get ->
+        get[LOCK_AWAKE_FIRST_TIME] ?: true
     }
 
     suspend fun changeVibrationEnabled(enabled: Boolean) {

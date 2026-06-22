@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
+import kotlin.time.Duration.Companion.milliseconds
 
 class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
     private var elapsedMsBeforePause = 0L
@@ -24,6 +25,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     val tapOnClock = dataStoreManager.getTapOnClock().asLiveData()
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
     val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
+    val lockAwakeFirstTimeEnabled = dataStoreManager.lockAwakeEnabledFirstTime().asLiveData()
     val vibrationEnabled = dataStoreManager.vibrationEnabled().asLiveData()
     val autoStartEnabled = dataStoreManager.autoStartEnabled().asLiveData()
 
@@ -41,6 +43,10 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun changeLockAwakeEnabled(enabled: Boolean) = viewModelScope.launch {
         dataStoreManager.changeLockAwakeEnabled(enabled)
+    }
+
+    fun changeLockAwakeFirstTimeEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeLockAwakeFirstTimeEnabled(enabled)
     }
 
     fun changeVibrationEnabled(enabled: Boolean) = viewModelScope.launch {
@@ -99,7 +105,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                 elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)
                 val seconds = elapsedMs.value!! / 1000
                 if (elapsedSec.value != seconds) elapsedSec.postValue(seconds)
-                delay(10)
+                delay(10.milliseconds)
             }
         }
     }
@@ -128,7 +134,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     fun hardReset() {
         pause()
         viewModelScope.launch {
-            delay(10)
+            delay(10.milliseconds)
             reset()
         }
     }

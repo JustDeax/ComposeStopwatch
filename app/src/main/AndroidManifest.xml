@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -16,10 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ComposeStopwatch"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="35">
-
-        <service android:name=".stopwatch.StopwatchService" android:foregroundServiceType="dataSync"/>
-
+        tools:targetApi="37">
         <activity
             android:name=".AppActivity"
             android:exported="true"
@@ -29,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".stopwatch.StopwatchService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
 
     </application>
 
