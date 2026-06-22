@@ -1,9 +1,6 @@
 package com.justdeax.composeStopwatch.util
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Immutable
-import com.justdeax.composeStopwatch.stopwatch.StopwatchService
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -19,12 +16,6 @@ data class StopwatchState(
     val startTime: Long,
     val isRunning: Boolean
 )
-
-fun Context.commandService(serviceState: StopwatchAction) {
-    val intent = Intent(this, StopwatchService::class.java)
-    intent.action = serviceState.name
-    this.startService(intent)
-}
 
 enum class StopwatchAction {
     START_RESUME, PAUSE, RESET, HARD_RESET, ADD_LAP

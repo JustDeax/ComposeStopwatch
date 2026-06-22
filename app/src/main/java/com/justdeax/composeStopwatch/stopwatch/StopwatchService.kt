@@ -210,7 +210,7 @@ class StopwatchService : LifecycleService() {
     }
 
     companion object {
-        private const val NOTIFICATION_ID = 1448
+        private const val NOTIFICATION_ID = 148
         private const val NOTIFICATION_CHANNEL_ID = "stopwatch_service_channel"
 
         private val isStarted = MutableLiveData(false)

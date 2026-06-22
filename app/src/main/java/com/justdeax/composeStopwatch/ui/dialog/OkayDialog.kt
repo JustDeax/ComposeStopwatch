@@ -14,10 +14,10 @@ import androidx.compose.ui.window.DialogProperties
 @Composable
 fun OkayDialog(
     title: String,
-    content: @Composable () -> Unit,
     isPortrait: Boolean,
     confirmText: String,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    content: @Composable () -> Unit
 ) {
     AlertDialog(
         modifier = if (isPortrait)

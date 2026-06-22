@@ -62,4 +62,5 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.core.splashscreen)
 }

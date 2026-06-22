@@ -1,5 +1,6 @@
 package com.justdeax.composeStopwatch.stopwatch
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,24 +22,35 @@ import kotlin.time.Duration.Companion.milliseconds
 class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
     private var elapsedMsBeforePause = 0L
     private var startTime = 0L
-    val theme = dataStoreManager.getTheme().asLiveData()
     val tapOnClock = dataStoreManager.getTapOnClock().asLiveData()
+    val autoStartEnabled = dataStoreManager.autoStartEnabled().asLiveData()
+    val vibrationEnabled = dataStoreManager.vibrationEnabled().asLiveData()
     val notificationEnabled = dataStoreManager.notificationEnabled().asLiveData()
     val lockAwakeEnabled = dataStoreManager.lockAwakeEnabled().asLiveData()
     val lockAwakeFirstTimeEnabled = dataStoreManager.lockAwakeEnabledFirstTime().asLiveData()
-    val vibrationEnabled = dataStoreManager.vibrationEnabled().asLiveData()
-    val autoStartEnabled = dataStoreManager.autoStartEnabled().asLiveData()
-
-    fun changeTheme(themeCode: Int) = viewModelScope.launch {
-        dataStoreManager.changeTheme(themeCode)
-    }
+    val theme = dataStoreManager.getTheme().asLiveData()
+    val firstBoot = dataStoreManager.firstBoot().asLiveData()
 
     fun changeTapOnClock(tapType: Int) = viewModelScope.launch {
         dataStoreManager.changeTapOnClock(tapType)
     }
 
+    fun changeAutoStartEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeAutoStartEnabled(enabled)
+    }
+
+    fun changeVibrationEnabled(enabled: Boolean) = viewModelScope.launch {
+        dataStoreManager.changeVibrationEnabled(enabled)
+    }
+
     fun changeNotificationEnabled(enabled: Boolean) = viewModelScope.launch {
+        Log.w("TAG", "changeNotificationEnabled from <: " + notificationEnabled.value)
         dataStoreManager.changeNotificationEnabled(enabled)
+        Log.w("TAG", "changeNotificationEnabled to >: " + notificationEnabled.value)
+    }
+
+    fun changeTheme(themeCode: Int) = viewModelScope.launch {
+        dataStoreManager.changeTheme(themeCode)
     }
 
     fun changeLockAwakeEnabled(enabled: Boolean) = viewModelScope.launch {
@@ -49,12 +61,8 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         dataStoreManager.changeLockAwakeFirstTimeEnabled(enabled)
     }
 
-    fun changeVibrationEnabled(enabled: Boolean) = viewModelScope.launch {
-        dataStoreManager.changeVibrationEnabled(enabled)
-    }
-
-    fun changeAutoStartEnabled(enabled: Boolean) = viewModelScope.launch {
-        dataStoreManager.changeAutoStartEnabled(enabled)
+    fun disableFirstBoot() = viewModelScope.launch {
+        dataStoreManager.changeFirstBoot(false)
     }
 
     private fun saveStopwatch() {

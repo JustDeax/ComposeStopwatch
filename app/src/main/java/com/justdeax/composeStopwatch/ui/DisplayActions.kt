@@ -12,17 +12,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -46,7 +48,8 @@ fun DisplayActions(
     changeTapOnClock: (Int) -> Unit,
     notificationEnabled: Boolean,
     changeNotificationEnabled: () -> Unit,
-    hardReset: () -> Unit,
+    pauseStopwatch: () -> Unit,
+    resetStopwatch: () -> Unit,
     theme: Int,
     changeTheme: (Int) -> Unit,
     lockAwakeEnabled: Boolean,
@@ -80,7 +83,14 @@ fun DisplayActions(
         )
         OutlineIconButton(
             modifier = modifier,
-            onClick = { showResetStopwatchDialog = true },
+            onClick = {
+                if (isStarted) {
+                    pauseStopwatch()
+                    showResetStopwatchDialog = true
+                } else {
+                    changeNotificationEnabled()
+                }
+                      },
             painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
             contentDesc = stringResource(R.string.turn_off_notif)
         )
@@ -92,7 +102,11 @@ fun DisplayActions(
         )
         OutlineIconButton(
             modifier = modifier,
-            onClick = { showLockAwakeDialog = true },
+            onClick = {
+                changeLockAwakeEnabled()
+                if (lockAwakeFirstTimeEnabled)
+                    showLockAwakeDialog = true
+                      },
             painter = if (lockAwakeEnabled) lockAwake else unlockAwake,
             contentDesc = stringResource(R.string.lock_awake)
         )
@@ -102,30 +116,44 @@ fun DisplayActions(
         var showTapOnClockDialog by remember { mutableStateOf(false) }
         OkayDialog(
             title = stringResource(R.string.stopwatch_settings),
-            content = {
-                SettingsRow(
-                    stringResource(R.string.change_tap_on_clock),
-                    tapOnClock.toString()
-                ) {
-                    showTapOnClockDialog = true
-                }
-                SettingsRow(
-                    stringResource(R.string.auto_start_sw),
-                    if (autoStartEnabled) "ON" else "OFF"
-                ) {
-                    changeAutoStartEnabled()
-                }
-                SettingsRow(
-                    stringResource(R.string.turn_on_vibration),
-                    if (vibrationEnabled) "ON" else "OFF"
-                ) {
-                    changeVibrationEnabled()
-                }
-            },
             isPortrait = isPortrait,
             confirmText = stringResource(R.string.ok),
             onConfirm = { showSettingsDialog = false }
-        )
+        ) {
+            SettingsRow(
+                stringResource(R.string.change_tap_on_clock),
+                { showTapOnClockDialog = true }
+            ) {
+                Text(
+                    text = when (tapOnClock) {
+                        1 -> "R & P"
+                        2 -> "R & L"
+                        3 -> "R & S"
+                        else -> "No"
+                    },
+                    fontSize = 21.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            SettingsRow(
+                stringResource(R.string.auto_start_sw),
+                { changeAutoStartEnabled() }
+            ) {
+                Switch(
+                    autoStartEnabled,
+                    { _ -> changeAutoStartEnabled() }
+                )
+            }
+            SettingsRow(
+                stringResource(R.string.turn_on_vibration),
+                { changeVibrationEnabled() }
+            ) {
+                Switch(
+                    vibrationEnabled,
+                    { _ -> changeVibrationEnabled() }
+                )
+            }
+        }
         if (showTapOnClockDialog)
             RadioDialog(
                 title = stringResource(R.string.change_tap_on_clock),
@@ -140,25 +168,22 @@ fun DisplayActions(
             )
     }
     if (showResetStopwatchDialog) {
-        if (isStarted)
-            SimpleDialog(
-                title = stringResource(R.string.reset_stopwatch),
-                desc = if (notificationEnabled)
-                    stringResource(R.string.reset_stopwatch_desc_disable)
-                else
-                    stringResource(R.string.reset_stopwatch_desc_enable),
-                isPortrait = isPortrait,
-                confirmText = stringResource(R.string.ok),
-                onConfirm = {
-                    hardReset()
-                    changeNotificationEnabled()
-                    showResetStopwatchDialog = false
-                },
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { showResetStopwatchDialog = false }
-            )
-        else
-            changeNotificationEnabled()
+        SimpleDialog(
+            title = stringResource(R.string.reset_stopwatch),
+            desc = if (notificationEnabled)
+                stringResource(R.string.reset_stopwatch_desc_disable)
+            else
+                stringResource(R.string.reset_stopwatch_desc_enable),
+            isPortrait = isPortrait,
+            confirmText = stringResource(R.string.ok),
+            onConfirm = {
+                resetStopwatch()
+                changeNotificationEnabled()
+                showResetStopwatchDialog = false
+            },
+            dismissText = stringResource(R.string.cancel),
+            onDismiss = { showResetStopwatchDialog = false }
+        )
     }
     if (showThemeDialog) {
         RadioDialog(
@@ -176,26 +201,19 @@ fun DisplayActions(
         )
     }
     if (showLockAwakeDialog) {
-        LaunchedEffect(Unit) {
-            changeLockAwakeEnabled()
-            if (!lockAwakeFirstTimeEnabled)
-                showLockAwakeDialog = false
-        }
-        if (lockAwakeFirstTimeEnabled) {
-            OkayDialog(
-                title = stringResource(R.string.lock_awake_mode),
-                content = {
-                    Text(
-                        text = stringResource(R.string.lock_awake_mode_desc_enable),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                isPortrait = isPortrait,
-                confirmText = stringResource(R.string.ok),
-                onConfirm = {
+        OkayDialog(
+            title = stringResource(R.string.lock_awake_mode),
+            isPortrait = isPortrait,
+            confirmText = stringResource(R.string.ok),
+            onConfirm = {
+                if (lockAwakeFirstTimeEnabled)
                     changeLockAwakeFirstTimeEnabled()
-                    showLockAwakeDialog = false
-                }
+                showLockAwakeDialog = false
+            }
+        ) {
+            Text(
+                text = stringResource(R.string.lock_awake_mode_desc_enable),
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }
@@ -229,23 +247,20 @@ fun DisplayActions(
 }
 
 @Composable
-fun SettingsRow(text: String, value: String, onClick: () -> Unit) {
+fun SettingsRow(text: String, onClick: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
     Row(
         Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(10.dp, 12.dp)
+            .padding(10.dp, 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             modifier = Modifier.weight(1f),
             text = text,
             fontSize = 20.sp
         )
-        Text(
-            text = value,
-            fontSize = 21.sp,
-            color = MaterialTheme.colorScheme.outline
-        )
+        content()
     }
 }
 
@@ -265,7 +280,8 @@ fun DisplayActionsPreview() {
             changeTapOnClock = { },
             notificationEnabled = false,
             changeNotificationEnabled = { },
-            hardReset = { },
+            pauseStopwatch = { },
+            resetStopwatch = { },
             theme = 0,
             changeTheme = { },
             lockAwakeEnabled = false,

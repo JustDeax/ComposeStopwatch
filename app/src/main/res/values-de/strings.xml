@@ -92,4 +92,8 @@
     <string name="about_app_desc_a">Autor:</string>
     <string name="about_app_desc_v">\nVersion:</string>
 
+    <string name="changelogs">Letzte Änderungen</string>
+    <string name="changelogs_desc">"Dies ist das letzte Update für diese App. Es enthält Fehlerbehebungen, kleine UI-Verbesserungen und geringfügige Änderungen. Die Anwendung ist nun voll funktionsfähig und vollständig. Wenn Sie schwerwiegende Fehler finden, melden Sie diese bitte im Repository (klicken Sie auf den Titeltext ganz oben in der App, um zum Link zu gelangen).
+
+Ich werde weiterhin Apps entwickeln, einschließlich einer brandneuen Stoppuhr, die auf einer völlig anderen Architektur basiert. Aus diesem Grund wird diese Version keine Updates mehr erhalten. Vielen Dank für Ihre Unterstützung!"</string>
 </resources>

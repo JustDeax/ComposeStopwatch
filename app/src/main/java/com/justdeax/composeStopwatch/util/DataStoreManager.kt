@@ -19,21 +19,14 @@ class DataStoreManager(private val context: Context) {
         private val SW_START_TIME = longPreferencesKey("SW_START_TIME")
         private val SW_IS_RUNNING = booleanPreferencesKey("SW_IS_RUNNING")
         private val SW_LAPS = stringPreferencesKey("SW_LAPS")
-        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIFICATION_ENABLED")
         private val SW_TAP_ON_CLOCK = intPreferencesKey("SW_TAP_ON_CLOCK")
-        private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SW_VIBRATION_ENABLED")
         private val SW_AUTOSTART_ENABLED = booleanPreferencesKey("SW_AUTOSTART_ENABLES")
+        private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SW_VIBRATION_ENABLED")
+        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIFICATION_ENABLED")
+        private val APP_THEME = intPreferencesKey("APP_THEME_CODE")
         private val LOCK_AWAKE = booleanPreferencesKey("LOCK_AWAKE")
         private val LOCK_AWAKE_FIRST_TIME = booleanPreferencesKey("LOCK_AWAKE_FIRST_TIME")
-        private val APP_THEME = intPreferencesKey("APP_THEME_CODE")
-    }
-
-    suspend fun changeTheme(themeCode: Int) {
-        context.dataStore.edit { set -> set[APP_THEME] = themeCode }
-    }
-
-    fun getTheme() = context.dataStore.data.map { get ->
-        get[APP_THEME] ?: 0
+        private val FIRST_BOOT = booleanPreferencesKey("FIRST_BOOT")
     }
 
     suspend fun changeTapOnClock(tapType: Int) {
@@ -44,12 +37,36 @@ class DataStoreManager(private val context: Context) {
         get[SW_TAP_ON_CLOCK] ?: 1
     }
 
+    suspend fun changeAutoStartEnabled(enabled: Boolean) {
+        context.dataStore.edit { set -> set[SW_AUTOSTART_ENABLED] = enabled }
+    }
+
+    fun autoStartEnabled() = context.dataStore.data.map { get ->
+        get[SW_AUTOSTART_ENABLED] ?: false
+    }
+
+    suspend fun changeVibrationEnabled(enabled: Boolean) {
+        context.dataStore.edit { set -> set[SW_VIBRATION_ENABLED] = enabled }
+    }
+
+    fun vibrationEnabled() = context.dataStore.data.map { get ->
+        get[SW_VIBRATION_ENABLED] ?: false
+    }
+
     suspend fun changeNotificationEnabled(enabled: Boolean) {
         context.dataStore.edit { set -> set[SW_NOTIFICATION_ENABLED] = enabled }
     }
 
     fun notificationEnabled() = context.dataStore.data.map { get ->
         get[SW_NOTIFICATION_ENABLED] ?: true
+    }
+
+    suspend fun changeTheme(themeCode: Int) {
+        context.dataStore.edit { set -> set[APP_THEME] = themeCode }
+    }
+
+    fun getTheme() = context.dataStore.data.map { get ->
+        get[APP_THEME] ?: 0
     }
 
     suspend fun changeLockAwakeEnabled(enabled: Boolean) {
@@ -68,20 +85,12 @@ class DataStoreManager(private val context: Context) {
         get[LOCK_AWAKE_FIRST_TIME] ?: true
     }
 
-    suspend fun changeVibrationEnabled(enabled: Boolean) {
-        context.dataStore.edit { set -> set[SW_VIBRATION_ENABLED] = enabled }
+    suspend fun changeFirstBoot(enabled: Boolean) {
+        context.dataStore.edit { set -> set[FIRST_BOOT] = enabled }
     }
 
-    fun vibrationEnabled() = context.dataStore.data.map { get ->
-        get[SW_VIBRATION_ENABLED] ?: false
-    }
-
-    suspend fun changeAutoStartEnabled(enabled: Boolean) {
-        context.dataStore.edit { set -> set[SW_AUTOSTART_ENABLED] = enabled }
-    }
-
-    fun autoStartEnabled() = context.dataStore.data.map { get ->
-        get[SW_AUTOSTART_ENABLED] ?: false
+    fun firstBoot() = context.dataStore.data.map { get ->
+        get[FIRST_BOOT] ?: true
     }
 
     suspend fun saveStopwatch(stopwatchState: StopwatchState) {

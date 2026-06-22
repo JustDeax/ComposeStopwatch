@@ -92,4 +92,8 @@
     <string name="about_app_desc_a">Auteur :</string>
     <string name="about_app_desc_v">\nVersion :</string>
 
+    <string name="changelogs">Notes de mise à jour finales</string>
+    <string name="changelogs_desc">"Il s\'agit de la dernière mise à jour de cette application. Elle comprend des corrections de bugs, de petites améliorations de l\'interface utilisateur et des modifications mineures. L\'application est désormais complète et entièrement fonctionnelle. Si vous trouvez des bugs importants, veuillez les signaler sur le dépôt (cliquez sur le titre tout en haut de l\'application pour accéder au lien).
+
+Je vais continuer à développer des applications, y compris un tout nouveau chronomètre basé sur une architecture complètement différente, c\'est pourquoi cette version ne recevra plus de mises à jour. Merci pour votre soutien !"</string>
 </resources>
