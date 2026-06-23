@@ -52,8 +52,7 @@
     </string-array>
     
     <string name="lock_awake_mode">Screen Awake Mode</string>
-    <string name="lock_awake_mode_desc_enable">The screen wake-up mode is switched on</string>
-    <string name="lock_awake_mode_desc_disable">The screen wake-up mode is switched off</string>
+    <string name="lock_awake_mode_desc_enable">Always-On Display turned on</string>
 
     <string name="auto_start_sw_title">Auto Start</string>
     <string name="auto_start_sw_desc_1">Automatic start of the stopwatch will begin after</string>

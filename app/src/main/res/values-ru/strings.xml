@@ -48,8 +48,7 @@
     </string-array>
 
     <string name="lock_awake_mode">Режим активного экрана</string>
-    <string name="lock_awake_mode_desc_enable">Режим активного экрана включен</string>
-    <string name="lock_awake_mode_desc_disable">Режим активного экрана выключен</string>
+    <string name="lock_awake_mode_desc_enable">Всегда включенный экран включен</string>
 
     <string name="auto_start_sw_title">Автозапуск</string>
     <string name="auto_start_sw_desc_1">Автоматический запуск секундомера начнется через</string>

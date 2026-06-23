@@ -31,7 +31,11 @@
         <service
             android:name=".stopwatch.StopwatchService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Stopwatch functionality that needs to run in the background to keep track of time and show a persistent notification." />
+        </service>
 
     </application>
 

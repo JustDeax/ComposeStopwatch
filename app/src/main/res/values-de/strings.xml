@@ -48,8 +48,7 @@
     </string-array>
 
     <string name="lock_awake_mode">Bildschirm-Wachmodus</string>
-    <string name="lock_awake_mode_desc_enable">Der Bildschirm-Wachmodus ist eingeschaltet</string>
-    <string name="lock_awake_mode_desc_disable">Der Bildschirm-Wachmodus ist ausgeschaltet</string>
+    <string name="lock_awake_mode_desc_enable">Always-On-Display eingeschaltet</string>
 
     <string name="auto_start_sw_title">Automatischer Start</string>
     <string name="auto_start_sw_desc_1">Der automatische Start der Stoppuhr beginnt nach</string>

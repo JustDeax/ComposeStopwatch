@@ -44,7 +44,9 @@ fun EasyBottomSheet(
                     Modifier
                         .weight(1f)
                         .verticalScroll(scrollState)
-                ) { sheetContent() }
+                ) {
+                    sheetContent()
+                }
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -1,6 +1,5 @@
 package com.justdeax.composeStopwatch.stopwatch
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,13 +43,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     }
 
     fun changeNotificationEnabled(enabled: Boolean) = viewModelScope.launch {
-        try {
-            Log.w("TAG", "changeNotificationEnabled from <: ${notificationEnabled.value}")
-            dataStoreManager.changeNotificationEnabled(enabled)
-            Log.w("TAG", "changeNotificationEnabled to >: ${notificationEnabled.value}")
-        } catch (e: Exception) {
-            Log.e("TAG", "Error changing notification enabled", e)
-        }
+        dataStoreManager.changeNotificationEnabled(enabled)
     }
 
     fun changeTheme(themeCode: Int) = viewModelScope.launch {
@@ -86,29 +79,25 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     fun restoreStopwatch() {
         restoreJob?.cancel()
         restoreJob = viewModelScope.launch {
-            try {
-                val lapsData = dataStoreManager.restoreLaps().first()
-                this@StopwatchViewModel.laps.value = if (lapsData.isNotEmpty())
-                    LinkedList(Json.decodeFromString<List<Lap>>(lapsData))
-                else LinkedList()
-                
-                val restoredState = dataStoreManager.restoreStopwatch().first()
-                elapsedMsBeforePause = restoredState.elapsedMsBeforePause
-                startTime = restoredState.startTime
-                isRunning.value = restoredState.isRunning
-                if (isRunning.value == true) {
-                    val currentTime = System.currentTimeMillis()
-                    elapsedMsBeforePause += currentTime - startTime
-                    startTime = currentTime
-                    startResume()
-                } else {
-                    elapsedMs.value = elapsedMsBeforePause
-                    elapsedSec.value = elapsedMsBeforePause / 1000
-                }
-                isStarted.value = elapsedMsBeforePause != 0L
-            } catch (e: Exception) {
-                Log.e("TAG", "Error restoring stopwatch", e)
+            val lapsData = dataStoreManager.restoreLaps().first()
+            this@StopwatchViewModel.laps.value = if (lapsData.isNotEmpty())
+                LinkedList(Json.decodeFromString<List<Lap>>(lapsData))
+            else LinkedList()
+
+            val restoredState = dataStoreManager.restoreStopwatch().first()
+            elapsedMsBeforePause = restoredState.elapsedMsBeforePause
+            startTime = restoredState.startTime
+            isRunning.value = restoredState.isRunning
+            if (isRunning.value == true) {
+                val currentTime = System.currentTimeMillis()
+                elapsedMsBeforePause += currentTime - startTime
+                startTime = currentTime
+                startResume()
+            } else {
+                elapsedMs.value = elapsedMsBeforePause
+                elapsedSec.value = elapsedMsBeforePause / 1000
             }
+            isStarted.value = elapsedMsBeforePause != 0L
         }
     }
 

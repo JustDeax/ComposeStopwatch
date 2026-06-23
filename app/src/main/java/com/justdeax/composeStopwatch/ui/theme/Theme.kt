@@ -4,10 +4,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 
 val ExtraDarkColorScheme = darkColorScheme(
-    primary = White0,
+    primary = White1,
     onPrimary = Black0,
-    secondary = White0,
-    tertiary = White0,
+    secondary = White1,
+    tertiary = White1,
     onSecondaryContainer = GrayLight,
     background = Black0,
     surface = Black0

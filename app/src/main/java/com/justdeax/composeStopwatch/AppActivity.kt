@@ -65,6 +65,10 @@ import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
+import com.justdeax.composeStopwatch.util.addLapVibration
+import com.justdeax.composeStopwatch.util.pauseVibration
+import com.justdeax.composeStopwatch.util.resetVibration
+import com.justdeax.composeStopwatch.util.startResumeVibration
 import java.util.LinkedList
 
 class AppActivity : ComponentActivity() {
@@ -97,29 +101,20 @@ class AppActivity : ComponentActivity() {
 
     @Composable
     fun AppScreen() {
-        val notificationEnabled: Boolean by viewModel.notificationEnabled.observeAsState(true)
-        if (notificationEnabled) {
-            val isStarted by StopwatchService.isStartedI.observeAsState(false)
-            val isRunning by StopwatchService.isRunningI.observeAsState(false)
-            val elapsedMs by StopwatchService.elapsedMsI.observeAsState(0L)
-            val elapsedSec by StopwatchService.elapsedSecI.observeAsState(0L)
-            val laps by StopwatchService.lapsI.observeAsState(LinkedList())
-            val previousLapDelta by StopwatchService.previousLapDelta.observeAsState(0L)
-            StopwatchScreen(
-                true, isStarted, isRunning, elapsedMs, elapsedSec, laps, previousLapDelta
-            )
-        } else {
+        val notificationEnabled by viewModel.notificationEnabled.observeAsState(true)
+        val isStarted by (if (notificationEnabled) StopwatchService.isStartedI else viewModel.isStartedI).observeAsState(false)
+        val isRunning by (if (notificationEnabled) StopwatchService.isRunningI else viewModel.isRunningI).observeAsState(false)
+        val elapsedMs by (if (notificationEnabled) StopwatchService.elapsedMsI else viewModel.elapsedMsI).observeAsState(0L)
+        val elapsedSec by (if (notificationEnabled) StopwatchService.elapsedSecI else viewModel.elapsedSecI).observeAsState(0L)
+        val laps by (if (notificationEnabled) StopwatchService.lapsI else viewModel.lapsI).observeAsState(LinkedList())
+        val previousLapDelta by (if (notificationEnabled) StopwatchService.previousLapDelta else viewModel.previousLapDelta).observeAsState(0L)
+
+        if (!notificationEnabled)
             LaunchedEffect(Unit) { viewModel.restoreStopwatch() }
-            val isStarted by viewModel.isStartedI.observeAsState(false)
-            val isRunning by viewModel.isRunningI.observeAsState(false)
-            val elapsedMs by viewModel.elapsedMsI.observeAsState(0L)
-            val elapsedSec by viewModel.elapsedSecI.observeAsState(0L)
-            val laps by viewModel.lapsI.observeAsState(LinkedList())
-            val previousLapDelta by viewModel.previousLapDelta.observeAsState(0L)
-            StopwatchScreen(
-                false, isStarted, isRunning, elapsedMs, elapsedSec, laps, previousLapDelta
-            )
-        }
+
+        StopwatchScreen(
+            notificationEnabled, isStarted, isRunning, elapsedMs, elapsedSec, laps, previousLapDelta
+        )
     }
 
     @Composable
@@ -169,10 +164,6 @@ class AppActivity : ComponentActivity() {
                 @Suppress("DEPRECATION")
                 getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
-        val startResumeVibration = VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
-        val pauseVibration = VibrationEffect.createOneShot(200, 80)
-        val resetVibration = VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE)
-        val addLapVibration = VibrationEffect.createWaveform(longArrayOf(0, 100, 50, 100), -1)
 
         LaunchedEffect(autoStartEnabled) {
             autoStartEnabledNow = autoStartEnabled
@@ -195,20 +186,17 @@ class AppActivity : ComponentActivity() {
                         stringResource(R.string.ok),
                         { viewModel.disableFirstBoot() }
                     ) {
-                        Text(stringResource(R.string.changelogs_desc))
+                        Text(
+                            text = stringResource(R.string.changelogs_desc),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                 }
                 if (!isStarted && autoStartEnabledNow)
                     DisplayAutoStartDialog(
                         isPortrait = isPortrait,
                         onDismiss = { autoStartEnabledNow = false },
-                        startStopwatch = {
-                            startResume(notificationEnabled)
-                            if (vibrationEnabled && vibrator != null) {
-                                vibrator.cancel()
-                                vibrator.vibrate(startResumeVibration)
-                            }
-                        }
+                        startStopwatch = { startResume(notificationEnabled, vibrationEnabled, vibrator) }
                     )
 
                 if (isPortrait) {
@@ -236,15 +224,7 @@ class AppActivity : ComponentActivity() {
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            clickOnClock(tapOnClock, isRunning, notificationEnabled)
-                                            if (vibrationEnabled && vibrator != null) {
-                                                vibrator.cancel()
-                                                if (isRunning) when (tapOnClock) {
-                                                    1 -> vibrator.vibrate(pauseVibration)
-                                                    2 -> vibrator.vibrate(addLapVibration)
-                                                    3 -> vibrator.vibrate(resetVibration)
-                                                } else vibrator.vibrate(startResumeVibration)
-                                            }
+                                            clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
                                         },
                                     true,
                                     isStarted && !isRunning,
@@ -274,8 +254,11 @@ class AppActivity : ComponentActivity() {
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
                             { viewModel.changeNotificationEnabled(!notificationEnabled) },
-                            { pause(notificationEnabled) },
-                            { reset(notificationEnabled) },
+                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                            {
+                                reset(notificationEnabled, vibrationEnabled, vibrator)
+                                if (additionalActionsShow) additionalActionsShow = false
+                            },
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
@@ -295,22 +278,12 @@ class AppActivity : ComponentActivity() {
                             isRunning,
                             { additionalActionsShow = !additionalActionsShow },
                             {
+                                reset(notificationEnabled, vibrationEnabled, vibrator)
                                 if (additionalActionsShow) additionalActionsShow = false
-                                reset(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, resetVibration)
                             },
-                            {
-                                startResume(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, startResumeVibration)
-                            },
-                            {
-                                pause(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, pauseVibration)
-                            },
-                            {
-                                addLap(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, addLapVibration)
-                            }
+                            { startResume(notificationEnabled, vibrationEnabled, vibrator) },
+                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                            { addLap(notificationEnabled, vibrationEnabled, vibrator) }
                         )
                     }
                 } else {
@@ -323,22 +296,12 @@ class AppActivity : ComponentActivity() {
                             isRunning,
                             { additionalActionsShow = !additionalActionsShow },
                             {
+                                reset(notificationEnabled, vibrationEnabled, vibrator)
                                 if (additionalActionsShow) additionalActionsShow = false
-                                reset(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, resetVibration)
                             },
-                            {
-                                startResume(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, startResumeVibration)
-                            },
-                            {
-                                pause(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, pauseVibration)
-                            },
-                            {
-                                addLap(notificationEnabled)
-                                commandVibration(vibrationEnabled, vibrator, addLapVibration)
-                            }
+                            { startResume(notificationEnabled, vibrationEnabled, vibrator) },
+                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                            { addLap(notificationEnabled, vibrationEnabled, vibrator) }
                         )
                         DisplayActions(
                             Modifier
@@ -352,8 +315,11 @@ class AppActivity : ComponentActivity() {
                             { newState -> viewModel.changeTapOnClock(newState) },
                             notificationEnabled,
                             { viewModel.changeNotificationEnabled(!notificationEnabled) },
-                            { pause(notificationEnabled) },
-                            { reset(notificationEnabled) },
+                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                            {
+                                reset(notificationEnabled, vibrationEnabled, vibrator)
+                                if (additionalActionsShow) additionalActionsShow = false
+                            },
                             theme,
                             { newState -> viewModel.changeTheme(newState) },
                             lockAwakeEnabled,
@@ -388,15 +354,7 @@ class AppActivity : ComponentActivity() {
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            clickOnClock(tapOnClock, isRunning, notificationEnabled)
-                                            if (vibrationEnabled && vibrator != null) {
-                                                vibrator.cancel()
-                                                if (isRunning) when (tapOnClock) {
-                                                    1 -> vibrator.vibrate(pauseVibration)
-                                                    2 -> vibrator.vibrate(addLapVibration)
-                                                    3 -> vibrator.vibrate(resetVibration)
-                                                } else vibrator.vibrate(startResumeVibration)
-                                            }
+                                            clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
                                         },
                                     false,
                                     isStarted && !isRunning,
@@ -420,40 +378,45 @@ class AppActivity : ComponentActivity() {
         }
     }
 
-    private fun clickOnClock(tapType: Int, isRunning: Boolean, notificationEnabled: Boolean) {
+    private fun clickOnClock(tapType: Int, isRunning: Boolean, notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
         if (isRunning) when (tapType) {
-            1 -> pause(notificationEnabled)
-            2 -> addLap(notificationEnabled)
-            3 -> hardReset(notificationEnabled)
-        } else startResume(notificationEnabled)
+            1 -> pause(notificationEnabled, vibrationEnabled, vibrator)
+            2 -> addLap(notificationEnabled, vibrationEnabled, vibrator)
+            3 -> hardReset(notificationEnabled, vibrationEnabled, vibrator)
+        } else startResume(notificationEnabled, vibrationEnabled, vibrator)
     }
 
-    private fun startResume(notificationEnabled: Boolean) {
+    private fun startResume(notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
+        commandVibration(vibrationEnabled, vibrator, startResumeVibration)
         if (notificationEnabled) commandService(StopwatchAction.START_RESUME)
         else viewModel.startResume()
     }
 
-    private fun pause(notificationEnabled: Boolean) {
+    private fun pause(notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
+        commandVibration(vibrationEnabled, vibrator, pauseVibration)
         if (notificationEnabled) commandService(StopwatchAction.PAUSE)
         else viewModel.pause()
     }
 
-    private fun addLap(notificationEnabled: Boolean) {
+    private fun addLap(notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
+        commandVibration(vibrationEnabled, vibrator, addLapVibration)
         if (notificationEnabled) commandService(StopwatchAction.ADD_LAP)
         else viewModel.addLap()
     }
 
-    private fun reset(notificationEnabled: Boolean) {
+    private fun reset(notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
+        commandVibration(vibrationEnabled, vibrator, resetVibration)
         if (notificationEnabled) commandService(StopwatchAction.RESET)
         else viewModel.reset()
     }
 
-    private fun hardReset(notificationEnabled: Boolean) {
+    private fun hardReset(notificationEnabled: Boolean, vibrationEnabled: Boolean, vibrator: Vibrator?) {
+        commandVibration(vibrationEnabled, vibrator, resetVibration)
         if (notificationEnabled) commandService(StopwatchAction.HARD_RESET)
         else viewModel.hardReset()
     }
 
-    private fun commandVibration(enabled: Boolean, vibrator: Vibrator?, vibe: VibrationEffect) {
+    private fun commandVibration(enabled: Boolean, vibrator: Vibrator?, vibe: VibrationEffect?) {
         if (enabled && vibrator != null) {
             vibrator.cancel()
             vibrator.vibrate(vibe)

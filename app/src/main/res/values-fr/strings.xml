@@ -48,8 +48,7 @@
     </string-array>
 
     <string name="lock_awake_mode">Mode écran toujours actif</string>
-    <string name="lock_awake_mode_desc_enable">Le mode écran toujours actif est activé</string>
-    <string name="lock_awake_mode_desc_disable">Le mode écran toujours actif est désactivé</string>
+    <string name="lock_awake_mode_desc_enable">Affichage permanent activé</string>
 
     <string name="auto_start_sw_title">Démarrage automatique</string>
     <string name="auto_start_sw_desc_1">Le démarrage automatique du chronomètre commencera après</string>

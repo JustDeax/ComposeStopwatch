@@ -63,18 +63,11 @@ fun DisplayButton(
                         contentDesc = stringResource(R.string.additional_action)
                     )
                     Spacer(Modifier.width(170.dp))
-                    if (isRunning)
-                        IconButton(
-                            onClick = { addLap() },
-                            painter = addLapsDrawable,
-                            contentDesc = stringResource(R.string.add_lap)
-                        )
-                    else
-                        IconButton(
-                            onClick = { reset() },
-                            painter = stopDrawable,
-                            contentDesc = stringResource(R.string.stop)
-                        )
+                    IconButton(
+                        onClick = { if (isRunning) addLap() else reset() },
+                        painter = if (isRunning) addLapsDrawable else stopDrawable,
+                        contentDesc = stringResource(if (isRunning) R.string.add_lap else R.string.stop)
+                    )
                 }
             }
             IconButton(

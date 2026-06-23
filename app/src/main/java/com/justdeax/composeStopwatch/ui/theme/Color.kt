@@ -3,7 +3,7 @@ package com.justdeax.composeStopwatch.ui.theme
 import androidx.compose.ui.graphics.Color
 
 //EXTRA DARK THEME
-val White0 = Color(0xFFFFFFFF)
+val White1 = Color(0xCCFFFFFF)
 val Black0 = Color(0xFF000000)
 
 //DARK THEME
