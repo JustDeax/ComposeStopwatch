@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.justdeax.composeStopwatch"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.justdeax.composeStopwatch"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1009000
         versionName = "1.9.0"
 

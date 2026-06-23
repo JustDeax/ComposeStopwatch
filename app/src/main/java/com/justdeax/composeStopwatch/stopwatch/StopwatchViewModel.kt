@@ -11,7 +11,7 @@ import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchState
 import com.justdeax.composeStopwatch.util.toFormatString
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -44,9 +44,13 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     }
 
     fun changeNotificationEnabled(enabled: Boolean) = viewModelScope.launch {
-        Log.w("TAG", "changeNotificationEnabled from <: " + notificationEnabled.value)
-        dataStoreManager.changeNotificationEnabled(enabled)
-        Log.w("TAG", "changeNotificationEnabled to >: " + notificationEnabled.value)
+        try {
+            Log.w("TAG", "changeNotificationEnabled from <: ${notificationEnabled.value}")
+            dataStoreManager.changeNotificationEnabled(enabled)
+            Log.w("TAG", "changeNotificationEnabled to >: ${notificationEnabled.value}")
+        } catch (e: Exception) {
+            Log.e("TAG", "Error changing notification enabled", e)
+        }
     }
 
     fun changeTheme(themeCode: Int) = viewModelScope.launch {
@@ -65,26 +69,30 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         dataStoreManager.changeFirstBoot(false)
     }
 
-    private fun saveStopwatch() {
-        if (!notificationEnabled.value!!)
-            viewModelScope.launch {
-                dataStoreManager.saveStopwatch(
-                    StopwatchState(
-                        elapsedMsBeforePause,
-                        startTime,
-                        isRunning.value!!
-                    )
+    private suspend fun saveStopwatch() {
+        if (notificationEnabled.value == false) {
+            dataStoreManager.saveStopwatch(
+                StopwatchState(
+                    elapsedMsBeforePause,
+                    startTime,
+                    isRunning.value ?: false
                 )
-            }
+            )
+        }
     }
 
+    private var restoreJob: Job? = null
+
     fun restoreStopwatch() {
-        viewModelScope.launch {
-            val laps = dataStoreManager.restoreLaps().first()
-            this@StopwatchViewModel.laps.value = if (laps.isNotEmpty())
-                LinkedList(Json.decodeFromString<List<Lap>>(laps))
-            else LinkedList()
-            dataStoreManager.restoreStopwatch().collect { restoredState ->
+        restoreJob?.cancel()
+        restoreJob = viewModelScope.launch {
+            try {
+                val lapsData = dataStoreManager.restoreLaps().first()
+                this@StopwatchViewModel.laps.value = if (lapsData.isNotEmpty())
+                    LinkedList(Json.decodeFromString<List<Lap>>(lapsData))
+                else LinkedList()
+                
+                val restoredState = dataStoreManager.restoreStopwatch().first()
                 elapsedMsBeforePause = restoredState.elapsedMsBeforePause
                 startTime = restoredState.startTime
                 isRunning.value = restoredState.isRunning
@@ -98,21 +106,27 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
                     elapsedSec.value = elapsedMsBeforePause / 1000
                 }
                 isStarted.value = elapsedMsBeforePause != 0L
+            } catch (e: Exception) {
+                Log.e("TAG", "Error restoring stopwatch", e)
             }
         }
     }
 
+    private var timerJob: Job? = null
+
     fun startResume() {
-        if (isStarted.value == true && isRunning.value == true) return
+        if (isStarted.value == true && isRunning.value == true && timerJob?.isActive == true) return
         isStarted.value = true
         isRunning.value = true
-        viewModelScope.launch(Dispatchers.Main) {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch(Dispatchers.Main) {
             if (startTime == 0L) startTime = System.currentTimeMillis()
             saveStopwatch()
-            while (isRunning.value!!) {
-                elapsedMs.postValue((System.currentTimeMillis() - startTime) + elapsedMsBeforePause)
-                val seconds = elapsedMs.value!! / 1000
-                if (elapsedSec.value != seconds) elapsedSec.postValue(seconds)
+            while (isRunning.value == true) {
+                val currentMs = (System.currentTimeMillis() - startTime) + elapsedMsBeforePause
+                elapsedMs.value = currentMs
+                val seconds = currentMs / 1000
+                if (elapsedSec.value != seconds) elapsedSec.value = seconds
                 delay(10.milliseconds)
             }
         }
@@ -120,22 +134,26 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun pause() {
         isRunning.value = false
-        elapsedMsBeforePause = elapsedMs.value!!
+        timerJob?.cancel()
+        elapsedMsBeforePause = elapsedMs.value ?: 0L
         startTime = 0L
-        saveStopwatch()
+        viewModelScope.launch {
+            saveStopwatch()
+        }
     }
 
     fun reset() {
         isStarted.value = false
         isRunning.value = false
+        timerJob?.cancel()
+        restoreJob?.cancel()
         elapsedMs.value = 0L
         elapsedSec.value = 0L
         elapsedMsBeforePause = 0L
-        laps.value!!.clear()
+        laps.value?.clear()
         previousLapDelta.value = 1L
         viewModelScope.launch {
             dataStoreManager.resetStopwatch()
-            viewModelScope.coroutineContext.cancelChildren()
         }
     }
 
@@ -149,13 +167,16 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
 
     fun addLap() {
         viewModelScope.launch(Dispatchers.Main) {
-            val deltaLap = if (laps.value!!.isEmpty())
-                elapsedMs.value!!
+            val currentElapsed = elapsedMs.value ?: 0L
+            val deltaLap = if (laps.value?.isEmpty() == true)
+                currentElapsed
             else
-                elapsedMs.value!! - laps.value!!.first().elapsedTime
+                currentElapsed - (laps.value?.firstOrNull()?.elapsedTime ?: 0L)
+            
             val deltaLapString = "+ ${deltaLap.toFormatString()}"
-            val newLaps = LinkedList(laps.value!!)
-            newLaps.addFirst(Lap(laps.value!!.size + 1, elapsedMs.value!!, deltaLapString))
+            val currentLaps = laps.value ?: LinkedList()
+            val newLaps = LinkedList(currentLaps)
+            newLaps.addFirst(Lap(newLaps.size + 1, currentElapsed, deltaLapString))
             laps.value = newLaps
             previousLapDelta.value = deltaLap
             dataStoreManager.saveLaps(Json.encodeToString(newLaps.toList()))

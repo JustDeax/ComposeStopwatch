@@ -2,6 +2,6 @@
 - Fixed bugs
 - Updated settings menu
 - Lock awake dialog shows once
-- Android 17 support
+- Android 16 support
 - The app is now complete and fully functional.
 - Future projects (including a new stopwatch built on a fresh architecture) will be released separately
