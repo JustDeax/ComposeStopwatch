@@ -1,6 +1,6 @@
 1.9 Final:
+- New UI
 - Fixed bugs
-- Updated settings menu
 - Lock awake dialog shows once
 - Update extra dark menu
 - Android 16 support

@@ -12,7 +12,7 @@ android {
         applicationId = "com.justdeax.composeStopwatch"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1009000
+        versionCode = 1009010
         versionName = "1.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

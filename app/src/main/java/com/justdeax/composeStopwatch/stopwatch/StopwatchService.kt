@@ -16,8 +16,8 @@ import com.justdeax.composeStopwatch.AppActivity
 import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
-import com.justdeax.composeStopwatch.util.fullFormatSeconds
-import com.justdeax.composeStopwatch.util.toFormatString
+import com.justdeax.composeStopwatch.util.formatSecondsFull
+import com.justdeax.composeStopwatch.util.formatSecondsFullWithMs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
@@ -54,7 +54,7 @@ class StopwatchService : LifecycleService() {
         elapsedSec.observe(this) { elapsedSeconds ->
             if (isRunning.value == true)
                 notificationManager.notify(
-                    NOTIFICATION_ID, getNotification(elapsedSeconds.fullFormatSeconds())
+                    NOTIFICATION_ID, getNotification(elapsedSeconds.formatSecondsFull())
                 )
         }
 
@@ -80,7 +80,7 @@ class StopwatchService : LifecycleService() {
         val currentLaps = laps.value ?: LinkedList()
         val lapItem = if (currentLaps.isEmpty()) "" else {
             val lastLap = currentLaps.first()
-            val elapsedTime = lastLap.elapsedTime.toFormatString()
+            val elapsedTime = lastLap.elapsedTime.formatSecondsFullWithMs()
             val lastLapText = getString(R.string.last_lap)
             "$lastLapText: ${lastLap.index} $elapsedTime | ${lastLap.deltaLap}"
         }
@@ -141,7 +141,7 @@ class StopwatchService : LifecycleService() {
             }
         }
 
-        val initialTime = (elapsedMsBeforePause / 1000).fullFormatSeconds()
+        val initialTime = (elapsedMsBeforePause / 1000).formatSecondsFull()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(
                 NOTIFICATION_ID,
@@ -158,8 +158,9 @@ class StopwatchService : LifecycleService() {
         timerJob?.cancel()
         elapsedMsBeforePause = elapsedMs.value ?: 0L
         startTime = 0L
+
         notificationManager.notify(
-            NOTIFICATION_ID, getNotification(elapsedMs.value?.toFormatString() ?: "00:00:00")
+            NOTIFICATION_ID, getNotification((elapsedMs.value?: 0L).formatSecondsFullWithMs())
         )
     }
 
@@ -195,13 +196,13 @@ class StopwatchService : LifecycleService() {
             else
                 currentElapsed - currentLaps.first().elapsedTime
 
-            val deltaLapString = "+ ${deltaLap.toFormatString()}"
+            val deltaLapString = "+ ${deltaLap.formatSecondsFullWithMs()}"
             currentLaps.addFirst(Lap(currentLaps.size + 1, currentElapsed, deltaLapString))
             laps.value = currentLaps
             previousLapDelta.value = deltaLap
 
             notificationManager.notify(
-                NOTIFICATION_ID, getNotification(currentElapsed.toFormatString())
+                NOTIFICATION_ID, getNotification(currentElapsed.formatSecondsFullWithMs())
             )
         }
     }

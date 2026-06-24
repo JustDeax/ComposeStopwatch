@@ -8,19 +8,19 @@ fun Long.cutToMs() = String.format(Locale.US, "%02d", (this % 1000)).substring(0
 
 //PORTRAIT -----------------------------------
 
-fun Long.formatSeconds(): String {
+fun Long.formatSecondsWithoutHours(): String {
     val seconds = this % 60
     val minutes = this / 60 % 60
-    val result = if (this == 3600L)
+    val result = if (this >= 3600)
         String.format(Locale.US, "%02d:%02d", minutes, seconds)
     else if (minutes != 0L)
-        String.format(Locale.US, "%01d:%02d", minutes, seconds)
+        String.format(Locale.US, "%d:%02d", minutes, seconds)
     else
-        String.format(Locale.US, "%01d", seconds)
+        String.format(Locale.US, "%d", seconds)
     return "$result."
 }
 
-fun Long.getHours() = "${this / 60 / 60}"
+fun Long.cutToHours() = "${this / 60 / 60}h"
 
 //LANDSCAPE ----------------------------------
 
@@ -29,24 +29,24 @@ fun Long.formatSecondsWithHours(): String {
     val minutes = this / 60 % 60
     val hours = this / 60 / 60
     val result = if (hours != 0L)
-        String.format(Locale.US, "%01d:%02d:%02d", hours, minutes, seconds)
+        String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds)
     else if (minutes != 0L)
-        String.format(Locale.US, "%01d:%02d", minutes, seconds)
+        String.format(Locale.US, "%d:%02d", minutes, seconds)
     else
-        String.format(Locale.US, "%01d", seconds)
+        String.format(Locale.US, "%d", seconds)
     return "$result."
 }
 
 //FOR LAPS AND NOTIFICATION ------------------
 
-fun Long.fullFormatSeconds(): String {
+fun Long.formatSecondsFull(): String {
     val seconds = this % 60
     val minutes = this / 60 % 60
     val hours = this / 60 / 60
     return if (hours != 0L)
-        String.format(Locale.US, "%01d:%02d:%02d", hours, minutes, seconds)
+        String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds)
     else
-        String.format(Locale.US, "%02d:%02d", minutes, seconds)
+        String.format(Locale.US, "%d:%02d", minutes, seconds)
 }
 
-fun Long.toFormatString() = (this / 1000).fullFormatSeconds() + "." + this.cutToMs()
+fun Long.formatSecondsFullWithMs() = (this / 1000).formatSecondsFull() + "." + this.cutToMs()

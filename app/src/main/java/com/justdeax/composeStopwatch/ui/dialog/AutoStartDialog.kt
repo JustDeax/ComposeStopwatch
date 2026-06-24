@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,17 +16,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import com.justdeax.composeStopwatch.R
-import androidx.compose.ui.res.stringResource
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun DisplayAutoStartDialog(
+fun AutoStartDialog(
     isPortrait: Boolean,
     onDismiss: () -> Unit,
     startStopwatch: () -> Unit
@@ -46,15 +44,8 @@ fun DisplayAutoStartDialog(
         }
     }
 
-    AlertDialog(
-        modifier = if (isPortrait)
-            Modifier
-        else
-            Modifier.fillMaxWidth(0.6f),
-        properties = if (isPortrait)
-            DialogProperties()
-        else
-            DialogProperties(usePlatformDefaultWidth = false),
+    BaseDialog(
+        isPortrait = isPortrait,
         title = { Text(stringResource(R.string.auto_start_sw_title)) },
         text = {
             val scrollState = rememberScrollState()
@@ -66,7 +57,7 @@ fun DisplayAutoStartDialog(
                 Text(stringResource(R.string.auto_start_sw_desc_1))
                 Text(
                     text = timeLeft.toString(),
-                    fontSize = 58.sp,
+                    fontSize = 90.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()

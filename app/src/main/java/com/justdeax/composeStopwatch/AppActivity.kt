@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,17 +51,17 @@ import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModel
 import com.justdeax.composeStopwatch.stopwatch.StopwatchViewModelFactory
 import com.justdeax.composeStopwatch.ui.DisplayActions
 import com.justdeax.composeStopwatch.ui.DisplayAppName
-import com.justdeax.composeStopwatch.ui.DisplayButton
-import com.justdeax.composeStopwatch.ui.DisplayButtonInLandscape
+import com.justdeax.composeStopwatch.ui.DisplayButtons
 import com.justdeax.composeStopwatch.ui.DisplayLaps
 import com.justdeax.composeStopwatch.ui.DisplayTime
-import com.justdeax.composeStopwatch.ui.dialog.DisplayAutoStartDialog
+import com.justdeax.composeStopwatch.ui.dialog.AutoStartDialog
 import com.justdeax.composeStopwatch.ui.dialog.OkayDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.ExtraDarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.LightColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
 import com.justdeax.composeStopwatch.util.DataStoreManager
+import com.justdeax.composeStopwatch.util.Dimens
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchAction
 import com.justdeax.composeStopwatch.util.addLapVibration
@@ -176,15 +175,105 @@ class AppActivity : ComponentActivity() {
                 window.clearFlags(keepScreenOn)
         }
 
+        @Composable
+        fun FinalDisplayAppName() {
+            DisplayAppName(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(21.dp, 16.dp),
+                show = !isStarted
+            )
+        }
+
+        @Composable
+        fun FinalDisplayTime() {
+            DisplayTime(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .heightIn(min = 100.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
+                    },
+                isPortrait = isPortrait,
+                isPausing = isStarted && !isRunning,
+                seconds = elapsedSec,
+                milliseconds = elapsedMs,
+                laps = laps,
+                previousLapDelta = previousLapDelta
+            )
+        }
+
+        @Composable
+        fun FinalDisplayLaps(modifier: Modifier) {
+            DisplayLaps(
+                modifier = modifier.fillMaxWidth(),
+                laps = laps,
+                elapsedMs = elapsedMs
+            )
+        }
+
+        @Composable
+        fun FinalDisplayActions(modifier: Modifier) {
+            DisplayActions(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                show = !isStarted || additionalActionsShow,
+                isPortrait = isPortrait,
+                isStarted = isStarted,
+                tapOnClock = tapOnClock,
+                changeTapOnClock = { newState -> viewModel.changeTapOnClock(newState) },
+                vibrationEnabled = vibrationEnabled,
+                changeVibrationEnabled = { viewModel.changeVibrationEnabled(!vibrationEnabled) },
+                autoStartEnabled = autoStartEnabled,
+                changeAutoStartEnabled = { viewModel.changeAutoStartEnabled(!autoStartEnabled) },
+                notificationEnabled = notificationEnabled,
+                changeNotificationEnabled = { viewModel.changeNotificationEnabled(!notificationEnabled) },
+                pauseStopwatch = { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                resetStopwatch = {
+                    reset(notificationEnabled, vibrationEnabled, vibrator)
+                    if (additionalActionsShow) additionalActionsShow = false
+                },
+                theme = theme,
+                changeTheme = { newState -> viewModel.changeTheme(newState) },
+                lockAwakeEnabled = lockAwakeEnabled,
+                changeLockAwakeEnabled = { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
+                lockAwakeFirstTimeEnabled = lockAwakeFirstTimeEnabled,
+                changeLockAwakeFirstTimeEnabled = { viewModel.changeLockAwakeFirstTimeEnabled(!lockAwakeFirstTimeEnabled)}
+            )
+        }
+
+        @Composable
+        fun FinalDisplayButtons(modifier: Modifier) {
+            DisplayButtons(
+                modifier = modifier,
+                isPortrait = isPortrait,
+                isStarted = isStarted,
+                isRunning = isRunning,
+                additionalActionShow = additionalActionsShow,
+                showHideAdditional = { additionalActionsShow = !additionalActionsShow },
+                reset = {
+                    reset(notificationEnabled, vibrationEnabled, vibrator)
+                    if (additionalActionsShow) additionalActionsShow = false
+                },
+                startResume = { startResume(notificationEnabled, vibrationEnabled, vibrator) },
+                pause = { pause(notificationEnabled, vibrationEnabled, vibrator) },
+                addLap = { addLap(notificationEnabled, vibrationEnabled, vibrator) }
+            )
+        }
 
         MaterialTheme(colorScheme = colorScheme, typography = Typography) {
             Scaffold(Modifier.fillMaxSize()) { innerPadding ->
                 if (firstBoot) {
                     OkayDialog(
-                        stringResource(R.string.changelogs),
-                        isPortrait,
-                        stringResource(R.string.ok),
-                        { viewModel.disableFirstBoot() }
+                        title = stringResource(R.string.changelogs),
+                        isPortrait = isPortrait,
+                        confirmText = stringResource(R.string.ok),
+                        onConfirm = { viewModel.disableFirstBoot() }
                     ) {
                         Text(
                             text = stringResource(R.string.changelogs_desc),
@@ -192,183 +281,71 @@ class AppActivity : ComponentActivity() {
                         )
                     }
                 }
+
                 if (!isStarted && autoStartEnabledNow)
-                    DisplayAutoStartDialog(
+                    AutoStartDialog(
                         isPortrait = isPortrait,
                         onDismiss = { autoStartEnabledNow = false },
                         startStopwatch = { startResume(notificationEnabled, vibrationEnabled, vibrator) }
                     )
 
                 if (isPortrait) {
-                    Column(Modifier.padding(innerPadding)) {
-                        Box(
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        FinalDisplayAppName()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = if (laps.size <= 1) Dimens.generalButtonHeight.dp else 0.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            FinalDisplayTime()
+                            FinalDisplayLaps(
+                                modifier = Modifier.padding(8.dp, 0.dp)
+                            )
+                        }
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f),
-                            contentAlignment = Alignment.TopStart
+                                .align(Alignment.BottomCenter)
                         ) {
-                            DisplayAppName(
-                                Modifier.padding(21.dp, 16.dp),
-                                !isStarted
+                            FinalDisplayActions(
+                                modifier = Modifier.padding(8.dp, 0.dp)
                             )
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                DisplayTime(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
-                                        .heightIn(min = 100.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
-                                        },
-                                    true,
-                                    isStarted && !isRunning,
-                                    elapsedSec,
-                                    elapsedMs,
-                                    laps,
-                                    previousLapDelta
-                                )
-                                DisplayLaps(
-                                    Modifier
-                                        .padding(8.dp, 0.dp)
-                                        .fillMaxWidth(),
-                                    laps,
-                                    elapsedMs
-                                )
-                            }
+                            FinalDisplayButtons(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = Dimens.topButtonsPadding.dp, bottom = Dimens.bottomButtonsPadding.dp)
+                            )
                         }
-                        DisplayActions(
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(8.dp, 8.dp, 8.dp, 14.dp),
-                            true,
-                            isStarted,
-                            !isStarted || additionalActionsShow,
-                            tapOnClock,
-                            { newState -> viewModel.changeTapOnClock(newState) },
-                            notificationEnabled,
-                            { viewModel.changeNotificationEnabled(!notificationEnabled) },
-                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
-                            {
-                                reset(notificationEnabled, vibrationEnabled, vibrator)
-                                if (additionalActionsShow) additionalActionsShow = false
-                            },
-                            theme,
-                            { newState -> viewModel.changeTheme(newState) },
-                            lockAwakeEnabled,
-                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
-                            lockAwakeFirstTimeEnabled,
-                            { viewModel.changeLockAwakeFirstTimeEnabled(!lockAwakeFirstTimeEnabled)},
-                            vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled) },
-                            autoStartEnabled,
-                            { viewModel.changeAutoStartEnabled(!autoStartEnabled) },
-                        )
-                        DisplayButton(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(top = 20.dp, bottom = 50.dp),
-                            isStarted,
-                            isRunning,
-                            { additionalActionsShow = !additionalActionsShow },
-                            {
-                                reset(notificationEnabled, vibrationEnabled, vibrator)
-                                if (additionalActionsShow) additionalActionsShow = false
-                            },
-                            { startResume(notificationEnabled, vibrationEnabled, vibrator) },
-                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
-                            { addLap(notificationEnabled, vibrationEnabled, vibrator) }
-                        )
                     }
                 } else {
                     Row(Modifier.padding(innerPadding)) {
-                        DisplayButtonInLandscape(
-                            Modifier
+                        FinalDisplayButtons(
+                            modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(start = 50.dp, end = 20.dp),
-                            isStarted,
-                            isRunning,
-                            { additionalActionsShow = !additionalActionsShow },
-                            {
-                                reset(notificationEnabled, vibrationEnabled, vibrator)
-                                if (additionalActionsShow) additionalActionsShow = false
-                            },
-                            { startResume(notificationEnabled, vibrationEnabled, vibrator) },
-                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
-                            { addLap(notificationEnabled, vibrationEnabled, vibrator) }
-                        )
-                        DisplayActions(
-                            Modifier
-                                .fillMaxHeight()
-                                .wrapContentWidth()
-                                .padding(14.dp, 8.dp, 8.dp, 8.dp),
-                            false,
-                            isStarted,
-                            !isStarted || additionalActionsShow,
-                            tapOnClock,
-                            { newState -> viewModel.changeTapOnClock(newState) },
-                            notificationEnabled,
-                            { viewModel.changeNotificationEnabled(!notificationEnabled) },
-                            { pause(notificationEnabled, vibrationEnabled, vibrator) },
-                            {
-                                reset(notificationEnabled, vibrationEnabled, vibrator)
-                                if (additionalActionsShow) additionalActionsShow = false
-                            },
-                            theme,
-                            { newState -> viewModel.changeTheme(newState) },
-                            lockAwakeEnabled,
-                            { viewModel.changeLockAwakeEnabled(!lockAwakeEnabled) },
-                            lockAwakeFirstTimeEnabled,
-                            { viewModel.changeLockAwakeFirstTimeEnabled(!lockAwakeFirstTimeEnabled)},
-                            vibrationEnabled,
-                            { viewModel.changeVibrationEnabled(!vibrationEnabled) },
-                            autoStartEnabled,
-                            { viewModel.changeAutoStartEnabled(!autoStartEnabled) }
+                                .padding(start = Dimens.bottomButtonsPadding.dp, end = Dimens.topButtonsPadding.dp)
                         )
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .weight(1f),
-                            contentAlignment = Alignment.TopEnd
+                                .weight(1f)
                         ) {
-                            DisplayAppName(
-                                Modifier.padding(21.dp, 16.dp),
-                                !isStarted
+                            FinalDisplayActions(
+                                Modifier.padding(0.dp, 8.dp),
                             )
+                            FinalDisplayAppName()
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center
                             ) {
-                                DisplayTime(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
-                                        .heightIn(min = 100.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
-                                        },
-                                    false,
-                                    isStarted && !isRunning,
-                                    elapsedSec,
-                                    elapsedMs,
-                                    laps,
-                                    previousLapDelta
-                                )
-                                DisplayLaps(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp, 0.dp),
-                                    laps,
-                                    elapsedMs
+                                FinalDisplayTime()
+                                FinalDisplayLaps(
+                                    modifier = Modifier.padding(32.dp, 0.dp)
                                 )
                             }
                         }

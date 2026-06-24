@@ -8,8 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,11 +34,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
+import com.justdeax.composeStopwatch.util.Duration
 import com.justdeax.composeStopwatch.util.Lap
+import com.justdeax.composeStopwatch.util.cutToHours
 import com.justdeax.composeStopwatch.util.cutToMs
-import com.justdeax.composeStopwatch.util.formatSeconds
 import com.justdeax.composeStopwatch.util.formatSecondsWithHours
-import com.justdeax.composeStopwatch.util.getHours
+import com.justdeax.composeStopwatch.util.formatSecondsWithoutHours
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -75,7 +74,7 @@ fun DisplayTime(
             )
             if (seconds >= 3600L)
                 Text(
-                    text = seconds.getHours() + "h",
+                    text = seconds.cutToHours(),
                     fontSize = 36.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Medium,
@@ -85,7 +84,7 @@ fun DisplayTime(
                 )
             TimeRow(isPausing) {
                 Text(
-                    text = seconds.formatSeconds(),
+                    text = seconds.formatSecondsWithoutHours(),
                     style = textStyle,
                     fontSize = 60.sp
                 )
@@ -119,7 +118,7 @@ fun StopwatchCircularProgress(
     progress: Float,
     modifier: Modifier,
     markerPosition: Float,
-    strokeWidth: Dp = 8.dp,
+    strokeWidth: Dp,
     markerColor: Color
 ) {
     Box(
@@ -167,7 +166,7 @@ fun TimeRow(isPausing: Boolean, content: @Composable () -> Unit) {
         initialValue = 1f,
         targetValue = 0.1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(500),
+            animation = tween(Duration.animLong),
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
@@ -188,16 +187,15 @@ fun TimeRow(isPausing: Boolean, content: @Composable () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun DisplayTimePreview() {
+    val milliseconds = 4002000L
+    val seconds = milliseconds / 1000
     MaterialTheme(colorScheme = DarkColorScheme) {
         DisplayTime(
-            Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .heightIn(min = 100.dp),
+            modifier = Modifier,
             isPortrait = true,
             isPausing = false,
-            seconds = 3700L,
-            milliseconds = 102000L,
+            seconds = seconds,
+            milliseconds = milliseconds,
             laps = listOf(),
             previousLapDelta = 1000L
         )

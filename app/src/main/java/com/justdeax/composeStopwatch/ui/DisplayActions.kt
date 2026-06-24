@@ -1,13 +1,6 @@
 package com.justdeax.composeStopwatch.ui
 
 import android.os.Build
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -37,15 +29,22 @@ import com.justdeax.composeStopwatch.ui.dialog.OkayDialog
 import com.justdeax.composeStopwatch.ui.dialog.RadioDialog
 import com.justdeax.composeStopwatch.ui.dialog.SimpleDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
+import com.justdeax.composeStopwatch.ui.theme.Typography
+import com.justdeax.composeStopwatch.util.enterAnimation
+import com.justdeax.composeStopwatch.util.exitAnimation
 
 @Composable
 fun DisplayActions(
     modifier: Modifier,
+    show: Boolean,
     isPortrait: Boolean,
     isStarted: Boolean,
-    show: Boolean,
     tapOnClock: Int,
     changeTapOnClock: (Int) -> Unit,
+    vibrationEnabled: Boolean,
+    changeVibrationEnabled: () -> Unit,
+    autoStartEnabled: Boolean,
+    changeAutoStartEnabled: () -> Unit,
     notificationEnabled: Boolean,
     changeNotificationEnabled: () -> Unit,
     pauseStopwatch: () -> Unit,
@@ -55,11 +54,7 @@ fun DisplayActions(
     lockAwakeEnabled: Boolean,
     changeLockAwakeEnabled: () -> Unit,
     lockAwakeFirstTimeEnabled: Boolean,
-    changeLockAwakeFirstTimeEnabled: () -> Unit,
-    vibrationEnabled: Boolean,
-    changeVibrationEnabled: () -> Unit,
-    autoStartEnabled: Boolean,
-    changeAutoStartEnabled: () -> Unit
+    changeLockAwakeFirstTimeEnabled: () -> Unit
 ) {
     val settingsDraw = painterResource(R.drawable.round_settings_24)
     val turnOffNotifDraw = painterResource(R.drawable.round_notifications_24)
@@ -74,14 +69,14 @@ fun DisplayActions(
     var showLockAwakeDialog by remember { mutableStateOf(false) }
 
     @Composable
-    fun actionDialogs(modifier: Modifier) {
-        OutlineIconButton(
+    fun actionButtons(modifier: Modifier) {
+        IconOutlineButton(
             modifier = modifier,
             onClick = { showSettingsDialog = true },
             painter = settingsDraw,
             contentDesc = stringResource(R.string.stopwatch_settings)
         )
-        OutlineIconButton(
+        IconOutlineButton(
             modifier = modifier,
             onClick = {
                 if (isStarted) {
@@ -94,13 +89,13 @@ fun DisplayActions(
             painter = if (notificationEnabled) turnOffNotifDraw else turnOnNotifDraw,
             contentDesc = stringResource(R.string.turn_off_notif)
         )
-        OutlineIconButton(
+        IconOutlineButton(
             modifier = modifier,
             onClick = { showThemeDialog = true },
             painter = themeDraw,
             contentDesc = stringResource(R.string.theme)
         )
-        OutlineIconButton(
+        IconOutlineButton(
             modifier = modifier,
             onClick = {
                 changeLockAwakeEnabled()
@@ -125,13 +120,8 @@ fun DisplayActions(
                 { showTapOnClockDialog = true }
             ) {
                 Text(
-                    text = when (tapOnClock) {
-                        1 -> "R & P"
-                        2 -> "R & L"
-                        3 -> "R & S"
-                        else -> "No"
-                    },
-                    fontSize = 21.sp,
+                    text = tapOnClock.toString(),
+                    style = Typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -221,27 +211,27 @@ fun DisplayActions(
     if (isPortrait)
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = fadeIn(tween(500)) + slideInVertically(tween(500)) { 80 },
-            exit = fadeOut(tween(300)) + slideOutVertically(tween(300)) { 80 }
+            enter = enterAnimation,
+            exit = exitAnimation
         ) {
             Row(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                actionDialogs(Modifier.weight(1f))
+                actionButtons(Modifier.weight(1f))
             }
         }
     else
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = fadeIn(tween(500)) + slideInHorizontally(tween(500)) { -80 },
-            exit = fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { -80 }
+            enter = enterAnimation,
+            exit = exitAnimation
         ) {
             Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                actionDialogs(Modifier.weight(1f))
+                actionButtons(Modifier.weight(1f))
             }
         }
 }
@@ -269,15 +259,16 @@ fun SettingsRow(text: String, onClick: () -> Unit, content: @Composable (RowScop
 fun DisplayActionsPreview() {
     MaterialTheme(colorScheme = DarkColorScheme) {
         DisplayActions(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(8.dp, 8.dp, 8.dp, 14.dp),
+            Modifier,
+            show = true,
             isPortrait = true,
             isStarted = true,
-            show = true,
             tapOnClock = 0,
             changeTapOnClock = { },
+            vibrationEnabled = false,
+            changeVibrationEnabled = { },
+            autoStartEnabled = false,
+            changeAutoStartEnabled = { },
             notificationEnabled = false,
             changeNotificationEnabled = { },
             pauseStopwatch = { },
@@ -287,11 +278,7 @@ fun DisplayActionsPreview() {
             lockAwakeEnabled = false,
             changeLockAwakeEnabled = { },
             lockAwakeFirstTimeEnabled = true,
-            changeLockAwakeFirstTimeEnabled = { },
-            vibrationEnabled = false,
-            changeVibrationEnabled = { },
-            autoStartEnabled = false,
-            changeAutoStartEnabled = { }
+            changeLockAwakeFirstTimeEnabled = { }
         )
     }
 }

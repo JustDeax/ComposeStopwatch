@@ -15,18 +15,18 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("p
 
 class DataStoreManager(private val context: Context) {
     companion object { //SW => STOPWATCH
-        private val SW_ELAPSED_MS_BEFORE_PAUSE = longPreferencesKey("SW_ELAPSED_MS_BEFORE_PAUSE")
-        private val SW_START_TIME = longPreferencesKey("SW_START_TIME")
-        private val SW_IS_RUNNING = booleanPreferencesKey("SW_IS_RUNNING")
-        private val SW_LAPS = stringPreferencesKey("SW_LAPS")
-        private val SW_TAP_ON_CLOCK = intPreferencesKey("SW_TAP_ON_CLOCK")
-        private val SW_AUTOSTART_ENABLED = booleanPreferencesKey("SW_AUTOSTART_ENABLES")
-        private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SW_VIBRATION_ENABLED")
-        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SW_NOTIFICATION_ENABLED")
-        private val APP_THEME = intPreferencesKey("APP_THEME_CODE")
-        private val LOCK_AWAKE = booleanPreferencesKey("LOCK_AWAKE")
-        private val LOCK_AWAKE_FIRST_TIME = booleanPreferencesKey("LOCK_AWAKE_FIRST_TIME")
-        private val FIRST_BOOT = booleanPreferencesKey("FIRST_BOOT")
+        private val SW_ELAPSED_MS_BEFORE_PAUSE = longPreferencesKey("SEMBP")
+        private val SW_START_TIME = longPreferencesKey("SST")
+        private val SW_IS_RUNNING = booleanPreferencesKey("SIR")
+        private val SW_LAPS = stringPreferencesKey("SL")
+        private val SW_TAP_ON_CLOCK = intPreferencesKey("STOC")
+        private val SW_AUTOSTART_ENABLED = booleanPreferencesKey("SAE")
+        private val SW_VIBRATION_ENABLED = booleanPreferencesKey("SVE")
+        private val SW_NOTIFICATION_ENABLED = booleanPreferencesKey("SNE")
+        private val APP_THEME = intPreferencesKey("AT")
+        private val LOCK_AWAKE = booleanPreferencesKey("LA")
+        private val LOCK_AWAKE_FIRST_TIME = booleanPreferencesKey("LAFT")
+        private val FIRST_BOOT = booleanPreferencesKey("FB")
     }
 
     suspend fun changeTapOnClock(tapType: Int) {

@@ -29,8 +29,9 @@ import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Gold
 import com.justdeax.composeStopwatch.ui.theme.Iron
 import com.justdeax.composeStopwatch.ui.theme.Silver
+import com.justdeax.composeStopwatch.util.Duration
 import com.justdeax.composeStopwatch.util.Lap
-import com.justdeax.composeStopwatch.util.toFormatString
+import com.justdeax.composeStopwatch.util.formatSecondsFullWithMs
 
 @Composable
 fun DisplayLaps(
@@ -40,14 +41,14 @@ fun DisplayLaps(
 ) {
     val heightAnimation by animateFloatAsState(
         targetValue = if (laps.isEmpty()) 0.0001f else 1f,
-        animationSpec = tween(500),
+        animationSpec = tween(Duration.animLong),
         label = ""
     )
     Row(modifier = modifier.fillMaxHeight(heightAnimation)) {
         LazyColumn {
             if (laps.isNotEmpty())
                 item {
-                    val deltaLap = "+ ${(elapsedMs - laps.first().elapsedTime).toFormatString()}"
+                    val deltaLap = "+ ${(elapsedMs - laps.first().elapsedTime).formatSecondsFullWithMs()}"
                     LapItem("+", MaterialTheme.colorScheme.onBackground, elapsedMs, deltaLap)
                 }
             items(laps, key = { laps[it.index - 1].index }) { (index, elapsedTime, deltaLap) ->
@@ -85,7 +86,7 @@ fun LapItem(indexText: String, indexColor: Color, elapsedTime: Long, deltaLap: S
             )
             Text(
                 modifier = Modifier.weight(2f),
-                text = elapsedTime.toFormatString(),
+                text = elapsedTime.formatSecondsFullWithMs(),
                 style = textStyle,
                 fontWeight = FontWeight.Normal
             )
@@ -106,9 +107,7 @@ fun LapItem(indexText: String, indexColor: Color, elapsedTime: Long, deltaLap: S
 fun DisplayLapsPreview() {
     MaterialTheme(colorScheme = DarkColorScheme) {
         DisplayLaps(
-            modifier = Modifier
-                .padding(8.dp, 0.dp)
-                .fillMaxWidth(),
+            modifier = Modifier,
             laps = listOf(Lap(1, 1000L, "+ 1.00")),
             elapsedMs = 2000L
         )

@@ -13,19 +13,19 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 0.5.sp
     ),
     titleLarge = TextStyle(
         //APP NAME
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 23.sp,
+        fontSize = 23.sp
     ),
     titleMedium = TextStyle(
         //MEDIUM SIZE TEXT IN SCREEN AWAKE DIALOG AND BOTTOM SHEET
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
-        lineHeight = 24.sp,
+        lineHeight = 24.sp
     )
 )

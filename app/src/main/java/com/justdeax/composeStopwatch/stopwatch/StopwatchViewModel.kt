@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.justdeax.composeStopwatch.util.DataStoreManager
 import com.justdeax.composeStopwatch.util.Lap
 import com.justdeax.composeStopwatch.util.StopwatchState
-import com.justdeax.composeStopwatch.util.toFormatString
+import com.justdeax.composeStopwatch.util.formatSecondsFullWithMs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -162,7 +162,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
             else
                 currentElapsed - (laps.value?.firstOrNull()?.elapsedTime ?: 0L)
             
-            val deltaLapString = "+ ${deltaLap.toFormatString()}"
+            val deltaLapString = "+ ${deltaLap.formatSecondsFullWithMs()}"
             val currentLaps = laps.value ?: LinkedList()
             val newLaps = LinkedList(currentLaps)
             newLaps.addFirst(Lap(newLaps.size + 1, currentElapsed, deltaLapString))

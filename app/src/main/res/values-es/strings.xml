@@ -88,8 +88,8 @@
 ► Modo de pantalla siempre activa
     • Posibilidad de ver el cronómetro sin que la pantalla se apague
 "</string>
-    <string name="about_app_desc_a">Autor:</string>
-    <string name="about_app_desc_v">\nVersión:</string>
+    <string name="about_app_desc_a">"Autor: "</string>
+    <string name="about_app_desc_v">"\nVersión: "</string>
 
     <string name="changelogs">Lista de cambios final</string>
     <string name="changelogs_desc">"Esta es la última actualización de esta aplicación. Incluye correcciones de errores, pequeñas mejoras en la interfaz de usuario y cambios menores. La aplicación ahora está completa y es totalmente funcional. Si encuentra errores graves, infórmelos en el repositorio (haga clic en el título de la parte superior de la aplicación para ver el enlace).
