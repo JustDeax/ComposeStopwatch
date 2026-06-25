@@ -30,13 +30,16 @@ import com.justdeax.composeStopwatch.R
 import com.justdeax.composeStopwatch.ui.dialog.EasyBottomSheet
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Hypertext
-import com.justdeax.composeStopwatch.util.enterAnimation
-import com.justdeax.composeStopwatch.util.exitAnimation
+import com.justdeax.composeStopwatch.util.fadeInAnim
+import com.justdeax.composeStopwatch.util.fadeOutAnim
+import com.justdeax.composeStopwatch.util.slideInMinusAnim
+import com.justdeax.composeStopwatch.util.slideOutMinusAnim
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayAppName(
     modifier: Modifier,
+    isPortrait: Boolean,
     show: Boolean
 ) {
     val context = LocalContext.current
@@ -46,12 +49,15 @@ fun DisplayAppName(
 
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.TopEnd
+        contentAlignment = if (isPortrait)
+            Alignment.TopStart
+        else
+            Alignment.TopEnd
     ) {
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = enterAnimation,
-            exit = exitAnimation
+            enter = fadeInAnim + slideInMinusAnim,
+            exit = fadeOutAnim + slideOutMinusAnim
         ) {
             Row(
                 modifier = Modifier.clickable(
@@ -82,11 +88,7 @@ fun DisplayAppName(
             text = stringResource(R.string.about_app),
             style = MaterialTheme.typography.titleLarge
         )
-        Text(
-            text = stringResource(R.string.about_app_desc),
-            style = MaterialTheme.typography.titleMedium
-        )
-        val annotatedString = buildAnnotatedString {
+        val authorString = buildAnnotatedString {
             append(stringResource(R.string.about_app_desc_a))
             withStyle(
                 style = SpanStyle(
@@ -96,16 +98,39 @@ fun DisplayAppName(
             ) {
                 append(stringResource(R.string.app_author))
             }
+        }
+        val repoString = buildAnnotatedString {
+            append(stringResource(R.string.about_app_desc_r))
+            withStyle(
+                style = SpanStyle(
+                    color = Hypertext,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append(stringResource(R.string.app_repo))
+            }
             append(stringResource(R.string.about_app_desc_v))
             append(stringResource(R.string.app_version))
         }
         Text(
-            text = annotatedString,
+            text = authorString,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.clickable {
                 val intent = Intent(Intent.ACTION_VIEW, "https://github.com/JustDeax".toUri())
                 context.startActivity(intent)
             }
+        )
+        Text(
+            text = repoString,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.clickable {
+                val intent = Intent(Intent.ACTION_VIEW, "https://github.com/JustDeax/ComposeStopwatch".toUri())
+                context.startActivity(intent)
+            }
+        )
+        Text(
+            text = stringResource(R.string.about_app_desc),
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }
@@ -116,6 +141,7 @@ fun DisplayAppNamePreview() {
     MaterialTheme(colorScheme = DarkColorScheme) {
         DisplayAppName(
             modifier = Modifier,
+            true,
             show = true
         )
     }

@@ -89,6 +89,7 @@
     • Posibilidad de ver el cronómetro sin que la pantalla se apague
 "</string>
     <string name="about_app_desc_a">"Autor: "</string>
+    <string name="about_app_desc_r">"Repositorio: "</string>
     <string name="about_app_desc_v">"\nVersión: "</string>
 
     <string name="changelogs">Lista de cambios final</string>

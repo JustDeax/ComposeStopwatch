@@ -173,14 +173,15 @@ class StopwatchService : LifecycleService() {
         elapsedMsBeforePause = 0L
         laps.value?.clear()
         previousLapDelta.value = 1L
+
         lifecycleScope.coroutineContext.cancelChildren()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     private fun hardReset() {
-        pause()
         lifecycleScope.launch {
+            pause()
             delay(10.milliseconds)
             reset()
         }
@@ -208,9 +209,6 @@ class StopwatchService : LifecycleService() {
     }
 
     companion object {
-        private const val NOTIFICATION_ID = 1488
-        private const val NOTIFICATION_CHANNEL_ID = "stopwatch_service_channel"
-
         private val isStarted = MutableLiveData(false)
         private val isRunning = MutableLiveData(false)
         private val elapsedMs = MutableLiveData(0L)
@@ -224,5 +222,8 @@ class StopwatchService : LifecycleService() {
         val lapsI: LiveData<LinkedList<Lap>> get() = laps
 
         val previousLapDelta = MutableLiveData(1L)
+
+        private const val NOTIFICATION_ID = 1488
+        private const val NOTIFICATION_CHANNEL_ID = "stopwatch_service_channel"
     }
 }

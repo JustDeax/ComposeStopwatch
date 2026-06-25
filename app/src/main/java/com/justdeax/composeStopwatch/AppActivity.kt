@@ -181,6 +181,7 @@ class AppActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(21.dp, 16.dp),
+                isPortrait = isPortrait,
                 show = !isStarted
             )
         }
@@ -196,7 +197,14 @@ class AppActivity : ComponentActivity() {
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        clickOnClock(tapOnClock, isRunning, notificationEnabled, vibrationEnabled, vibrator)
+                        clickOnClock(
+                            tapOnClock,
+                            isRunning,
+                            notificationEnabled,
+                            vibrationEnabled,
+                            vibrator
+                        )
+                        if (additionalActionsShow) additionalActionsShow = false
                     },
                 isPortrait = isPortrait,
                 isPausing = isStarted && !isRunning,
@@ -319,7 +327,10 @@ class AppActivity : ComponentActivity() {
                             FinalDisplayButtons(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = Dimens.topButtonsPadding.dp, bottom = Dimens.bottomButtonsPadding.dp)
+                                    .padding(
+                                        top = Dimens.topButtonsPadding.dp,
+                                        bottom = Dimens.bottomButtonsPadding.dp
+                                    )
                             )
                         }
                     }
@@ -328,7 +339,10 @@ class AppActivity : ComponentActivity() {
                         FinalDisplayButtons(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(start = Dimens.bottomButtonsPadding.dp, end = Dimens.topButtonsPadding.dp)
+                                .padding(
+                                    start = Dimens.bottomButtonsPadding.dp,
+                                    end = Dimens.topButtonsPadding.dp
+                                )
                         )
                         Box(
                             modifier = Modifier

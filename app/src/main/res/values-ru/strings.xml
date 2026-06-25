@@ -89,6 +89,7 @@
     • Возможность следить за секундомером без отключения экрана
 "</string>
     <string name="about_app_desc_a">"Автор: "</string>
+    <string name="about_app_desc_r">"Репозиторий: "</string>
     <string name="about_app_desc_v">"\nВерсия: "</string>
 
     <string name="changelogs">Финальный список изменений</string>

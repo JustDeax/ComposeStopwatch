@@ -89,6 +89,7 @@
     • Möglichkeit, die Stoppuhr zu beobachten, ohne dass der Bildschirm in den Ruhezustand geht
 "</string>
     <string name="about_app_desc_a">"Autor: "</string>
+    <string name="about_app_desc_r">"Repository: "</string>
     <string name="about_app_desc_v">"\nVersion: "</string>
 
     <string name="changelogs">Letzte Änderungen</string>

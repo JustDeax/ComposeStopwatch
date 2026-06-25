@@ -126,6 +126,7 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         timerJob?.cancel()
         elapsedMsBeforePause = elapsedMs.value ?: 0L
         startTime = 0L
+
         viewModelScope.launch {
             saveStopwatch()
         }
@@ -141,14 +142,15 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
         elapsedMsBeforePause = 0L
         laps.value?.clear()
         previousLapDelta.value = 1L
+
         viewModelScope.launch {
             dataStoreManager.resetStopwatch()
         }
     }
 
     fun hardReset() {
-        pause()
         viewModelScope.launch {
+            pause()
             delay(10.milliseconds)
             reset()
         }
@@ -157,18 +159,20 @@ class StopwatchViewModel(private val dataStoreManager: DataStoreManager) : ViewM
     fun addLap() {
         viewModelScope.launch(Dispatchers.Main) {
             val currentElapsed = elapsedMs.value ?: 0L
-            val deltaLap = if (laps.value?.isEmpty() == true)
+            val currentLaps = laps.value ?: LinkedList()
+
+            val deltaLap = if (currentLaps.isEmpty())
                 currentElapsed
             else
-                currentElapsed - (laps.value?.firstOrNull()?.elapsedTime ?: 0L)
+                currentElapsed - (currentLaps.first().elapsedTime)
             
             val deltaLapString = "+ ${deltaLap.formatSecondsFullWithMs()}"
-            val currentLaps = laps.value ?: LinkedList()
-            val newLaps = LinkedList(currentLaps)
-            newLaps.addFirst(Lap(newLaps.size + 1, currentElapsed, deltaLapString))
-            laps.value = newLaps
+
+            currentLaps.addFirst(Lap(currentLaps.size + 1, currentElapsed, deltaLapString))
+            laps.value = currentLaps
             previousLapDelta.value = deltaLap
-            dataStoreManager.saveLaps(Json.encodeToString(newLaps.toList()))
+
+            dataStoreManager.saveLaps(Json.encodeToString(currentLaps.toList()))
         }
     }
 

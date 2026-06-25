@@ -30,8 +30,12 @@ import com.justdeax.composeStopwatch.ui.dialog.RadioDialog
 import com.justdeax.composeStopwatch.ui.dialog.SimpleDialog
 import com.justdeax.composeStopwatch.ui.theme.DarkColorScheme
 import com.justdeax.composeStopwatch.ui.theme.Typography
-import com.justdeax.composeStopwatch.util.enterAnimation
-import com.justdeax.composeStopwatch.util.exitAnimation
+import com.justdeax.composeStopwatch.util.fadeInAnim
+import com.justdeax.composeStopwatch.util.fadeOutAnim
+import com.justdeax.composeStopwatch.util.slideInMinusAnim
+import com.justdeax.composeStopwatch.util.slideInPlusAnim
+import com.justdeax.composeStopwatch.util.slideOutMinusAnim
+import com.justdeax.composeStopwatch.util.slideOutPlusAnim
 
 @Composable
 fun DisplayActions(
@@ -211,8 +215,8 @@ fun DisplayActions(
     if (isPortrait)
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = enterAnimation,
-            exit = exitAnimation
+            enter = fadeInAnim + slideInPlusAnim,
+            exit = fadeOutAnim + slideOutPlusAnim
         ) {
             Row(
                 modifier = modifier,
@@ -224,8 +228,8 @@ fun DisplayActions(
     else
         androidx.compose.animation.AnimatedVisibility(
             visible = show,
-            enter = enterAnimation,
-            exit = exitAnimation
+            enter = fadeInAnim + slideInMinusAnim,
+            exit = fadeOutAnim + slideOutMinusAnim
         ) {
             Column(
                 modifier = modifier,

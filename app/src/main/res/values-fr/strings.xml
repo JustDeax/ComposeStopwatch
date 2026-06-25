@@ -89,6 +89,7 @@
     • Possibilité de regarder le chronomètre sans que l\'écran ne s\'éteigne
 "</string>
     <string name="about_app_desc_a">"Auteur : "</string>
+    <string name="about_app_desc_r">"Dépôt : "</string>
     <string name="about_app_desc_v">"\nVersion : "</string>
 
     <string name="changelogs">Notes de mise à jour finales</string>

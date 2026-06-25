@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Compose Stopwatch</string>
-    <string name="app_version" translatable="false">1.9.0 \n\n</string>
+    <string name="app_version" translatable="false">1.9.0\n</string>
     <string name="app_author" translatable="false">JustDeax (github.com/JustDeax)</string>
+    <string name="app_repo" translatable="false">github.com/JustDeax/ComposeStopwatch</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -93,6 +94,7 @@
     • Ability to watch the stopwatch without the screen falling asleep
 "</string>
     <string name="about_app_desc_a">"Author: "</string>
+    <string name="about_app_desc_r">"Repository: "</string>
     <string name="about_app_desc_v">"\nVersion: "</string>
 
     <string name="changelogs">Final Changelogs</string>
