@@ -17,50 +17,19 @@
 </div>
 
 <p align="center">
-  <img src="./metadata/en-US/images/phoneScreenshots/1.png" height="400" />
-  <img src="./metadata/en-US/images/phoneScreenshots/2.png" height="400" />
-  <img src="./metadata/en-US/images/phoneScreenshots/3.png" height="400" />
+  <img src="./metadata/en-US/images/phoneScreenshots/1.png" height="400">
+  <img src="./metadata/en-US/images/phoneScreenshots/2.png" height="400">
+  <img src="./metadata/en-US/images/phoneScreenshots/3.png" height="400">
 
-  <img src="./metadata/en-US/images/phoneScreenshots/4.png" height="400" />
-  <img src="./metadata/en-US/images/phoneScreenshots/5.png" height="400" />
+  <img src="./metadata/en-US/images/phoneScreenshots/4.png" height="400">
+  <img src="./metadata/en-US/images/phoneScreenshots/5.png" height="175">
+  <img src="./metadata/en-US/images/phoneScreenshots/6.png" height="175">
 </p>
 
 ### Compose Stopwatch
-### Notice! if your app version is 1.8.2 or lower, you need to uninstall the old version to update it
-<details>
-<summary>🔑 APK Signature Key Change Notification (click)</summary>
+#### Notice! if your app version is 1.8.2 or lower, you need to uninstall the old version to update it
 
----
-
-This notice is also available at: https://justdeax.github.io/ComposeStopwatch/key-rotation
-
-Hello, I am the developer of this application.
-
-Unfortunately, I **lost the signing key** used in previous versions of the app.  
-As a result, updates signed with the new key **cannot be installed over existing installs**.  
-To continue publishing updates, I have generated a **new signing key**.
-
-**Application ID:** `com.justdeax.composeStopwatch`
-
-**New key (since 2025-05-01):**
-```
-SHA-256: 6b:2a:b5:9a:56:7e:5e:05:d5:a3:d5:63:66:bd:5a:e0:d1:2a:11:ee:2e:10:46:d5:4d:14:9b:fa:53:43:d2:e0
-```
-
-**Old key (before 2025-05-01):**
-```
-SHA-256: a8:18:9a:88:76:f7:7c:c7:c1:c4:e9:1d:0f:75:30:5a:ba:36:98:8d:9a:48:91:f5:63:c4:a5:dd:a2:2b:70:33
-```
-
-I understand that losing a signing key compromises the trust chain.  
-To address this:
-- I remain in control of this repository and GitHub account
-- I am open to further verification steps if required
-- I have set up a persistent verification channel to avoid such issues in the future
-
-Thank you for your understanding and continued support.
-
----
+🔑 APK Signature Key Change Notification [click](https://justdeax.github.io/ComposeStopwatch/key-rotation)
 
 </details>
 
